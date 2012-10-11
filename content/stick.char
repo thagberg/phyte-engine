@@ -1,0 +1,312 @@
+{"character": {
+	"name": "Stick",
+	"spritesheet": "sticksheet.png",
+	"walkingspeed": 8,
+	"backspeed": 5,
+	"jumpheight": 20,
+	"moves":	{
+		"movement": {
+			"stand": {
+				"frames": [{
+					"imagecrop":	[0, 0],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[66, 0],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[131, 0],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[196, 0],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[261, 0],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[196, 0],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[131, 0],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[66, 0],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}]
+			},
+			"crouch": {
+				"frames": [{
+					"imagecrop":	[0, 390],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}]
+			}, 
+			"walk":	{
+				"frames": [{
+					"imagecrop":	[0, 129],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[66, 129],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[131, 129],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[196, 129],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[261, 129],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[196, 129],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[131, 129],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[66, 129],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}]
+			},
+			"njump": {
+				"frames": [{
+					"imagecrop":	[0, 259],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}]
+			},
+			"fall": {
+				"frames": [{
+					"imagecrop":	[66, 259],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	1,
+					"hitboxes":		[
+
+					]
+				}]
+			}
+		},
+		"normals": {
+			"lp": {
+                "priority":  1,
+				"frames": [{
+					"imagecrop":		[66, 390],
+					"cropsize":		[64, 128],
+					"force":			[0, 0],
+					"projectile": 	false,
+					"repeatcount":	2,
+					"hitboxes":		[
+					
+					]
+				}, {
+					"imagecrop":		[132, 390],
+					"cropsize":		[64, 128],
+					"force":			[0, 0],
+					"projectile":		false,
+					"repeatcount":	2,
+					"hitboxes":		[
+
+					]
+				}]
+			},
+			"hp": {
+                "priority": 1,
+				"frames": [{
+					"imagecrop":	[196, 259],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	2,
+					"hitboxes":		[
+					
+					]
+				}, {
+					"imagecrop":	[261, 259],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	4,
+					"hitboxes":		[
+
+					]
+				}, {
+					"imagecrop":	[326, 259],
+					"cropsize":		[112, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	8,
+					"hitboxes":		[
+
+					]
+				}]
+			}
+		},
+		"specials": {
+			"inputspecials": {
+				"lfireball": {
+                    "priority": 2,
+                    "state": 0,
+					"frames": [{
+						"imagecrop":		[0, 517],
+						"cropsize":		[64, 128],
+						"force":			[0, 0],
+						"projectile":		false,
+						"repeatcount":	2,
+						"hitboxes":		[
+
+						]
+					}, {
+						"imagecrop":		[66, 517],
+						"cropsize":		[64, 128],
+						"force":			[0, 0],
+						"projectile":		false,
+						"repeatcount":	3,
+						"hitboxes":		[
+
+						]
+					}, {
+						"imagecrop":		[132, 517],
+						"cropsize":		[64, 128],
+						"force":			[0, 0],
+						"projectile":		"lfireball",
+						"repeatcount":	1,
+						"hitboxes":		[
+
+						]
+					}, {
+						"imagecrop":		[132, 517],
+						"cropsize":		[64, 128],
+						"force":			[0, 0],
+						"projectile":		false,
+						"repeatcount":	2,
+						"hitboxes":		[
+
+						]
+					}],
+					"inputs": [
+                        "down",
+                        "forward",
+                        "lp"
+					]
+				}
+			},
+			"chargespecials": {
+
+			}
+		}
+	},
+    "projectiles": [{
+        "name":         "lfireball",
+        "speed":        [21, 0],
+        "cropsize":     [50, 50],
+        "imagecrop":    [551, 0],
+        "hitbox":       []
+    }]
+}}
