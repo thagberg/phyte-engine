@@ -100,7 +100,7 @@ while not(done):
     # Draw debug info
     if debug:
         primary_state   = debugFont.render("Primary State: " + str(player1.primary_state), 1, black)
-        secondaryState  = debugFont.render("Secondary State: " + str(player1.secondaryState), 1, black)
+        secondary_state  = debugFont.render("Secondary State: " + str(player1.secondary_state), 1, black)
         onGround        = debugFont.render("On Ground: " + str(player1.onGround), 1, black)
         current_move    = debugFont.render("Current Move: " + str(player1.current_move), 1, black)
         location        = debugFont.render("Location: " + str(player1.location), 1, black)
@@ -123,7 +123,7 @@ while not(done):
 
         screen.blit(primary_state, (0, debug_y))
         debug_y += 18
-        screen.blit(secondaryState, (0, debug_y))
+        screen.blit(secondary_state, (0, debug_y))
         debug_y += 18
         screen.blit(onGround, (0, debug_y))
         debug_y += 18

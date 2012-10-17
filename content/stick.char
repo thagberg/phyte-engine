@@ -196,6 +196,7 @@
 		"normals": {
 			"lp": {
                 "priority":  1,
+                "cancellable": ["lfireball"],
 				"frames": [{
 					"imagecrop":		[66, 390],
 					"cropsize":		[64, 128],
@@ -218,6 +219,7 @@
 			},
 			"hp": {
                 "priority": 1,
+                "cancellable": ["lfireball"],
 				"frames": [{
 					"imagecrop":	[196, 259],
 					"cropsize":		[64, 128],

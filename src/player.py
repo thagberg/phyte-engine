@@ -16,7 +16,7 @@ class Player:
 
         # player state attributes
         self.primary_state      = PlayerState.FALLING
-        self.secondaryState     = PlayerState.FALLING
+        self.secondary_state    = PlayerState.FALLING
         self.hit                = False                 # these values are flags which will help determine state/moves
         self.onGround           = False                 #
         self.facing_left        = False
@@ -90,27 +90,27 @@ class Player:
             if self.current_inputs["down"]:  # player is in one of the crouching states
                 self.primary_state = PlayerState.CROUCHING
                 if self.attacking:
-                    self.secondaryState = PlayerState.ATTACKING
+                    self.secondary_state = PlayerState.ATTACKING
                 elif self.current_inputs["left"]:
-                    self.secondaryState = PlayerState.CROUCHING if self.facing_left else PlayerState.BLOCKING
+                    self.secondary_state = PlayerState.CROUCHING if self.facing_left else PlayerState.BLOCKING
                 elif self.current_inputs["right"]:
-                    self.secondaryState = PlayerState.BLOCKING if self.facing_left else PlayerState.CROUCHING
+                    self.secondary_state = PlayerState.BLOCKING if self.facing_left else PlayerState.CROUCHING
             else:           # player is in one of the standing states
                 self.primary_state = PlayerState.STANDING
                 if self.attacking:
-                    self.secondaryState = PlayerState.ATTACKING
+                    self.secondary_state = PlayerState.ATTACKING
                 elif self.current_inputs["left"]:
                     if self.facing_left:
-                        self.secondaryState = PlayerState.WALKING
+                        self.secondary_state = PlayerState.WALKING
                     else:
-                        self.secondaryState = PlayerState.BACKING
+                        self.secondary_state = PlayerState.BACKING
                 elif self.current_inputs["right"]:
                     if self.facing_left:
-                        self.secondaryState = PlayerState.BACKING
+                        self.secondary_state = PlayerState.BACKING
                     else:
-                        self.secondaryState = PlayerState.WALKING
+                        self.secondary_state = PlayerState.WALKING
                 else:
-                    self.secondaryState = PlayerState.STANDING
+                    self.secondary_state = PlayerState.STANDING
 
             if self.current_inputs["up"]:    # player is in one of the jumping states
                 if not(self.attacking):
@@ -123,81 +123,56 @@ class Player:
                 self.primary_state = PlayerState.JUMPING
 
             if self.attacking:
-                self.secondaryState = PlayerState.ATTACKING
+                self.secondary_state = PlayerState.ATTACKING
             else:
-                self.secondaryState = self.primary_state
+                self.secondary_state = self.primary_state
             
         # determine if player is attacking now
         if True in (self.current_inputs["lp"], self.current_inputs["mp"], self.current_inputs["hp"],
                     self.current_inputs["lk"], self.current_inputs["mk"], self.current_inputs["hk"]):
-            self.secondaryState = PlayerState.ATTACKING
+            self.secondary_state = PlayerState.ATTACKING
             #self.attacking = True
-
-
     
     
     def find_move(self):
         ''' find_move: determine the player's current move'''
-        newMove = self.move_mapping["stand"]
+        new_move = self.move_mapping["stand"]
         ### check the primary state, then the secondary state to determine the current move ###
 
         try:
-            # standing moves
-            if self.primary_state == PlayerState.STANDING:
-                if self.secondaryState == PlayerState.ATTACKING:
-                    newMove = self.find_move_for_attack()
-                else:
-                    if self.secondaryState == PlayerState.WALKING:
-                        newMove = self.move_mapping["walk"]
-                    elif self.secondaryState == PlayerState.BACKING:
-                        newMove = self.move_mapping["walk"] # TODO: this should be a backing move
-                    elif self.secondaryState == PlayerState.BLOCKING:
-                        newMove = self.move_mapping["block"]
-                    else:
-                        newMove = self.move_mapping["stand"]
-
-            # crouching moves
-            elif self.primary_state == PlayerState.CROUCHING:
-                if self.secondaryState == PlayerState.ATTACKING:
-                    newMove = self.find_move_for_attack()
-                else:
-                    if self.secondaryState == PlayerState.BLOCKING:
-                        newMove = self.move_mapping["block"] #TODO: this should be a crouch-blocking move
-                    else:
-                        newMove = self.move_mapping["crouch"]
-
-            # jumping moves
-            elif self.primary_state == PlayerState.JUMPING:
-                if self.secondaryState == PlayerState.ATTACKING:
-                    newMove = self.find_move_for_attack()
-                else:
-                    if self.secondaryState == PlayerState.WALKING:
-                        newMove = self.move_mapping["njump"] #TODO: this should be a forwards jump
-                    elif self.secondaryState == PlayerState.BACKING:
-                        newMove = self.move_mapping["njump"] #TODO: this should be a backward jump
-                    else:
-                        newMove = self.move_mapping["njump"]
-
-            # falling moves
-            elif self.primary_state == PlayerState.FALLING:
-                if self.secondaryState == PlayerState.ATTACKING:
-                    newMove = self.find_move_for_attack()
-                else:
-                    newMove = self.move_mapping["fall"]
-
-            # and a catch-all, just in case
+            if self.secondary_state == PlayerState.ATTACKING:
+                new_move = self.find_move_for_attack()
             else:
-                newMove = self.move_mapping["stand"]
-
-            # now check if attacking
-            if self.secondaryState == PlayerState.ATTACKING:
-                newMove = self.find_move_for_attack()
-                
+                if self.primary_state == PlayerState.STANDING:
+                    if self.secondary_state == PlayerState.WALKING:
+                        new_move = self.move_mapping["walk"]
+                    elif self.secondary_state == PlayerState.BACKING:
+                        new_move = self.move_mapping["walk"] # TODO: this should be a backing move
+                    elif self.secondary_state == PlayerState.BLOCKING:
+                        new_move = self.move_mapping["block"]
+                    else:
+                        new_move = self.move_mapping["stand"]
+                elif self.primary_state == PlayerState.CROUCHING:
+                    if self.secondary_state == PlayerState.BLOCKING:
+                        new_move = self.move_mapping["block"] #TODO: this should be a crouch-blocking move
+                    else:
+                        new_move = self.move_mapping["crouch"]
+                elif self.primary_state == PlayerState.JUMPING:
+                    if self.secondary_state == PlayerState.WALKING:
+                        new_move = self.move_mapping["njump"] #TODO: this should be a forwards jump
+                    elif self.secondary_state == PlayerState.BACKING:
+                        new_move = self.move_mapping["njump"] #TODO: this should be a backward jump
+                    else:
+                        new_move = self.move_mapping["njump"]
+                elif self.primary_state == PlayerState.FALLING:
+                    new_move = self.move_mapping["fall"]
+                else:
+                    new_move = self.move_mapping["stand"]
         except KeyError:
-            newMove = 0
+            new_move = 0
 
         # the new move is found, so change the current move
-        self.change_move(newMove)
+        self.change_move(new_move)
 
     
 
@@ -216,11 +191,11 @@ class Player:
         
     
         
-    def change_move(self, newMove):
+    def change_move(self, new_move):
         ''' change_move: resets the current move and switches to the given one'''
-        if newMove != self.current_move:
-            self.reset_move(newMove)
-            self.current_move = newMove
+        if new_move != self.current_move:
+            self.reset_move(new_move)
+            self.current_move = new_move
         
     
         
@@ -249,9 +224,9 @@ class Player:
             elif self.primary_state == PlayerState.JUMPBACKWARD:
                 self.playerVel[0] = self.backSpeed * (1 if self.facing_left else -1)
         else:                       # player is on the ground
-            if self.secondaryState == PlayerState.WALKING:
+            if self.secondary_state == PlayerState.WALKING:
                 self.playerVel[0] = self.walkingSpeed * (-1 if self.facing_left else 1)
-            elif self.secondaryState == PlayerState.BACKING:
+            elif self.secondary_state == PlayerState.BACKING:
                 self.playerVel[0] = self.backSpeed * (1 if self.facing_left else -1)
             else:
                 self.playerVel[0] = 0
@@ -288,7 +263,8 @@ class Player:
             elif self.current_inputs["lp"]:
                 new_move = self.move_mapping["lp"]
 
-        if (self.moves[new_move].cancel_priority > self.moves[self.current_move].cancel_priority and self.hit_opponent) or not(self.attacking):
+        # determine if current move can be cancelled
+        if (self.moves[new_move] in self.moves[self.current_move].cancellable and self.hit_opponent) or not(self.attacking):
             self.attacking = True
             return new_move
         else:
@@ -306,7 +282,6 @@ class Player:
 
         self.location[0] += self.playerVel[0]
         self.location[1] += self.playerVel[1]
-    
     
     
     def check_for_move(self):
@@ -347,7 +322,7 @@ class Move:
         self.projectile         = False
         self.bufferable         = False
         self.state              = 0
-        self.cancel_priority    = 0
+        self.cancellable        = list()
 
     def execute(self):
         if self.movIndex < len(self.movFrames):

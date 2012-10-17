@@ -71,6 +71,14 @@ def create_player(character_config, player_number):
             this_move_input.input_order = inputs
             this_player.move_inputs.append(this_move_input)
 
+    # some ugly, hacky stuff we're doing to re-map cancellable lists so that they use the index value
+    #   of the move rather than its string name (makes it easier to determine cancels during runtime)
+    for move_name, move in this_player.move_mapping.iteritems():
+        cancellable_list    = this_player.moves[move].cancellable
+        index_list          = list()
+        for cancellable in cancellable_list:
+            index_list.append(this_player.move_mapping[cancellable])
+
     return this_player
 
 def create_move(move_config):
@@ -81,6 +89,8 @@ def create_move(move_config):
         this_move.state = move_config["state"]
     if "priority" in move_config:
         this_move.priority = move_config["priority"]
+    if "cancellable" in move_config:
+        this_move.cancellable = move_config["cancellable"]
     for frame in frames:
         this_frame = player.MoveFrame()
         this_frame.animation.image_loc = frame["imagecrop"]
