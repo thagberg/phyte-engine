@@ -47,6 +47,9 @@ class Player:
         self.player_name        = "Stick"
         self.hit_opponent       = False
 
+        # handle to opponent
+        self.opponent           = None
+
     
     
     def do_move(self):
@@ -56,14 +59,15 @@ class Player:
             if self.current_move < len(self.moves):                          #
                 currentFrame = self.moves[self.current_move].execute()        
                 if currentFrame:                                            # was this a valid move?
-                    self.playerBoxes = currentFrame.hitBoxes
-                    self.playerForces.append(currentFrame.frameForce)
-                    self.imageLoc = currentFrame.animation.image_loc
-                    self.cropSize = currentFrame.animation.crop_size
+                    self.playerBoxes = currentFrame.hitboxes
+                    self.playerForces.append(currentFrame.force)
+                    self.imageLoc = currentFrame.image_loc
+                    self.cropSize = currentFrame.crop_size
                     if currentFrame.projectile != None:
                         proj_copy = copy.deepcopy(self.projectile_mapping[currentFrame.projectile])
-                        proj_copy.hit_box.rect[0] += self.location[0]
-                        proj_copy.hit_box.rect[1] += self.location[1]
+                        proj_copy.location[0] += self.location[0]
+                        proj_copy.location[1] += self.location[1]
+                        proj_copy.moving_left = self.facing_left
                         self.active_projectiles.append(proj_copy)
                 else:
                     self.reset_move(self.current_move)                        # nope, find the valid state and move
@@ -103,10 +107,16 @@ class Player:
                     if self.facing_left:
                         self.secondary_state = PlayerState.WALKING
                     else:
-                        self.secondary_state = PlayerState.BACKING
+                        if self.opponent != None and self.opponent.attacking:
+                            self.secondary_state = PlayerState.BLOCKING
+                        else:
+                            self.secondary_state = PlayerState.BACKING                          
                 elif self.current_inputs["right"]:
                     if self.facing_left:
-                        self.secondary_state = PlayerState.BACKING
+                        if self.opponent != None and self.opponent.attacking:
+                            self.secondary_state = PlayerState.BLOCKING
+                        else:
+                            self.secondary_state = PlayerState.BACKING                            
                     else:
                         self.secondary_state = PlayerState.WALKING
                 else:
@@ -154,7 +164,7 @@ class Player:
                         new_move = self.move_mapping["stand"]
                 elif self.primary_state == PlayerState.CROUCHING:
                     if self.secondary_state == PlayerState.BLOCKING:
-                        new_move = self.move_mapping["block"] #TODO: this should be a crouch-blocking move
+                        new_move = self.move_mapping["crouchblock"] 
                     else:
                         new_move = self.move_mapping["crouch"]
                 elif self.primary_state == PlayerState.JUMPING:
@@ -242,9 +252,8 @@ class Player:
 
         # move any active_projectiles
         for projectile in self.active_projectiles:
-            projectile.hit_box.rect[0] += -projectile.projectile_speed[0] if self.facing_left else projectile.projectile_speed[0]
-            projectile.hit_box.rect[1] += projectile.projectile_speed[1]
-        
+            projectile.location[0] += -projectile.speed[0] if projectile.moving_left else projectile.speed[0]
+            projectile.location[1] += projectile.speed[1]
     
 
     def find_move_for_attack(self):
@@ -260,6 +269,8 @@ class Player:
         elif self.primary_state == PlayerState.STANDING:
             if self.current_inputs["hp"]:
 			    new_move = self.move_mapping["hp"]
+            elif self.current_inputs["hk"]:
+                new_move = self.move_mapping["hk"]
             elif self.current_inputs["lp"]:
                 new_move = self.move_mapping["lp"]
 
@@ -323,19 +334,21 @@ class Move:
         self.bufferable         = False
         self.state              = 0
         self.cancellable        = list()
+        self.current_frame      = Animation_Frame()
 
     def execute(self):
         if self.movIndex < len(self.movFrames):
-            thisFrame = self.movFrames[self.movIndex].execute()
+            self.current_frame = self.movFrames[self.movIndex].execute()
             self.movIndex += 1
-            return thisFrame
+            return self.current_frame
         else:
             self.movIndex = 0
             return False
     
     def reset(self):
         self.movIndex = 0
-   
+
+
 
 class MoveFrame:
     '''represents one frame of animation within a move and its boxes, forces, and images'''
@@ -390,15 +403,43 @@ class Projectile:
     '''encapsulates a Projectile in a move'''
 
     def __init__(self):
-        self.projectile_speed   = [10, 0]
-        self.hit_box            = HitBox()
-        self.animation          = list()
+        self.name           = ""
+        self.speed          = [0, 0]
+        self.moving_left    = False
+        self.frames         = list()
+        self.location       = [0, 0]
+        self.animation      = Animation()
+        self.animation.loop = True
+
+
+class Animation:
+    '''includes a list of frames and some helper functions'''
+
+    def __init__(self):
+        self.frames = list()
+        self.current_frame = 0
+        self.loop = False
+
+    def get_next_frame(self):
+        if self.current_frame >= len(self.frames):
+            self.current_frame = 0
+            if not self.loop:
+                return False
+        ret = self.frames[self.current_frame]
+        self.current_frame += 1
+        return ret
 
 
 class Animation_Frame:
     '''represents one frame of an animation'''
 
     def __init__(self):
+        self.hitboxes           = list()
+        self.force              = [0, 0]
         self.image_loc          = [0, 0]
-        self.crop_size          = [64, 64]
+        self.crop_size          = [0, 0]
+        self.projectile         = None
         self.animation_index    = 0         #TODO: decide whether or not I should remove this attribute
+
+    def execute(self):
+        return self

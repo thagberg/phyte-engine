@@ -40,14 +40,8 @@ def create_player(character_config, player_number):
 
     # map projectiles
     for projectile in projectiles:
-        this_projectile = player.Projectile()
-        this_animation  = player.Animation_Frame()
-        this_projectile.projectile_speed    = projectile["speed"]
-        this_projectile.hitboxes            = projectile["hitbox"]
-        this_animation.image_loc    = projectile["imagecrop"]
-        this_animation.crop_size    = projectile["cropsize"]
-        this_projectile.animation.append(this_animation)
-        this_player.projectile_mapping[projectile["name"]] = this_projectile
+        new_proj = create_projectile(projectile)
+        this_player.projectile_mapping[new_proj.name] = new_proj
 
     # map movements
     for move_name, move in movements.iteritems():
@@ -82,26 +76,58 @@ def create_player(character_config, player_number):
     return this_player
 
 def create_move(move_config):
-    this_move = player.Move()
+    new_move = player.Move()
 
     frames = move_config["frames"]
     if "state" in move_config:
-        this_move.state = move_config["state"]
+        new_move.state = move_config["state"]
     if "priority" in move_config:
-        this_move.priority = move_config["priority"]
+        new_move.priority = move_config["priority"]
     if "cancellable" in move_config:
-        this_move.cancellable = move_config["cancellable"]
-    for frame in frames:
-        this_frame = player.MoveFrame()
-        this_frame.animation.image_loc = frame["imagecrop"]
-        this_frame.animation.crop_size = frame["cropsize"]
-        this_frame.force    = frame["force"]
-        if frame["projectile"]:
-            this_frame.projectile = frame["projectile"]
-        hit_boxes = frame["hitboxes"]
-        for hit_box in hit_boxes:
-            this_frame.hitBoxes.append(hit_box)
-        for repeat in range(frame["repeatcount"]):
-            this_move.movFrames.append(this_frame)
+        new_move.cancellable = move_config["cancellable"]
+    if "frames" in move_config:
+        for frame in frames:
+            new_frame = create_frame(frame)
+            if "repeatcount" in frame:
+                for repeat in range(frame["repeatcount"]):
+                    new_move.movFrames.append(new_frame) 
+    return new_move
 
-    return this_move
+def create_projectile(projectile_config):
+    new_proj = player.Projectile()
+    if "name" in projectile_config:
+        new_proj.name = projectile_config["name"]
+    if "speed" in projectile_config:
+        new_proj.speed = projectile_config["speed"]
+    if "frames" in projectile_config:
+        for frame in projectile_config["frames"]:
+            new_frame = create_frame(frame)
+            if "repeatcount" in frame:
+                for repeat in range(frame["repeatcount"]):
+                    new_proj.animation.frames.append(new_frame)
+    return new_proj
+
+def create_frame(frame_config):
+    new_frame = player.Animation_Frame()
+    if "force" in frame_config:
+        new_frame.force = frame_config["force"]
+    if "imagecrop" in frame_config:
+        new_frame.image_loc = frame_config["imagecrop"]
+    if "cropsize" in frame_config:
+        new_frame.crop_size = frame_config["cropsize"]
+    if "projectile" in frame_config and frame_config["projectile"] != False:
+        new_frame.projectile = frame_config["projectile"]
+    if "hitboxes" in frame_config:
+        for hitbox in frame_config["hitboxes"]:
+            new_frame.hitboxes.append(create_hitbox(hitbox))
+    return new_frame
+
+def create_hitbox(hitbox_config):
+    new_hitbox = player.HitBox()
+    if "rect" in hitbox_config:
+        new_hitbox.rect = hitbox_config["rect"]
+    if "hitActive" in hitbox_config:
+        new_hitbox.hitActive = hitbox_config["hitActive"]
+    if "hurtActive" in hitbox_config:
+        new_hitbox.hurtActive = hitbox_config["hurtActive"]
+    return new_hitbox

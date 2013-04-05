@@ -54,10 +54,6 @@ class Inputs:
                     self.inputState[binding] = False
                     
         return self.inputState
-    
-    #/ END Input.getInputState
-        
-#/ END Input class
 
 
 class InputBuffer:
@@ -96,3 +92,11 @@ def getMinTransVect(rect1, rect2):
     mtv[1] = shiftUp if (shiftUp >= shiftDown) else shiftDown
     
     return mtv
+
+
+def get_reverse_crop(surface, rect):
+    origin = (surface.get_width(), 0) 
+    return pygame.Rect(origin[0] - rect.width - rect.x,
+                       rect.y,
+                       rect.width,
+                       rect.height)

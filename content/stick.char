@@ -14,7 +14,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[66, 0],
@@ -23,7 +35,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[131, 0],
@@ -32,7 +56,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[196, 0],
@@ -41,7 +77,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[261, 0],
@@ -50,7 +98,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[196, 0],
@@ -59,7 +119,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[131, 0],
@@ -68,7 +140,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[66, 0],
@@ -77,6 +161,30 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
+					]
+				}]
+			},
+			"block": {
+				"frames": [{
+					"imagecrop": 	[196, 517],
+					"cropsize": 	[63, 129],
+					"force": 		[0, 0],
+					"projectile": 	false,
+					"repeatcount": 	1,
+					"hitboxes": 	[
 
 					]
 				}]
@@ -88,11 +196,31 @@
 					"force":		[0, 0],
 					"projectile":	false,
 					"repeatcount":	1,
-					"hitboxes":		[
-
+					"hitboxes":		[ 
+						{
+							"rect": [17, 39, 28, 35],
+							"hitActive": false,
+							"hurtActive": true
+						}, {
+							"rect": [14, 84, 25, 30],
+							"hitActive": false,
+							"hurtActive": true
+						}
 					]
 				}]
 			}, 
+			"crouchblock": {
+				"frames": [{
+					"imagecrop": 	[261, 517],
+					"cropsize": 	[63, 129],
+					"force": 		[0, 0],
+					"projectile": 	false,
+					"repeatcount": 	1,
+					"hitboxes": 	[
+
+					]
+				}]
+			},
 			"walk":	{
 				"frames": [{
 					"imagecrop":	[0, 129],
@@ -101,7 +229,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[66, 129],
@@ -110,7 +250,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[131, 129],
@@ -119,7 +271,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[196, 129],
@@ -128,7 +292,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[261, 129],
@@ -137,7 +313,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[196, 129],
@@ -146,7 +334,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[131, 129],
@@ -155,7 +355,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}, {
 					"imagecrop":	[66, 129],
@@ -164,7 +376,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}]
 			},
@@ -176,7 +400,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}]
 			},
@@ -188,7 +424,19 @@
 					"projectile":	false,
 					"repeatcount":	1,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}]
 			}
@@ -204,7 +452,19 @@
 					"projectile": 	false,
 					"repeatcount":	2,
 					"hitboxes":		[
-					
+					        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}	
 					]
 				}, {
 					"imagecrop":		[132, 390],
@@ -213,7 +473,19 @@
 					"projectile":		false,
 					"repeatcount":	2,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}]
 			},
@@ -227,7 +499,19 @@
 					"projectile":	false,
 					"repeatcount":	2,
 					"hitboxes":		[
-					
+						{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}		
 					]
 				}, {
 					"imagecrop":	[261, 259],
@@ -236,7 +520,19 @@
 					"projectile":	false,
 					"repeatcount":	4,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}	
 					]
 				}, {
 					"imagecrop":	[326, 259],
@@ -246,6 +542,74 @@
 					"repeatcount":	8,
 					"hitboxes":		[
 
+					]
+				}]
+			},
+			"hk": {
+				"priority": 1,
+				"cancellable": [],
+				"frames": [{
+					"imagecrop": 	[196, 390],
+					"cropsize": 	[63, 125],
+					"force": 		[0, 0],
+					"projectile": 	false,
+					"repeatcount": 	3,
+					"hitboxes": 	[
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
+					]
+				},{
+					"imagecrop": 	[261, 390],
+					"cropsize": 	[63, 125],
+					"force": 		[0, 0],
+					"projectile": 	false,
+					"repeatcount": 	5,
+					"hitboxes": 	[
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
+					]
+				},{
+					"imagecrop": 	[196, 390],
+					"cropsize": 	[63, 125],
+					"force": 		[0, 0],
+					"projectile": 	false,
+					"repeatcount": 	2,
+					"hitboxes": 	[
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
 					]
 				}]
 			}
@@ -262,7 +626,19 @@
 						"projectile":		false,
 						"repeatcount":	2,
 						"hitboxes":		[
-
+		        			{
+			        			"rect": [15,12,31,35],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		},{
+			        			"rect": [25,53,20,40],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		},{
+			        			"rect": [18,99,27,19],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		}
 						]
 					}, {
 						"imagecrop":		[66, 517],
@@ -271,7 +647,19 @@
 						"projectile":		false,
 						"repeatcount":	3,
 						"hitboxes":		[
-
+		        			{
+			        			"rect": [15,12,31,35],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		},{
+			        			"rect": [25,53,20,40],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		},{
+			        			"rect": [18,99,27,19],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		}
 						]
 					}, {
 						"imagecrop":		[132, 517],
@@ -280,7 +668,19 @@
 						"projectile":		"lfireball",
 						"repeatcount":	1,
 						"hitboxes":		[
-
+		        			{
+			        			"rect": [15,12,31,35],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		},{
+			        			"rect": [25,53,20,40],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		},{
+			        			"rect": [18,99,27,19],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		}
 						]
 					}, {
 						"imagecrop":		[132, 517],
@@ -289,7 +689,19 @@
 						"projectile":		false,
 						"repeatcount":	2,
 						"hitboxes":		[
-
+		        			{
+			        			"rect": [15,12,31,35],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		},{
+			        			"rect": [25,53,20,40],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		},{
+			        			"rect": [18,99,27,19],
+			        			"hitActive": false,
+			        			"hurtActive": true
+			        		}
 						]
 					}],
 					"inputs": [
@@ -307,8 +719,19 @@
     "projectiles": [{
         "name":         "lfireball",
         "speed":        [21, 0],
-        "cropsize":     [50, 50],
-        "imagecrop":    [551, 0],
-        "hitbox":       []
+        "frames": [
+        	{
+        		"imagecrop": [551, 0],
+        		"cropsize": [50, 50],
+        		"repeatcount": 1,
+        		"hitboxes": [
+        			{
+	        			"rect": [0,0,50,50],
+	        			"hitActive": true,
+	        			"hurtActive": false
+	        		}
+        		]
+        	}
+        ]
     }]
 }}

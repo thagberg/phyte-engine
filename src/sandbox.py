@@ -2,6 +2,7 @@ import pygame
 import player
 import gameUtils
 import playerUtils
+import pymenu
 
 pygame.init()
 
@@ -17,6 +18,7 @@ debug = True
 debugFont = pygame.font.SysFont("monospace", 15, False, False)
 current_time = pygame.time.get_ticks()
 time_since_last_udate = 0
+hitboxes = True
 
 # Screen stuffs
 size = [700,500]
@@ -32,11 +34,25 @@ ground = pygame.Rect(0, 450, size[0], 50)
 player1_config = playerUtils.load_character("stick")
 player1 = playerUtils.create_player(player1_config, 1)
 player1.inputState = gameUtils.Inputs()
+player1.facing_left = False
 
 # Game loop stuffs
 done = False
 
 clock = pygame.time.Clock()
+
+# Menu test stuff
+menu_font = pygame.font.SysFont("monospace", 24, False, False)
+style = pymenu.Style(menu_font, white, menu_font, white,
+    pygame.Rect(0,32,32,32), pygame.Rect(32,32,32,32), pygame.Rect(64,32,32,32),
+    pygame.Rect(96,32,32,32), pygame.Rect(32,0,32,32), pygame.Rect(0,0,32,32),
+    pygame.Rect(64,0,32,32), pygame.Rect(96,0,32,32), pygame.Rect(128,32,32,32))
+items = list()
+items.append("Test 1")
+items.append("Test 2")
+items.append("Test 3")
+menu = pymenu.Menu("../content/menu.jpg", style, items)
+menu_surface = menu.render_menu()
 
 # --- Here's da loop --- #
 while not(done):
@@ -74,13 +90,40 @@ while not(done):
     pygame.draw.rect(screen, color, ground, 5)
         
     # Draw player image
+    new_img = player1.playerImage if not player1.facing_left else pygame.transform.flip(player1.playerImage, True, False)
     cropRect = pygame.Rect(player1.imageLoc[0], player1.imageLoc[1], player1.cropSize[0], player1.cropSize[1])
-    screen.blit(player1.playerImage, player1.location, cropRect)    
+    if player1.facing_left:
+        cropRect = gameUtils.get_reverse_crop(new_img, cropRect)
+    screen.blit(new_img, player1.location, cropRect)    
+    if hitboxes:
+        current_frame = player1.moves[player1.current_move].current_frame
+        for hitbox in current_frame.hitboxes:
+            if hitbox.hitActive:
+                color = red
+            elif hitbox.hurtActive:
+                color = blue
+            else:
+                color = green
+            offsetBox = [hitbox.rect[0] + player1.location[0],
+                         hitbox.rect[1] + player1.location[1],
+                         hitbox.rect[2], hitbox.rect[3]]
+            pygame.draw.rect(screen, color, offsetBox, 2)
 
     # Draw projectiles
     for projectile in player1.active_projectiles:
-        cropRect = pygame.Rect(projectile.animation[0].image_loc[0], projectile.animation[0].image_loc[1], projectile.animation[0].crop_size[0], projectile.animation[0].crop_size[1])
-        screen.blit(player1.playerImage, (projectile.hit_box.rect[0], projectile.hit_box.rect[1]), cropRect)
+        current_frame = projectile.animation.get_next_frame()
+        cropRect = pygame.Rect(current_frame.image_loc[0],
+                               current_frame.image_loc[1],
+                               current_frame.crop_size[0],
+                               current_frame.crop_size[1])
+        screen.blit(player1.playerImage, (projectile.location[0], projectile.location[1]), cropRect)
+        if hitboxes:
+            color = red
+            for hitbox in current_frame.hitboxes:
+                offsetBox = [hitbox.rect[0] + projectile.location[0],
+                             hitbox.rect[1] + projectile.location[1],
+                             hitbox.rect[2], hitbox.rect[3]]
+                pygame.draw.rect(screen, color, offsetBox, 2)
         
     # Draw player boxes
     for box in player1.playerBoxes:
@@ -95,12 +138,12 @@ while not(done):
         offsetBox = [box.rect[0] + player1.location[0], box.rect[1] + player1.location[1], box.rect[2], box.rect[3]]
             
         pygame.draw.rect(screen, color, offsetBox, 2)
-                
+
 
     # Draw debug info
     if debug:
         primary_state   = debugFont.render("Primary State: " + str(player1.primary_state), 1, black)
-        secondary_state  = debugFont.render("Secondary State: " + str(player1.secondary_state), 1, black)
+        secondary_state = debugFont.render("Secondary State: " + str(player1.secondary_state), 1, black)
         onGround        = debugFont.render("On Ground: " + str(player1.onGround), 1, black)
         current_move    = debugFont.render("Current Move: " + str(player1.current_move), 1, black)
         location        = debugFont.render("Location: " + str(player1.location), 1, black)
@@ -159,6 +202,10 @@ while not(done):
             current_output = debugFont.render(buffered_input.inputName, 1, black)
             screen.blit(current_output, (input_buffer_x, input_buffer_y))
             input_buffer_y += 18
+
+
+    # draw menu test stuff
+    screen.blit(menu_surface, (250, 0))
 
     pygame.display.flip()
             
