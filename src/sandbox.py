@@ -43,16 +43,23 @@ clock = pygame.time.Clock()
 
 # Menu test stuff
 menu_font = pygame.font.SysFont("monospace", 24, False, False)
-style = pymenu.Style(menu_font, white, menu_font, white,
+style = pymenu.Style(menu_font, white, menu_font, green,
     pygame.Rect(0,32,32,32), pygame.Rect(32,32,32,32), pygame.Rect(64,32,32,32),
     pygame.Rect(96,32,32,32), pygame.Rect(32,0,32,32), pygame.Rect(0,0,32,32),
-    pygame.Rect(64,0,32,32), pygame.Rect(96,0,32,32), pygame.Rect(128,32,32,32))
+    pygame.Rect(64,0,32,32), pygame.Rect(96,0,32,32), pygame.Rect(128,32,32,32),
+    menu_font, white)
 items = list()
 items.append("Test 1")
 items.append("Test 2")
 items.append("Test 3")
-menu = pymenu.Menu("../content/menu.jpg", style, items)
+items.append("Test 4")
+items.append("Test 5")
+menu = pymenu.Menu("../content/menu.jpg", style, items, "Test Header")
 menu_surface = menu.render_menu()
+
+# joystick test stuff
+pygame.joystick.init()
+print pygame.joystick.get_count()
 
 # --- Here's da loop --- #
 while not(done):
@@ -66,6 +73,11 @@ while not(done):
     for event in events:
         if event.type == pygame.QUIT:
             done = True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                menu.move_selected(False)
+            elif event.key == pygame.K_UP:
+                menu.move_selected(True)
 
        
     # Logic processing
@@ -118,8 +130,14 @@ while not(done):
                                current_frame.crop_size[1])
         screen.blit(player1.playerImage, (projectile.location[0], projectile.location[1]), cropRect)
         if hitboxes:
-            color = red
+            color = white
             for hitbox in current_frame.hitboxes:
+                if hitbox.hitActive:
+                    color = blue
+                elif box.hurtActive:
+                    color = red
+                else:
+                    color = green
                 offsetBox = [hitbox.rect[0] + projectile.location[0],
                              hitbox.rect[1] + projectile.location[1],
                              hitbox.rect[2], hitbox.rect[3]]
@@ -129,11 +147,11 @@ while not(done):
     for box in player1.playerBoxes:
         color = white
         if box.hitActive:
-            color = green
+            color = blue
         elif box.hurtActive:
             color = red
         else:
-            color = blue
+            color = green
         
         offsetBox = [box.rect[0] + player1.location[0], box.rect[1] + player1.location[1], box.rect[2], box.rect[3]]
             
@@ -205,6 +223,7 @@ while not(done):
 
 
     # draw menu test stuff
+    menu_surface = menu.render_menu()
     screen.blit(menu_surface, (250, 0))
 
     pygame.display.flip()

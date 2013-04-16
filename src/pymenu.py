@@ -5,9 +5,11 @@ class Menu:
     """Menu class returns an interactive text-based menu 
         drawn on a dynamic surface"""
 
-    def __init__(self, image_name, style, items=None):
+    def __init__(self, image_name, style, items=None, header=None, selected=0):
         self.image_name     = image_name
         self.items          = items if not items == None else list()
+        self.header         = header
+        self.selected       = selected
         self.style          = style
         self.image          = None
         self.surface        = None
@@ -15,15 +17,31 @@ class Menu:
 
         self.image = pygame.image.load(self.image_name)
 
+
     def render_menu(self):
         width  = 0
         height = 0
         self.rendered_items = list() # clear rendered items
 
         # render the items and store them
-        for item in self.items:
-            rendered_item = self.style.n_font.render(
-                item, True, self.style.n_color)
+        # start with the header
+        if self.header is not None:
+            divider = '' + ('-' * len(self.header))
+            rendered_header = self.style.h_font.render(
+                self.header, True, self.style.h_color)
+            rendered_divider = self.style.h_font.render(
+                divider, True, self.style.h_color)
+            width = rendered_header.get_width()
+            height += rendered_header.get_height() + rendered_divider.get_height()
+            self.rendered_items.append(rendered_header)
+            self.rendered_items.append(rendered_divider)
+        for index in range(len(self.items)):
+            if index == self.selected:
+                rendered_item = self.style.s_font.render(
+                    self.items[index], True, self.style.s_color)
+            else:
+                rendered_item = self.style.n_font.render(
+                    self.items[index], True, self.style.n_color)
             self.rendered_items.append(rendered_item)
             this_width = rendered_item.get_width()
             width = this_width if this_width > width else width
@@ -68,6 +86,16 @@ class Menu:
 
         return self.surface
 
+    def move_selected(self, up=False):
+        if up:
+            self.selected -= 1
+            if self.selected < 0:
+                self.selected = len(self.items) - 1
+        else:
+            self.selected += 1
+            if self.selected == len(self.items):
+                self.selected = 0
+
 
 class Item:
     """Item represents one menu item.  An Item's handler property 
@@ -82,12 +110,14 @@ class Style:
     """Style defines the fonts and colors used for normal and highlighted 
         menu items"""
 
-    def __init__(self, n_font, n_color, h_font, h_color,
+    def __init__(self, n_font, n_color, s_font, s_color,
                  tl_rect, tr_rect, bl_rect, br_rect,
-                 t_rect, b_rect, l_rect, r_rect, c_rect):
+                 t_rect, b_rect, l_rect, r_rect, c_rect, h_font=None, h_color=None):
 
         self.n_font     = n_font
         self.n_color    = n_color
+        self.s_font     = s_font
+        self.s_color    = s_color
         self.h_font     = h_font
         self.h_color    = h_color
         self.tl_rect    = tl_rect
