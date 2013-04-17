@@ -1,9 +1,12 @@
 import pygame
 
+MENUEVENT = pygame.USEREVENT + 1
+COLLISIONEVENT = pygame.USEREVENT + 1
+
 class Inputs:
        
     def __init__(self):
-        self.bindings = {"up": pygame.K_UP,
+        self.bindings = {"up":  pygame.K_UP,
                          "down":  pygame.K_DOWN,
                          "left":  pygame.K_LEFT,
                          "right":   pygame.K_RIGHT,
@@ -13,7 +16,7 @@ class Inputs:
                          "lk":  pygame.K_z,
                          "mk":  pygame.K_x,
                          "hk":  pygame.K_c,
-                         "pause":   pygame.K_RETURN}
+                         "pause":  pygame.K_RETURN}
         
         self.inputState = {"up": False,
                        "down": False,

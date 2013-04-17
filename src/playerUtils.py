@@ -77,8 +77,10 @@ def create_player(character_config, player_number):
 
 def create_move(move_config):
     new_move = player.Move()
+    new_animation = player.Animation()
 
     frames = move_config["frames"]
+    new_move.animation = new_animation
     if "state" in move_config:
         new_move.state = move_config["state"]
     if "priority" in move_config:
@@ -90,7 +92,7 @@ def create_move(move_config):
             new_frame = create_frame(frame)
             if "repeatcount" in frame:
                 for repeat in range(frame["repeatcount"]):
-                    new_move.movFrames.append(new_frame) 
+                    new_animation.frames.append(new_frame) 
     return new_move
 
 def create_projectile(projectile_config):
@@ -125,7 +127,7 @@ def create_frame(frame_config):
 def create_hitbox(hitbox_config):
     new_hitbox = player.HitBox()
     if "rect" in hitbox_config:
-        new_hitbox.rect = hitbox_config["rect"]
+        new_hitbox.rect = pygame.Rect(hitbox_config["rect"])
     if "hitActive" in hitbox_config:
         new_hitbox.hitActive = hitbox_config["hitActive"]
     if "hurtActive" in hitbox_config:

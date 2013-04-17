@@ -328,25 +328,17 @@ class Move:
     '''encapsulates the frames of a move, as well as the logic for executing the move'''
     
     def __init__(self):
-        self.movFrames          = list()
-        self.movIndex           = 0
+        self.animation          = Animation()
         self.projectile         = False
         self.bufferable         = False
         self.state              = 0
         self.cancellable        = list()
-        self.current_frame      = Animation_Frame()
 
     def execute(self):
-        if self.movIndex < len(self.movFrames):
-            self.current_frame = self.movFrames[self.movIndex].execute()
-            self.movIndex += 1
-            return self.current_frame
-        else:
-            self.movIndex = 0
-            return False
-    
+        return self.animation.get_next_frame()
+
     def reset(self):
-        self.movIndex = 0
+        self.animation.reset()
 
 
 
@@ -374,10 +366,10 @@ class MoveInput:
 class HitBox:
     '''represents a collideable hitbox'''
     
-    def __init__(self):
-        self.rect = [0,0,10,10]
-        self.hitActive = False
-        self.hurtActive = False
+    def __init__(self, rect=None, hit_active=False, hurt_active=False):
+        self.rect = rect
+        self.hitActive = hit_active
+        self.hurtActive = hurt_active
 
 
 class PlayerState:
@@ -417,17 +409,24 @@ class Animation:
 
     def __init__(self):
         self.frames = list()
-        self.current_frame = 0
+        self.current_frame = None
+        self.current_index = 0
         self.loop = False
 
     def get_next_frame(self):
-        if self.current_frame >= len(self.frames):
-            self.current_frame = 0
+        if self.current_index >= len(self.frames):
+            self.current_index = 0
             if not self.loop:
                 return False
-        ret = self.frames[self.current_frame]
-        self.current_frame += 1
-        return ret
+        self.current_frame = self.frames[self.current_index]
+        self.current_index += 1
+        return self.current_frame
+
+    def get_current_frame(self):
+        return self.current_frame
+
+    def reset(self):
+        self.current_index = 0
 
 
 class Animation_Frame:

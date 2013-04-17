@@ -59,6 +59,13 @@ menu_surface = menu.render_menu()
 
 # joystick test stuff
 pygame.joystick.init()
+
+
+# collision test setup
+collide_box = player.HitBox()
+collide_box.rect = pygame.Rect(400, 300, 100, 150)
+collide_box.hurtActive = True
+
 print pygame.joystick.get_count()
 
 # --- Here's da loop --- #
@@ -108,7 +115,7 @@ while not(done):
         cropRect = gameUtils.get_reverse_crop(new_img, cropRect)
     screen.blit(new_img, player1.location, cropRect)    
     if hitboxes:
-        current_frame = player1.moves[player1.current_move].current_frame
+        current_frame = player1.moves[player1.current_move].animation.get_current_frame()
         for hitbox in current_frame.hitboxes:
             if hitbox.hitActive:
                 color = red
@@ -156,6 +163,15 @@ while not(done):
         offsetBox = [box.rect[0] + player1.location[0], box.rect[1] + player1.location[1], box.rect[2], box.rect[3]]
             
         pygame.draw.rect(screen, color, offsetBox, 2)
+
+    # Draw test collide box
+    if collide_box.hitActive:
+        color = blue
+    elif collide_box.hurtActive:
+        color = red
+    else:
+        color = green
+    pygame.draw.rect(screen, color, collide_box.rect, 2)
 
 
     # Draw debug info
