@@ -423,6 +423,8 @@ class Animation:
         return self.current_frame
 
     def get_current_frame(self):
+        if self.current_frame is None:
+            self.current_frame = self.frames[self.current_index]
         return self.current_frame
 
     def reset(self):

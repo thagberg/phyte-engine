@@ -86,9 +86,12 @@ while not(done):
             elif event.key == pygame.K_UP:
                 menu.move_selected(True)
 
+    # Collision testing
+    for hitbox in player1.moves[player1.current_move].animation.get_current_frame().hitboxes:
+        if hitbox.hitActive and hitbox.rect.colliderect(collide_box.rect):
+            print "COLLISION OCCURED"
        
     # Logic processing
-
     playerRect = pygame.Rect(player1.location[0], player1.location[1], player1.cropSize[0], player1.cropSize[1])
     if playerRect.colliderect(ground):
         collisionShift = gameUtils.getMinTransVect(playerRect, ground)
