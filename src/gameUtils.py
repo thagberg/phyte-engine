@@ -1,7 +1,8 @@
 import pygame
 
 MENUEVENT = pygame.USEREVENT + 1
-COLLISIONEVENT = pygame.USEREVENT + 1
+COLLISIONEVENT = pygame.USEREVENT + 2
+CHANGEFACEEVENT = pygame.USEREVENT + 3
 
 class Inputs:
        
@@ -98,8 +99,14 @@ def getMinTransVect(rect1, rect2):
 
 
 def get_reverse_crop(surface, rect):
+    """Used to get a cropped image from a reversed spritesheet"""
     origin = (surface.get_width(), 0) 
     return pygame.Rect(origin[0] - rect.width - rect.x,
                        rect.y,
                        rect.width,
                        rect.height)
+
+
+def trans_rect_to_world(rect, parent_loc, reverse=False):
+    return pygame.Rect(rect.x + parent_loc[0], rect.y + parent_loc[1],
+        rect.width, rect.height)

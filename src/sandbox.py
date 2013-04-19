@@ -34,7 +34,7 @@ ground = pygame.Rect(0, 450, size[0], 50)
 player1_config = playerUtils.load_character("stick")
 player1 = playerUtils.create_player(player1_config, 1)
 player1.inputState = gameUtils.Inputs()
-player1.facing_left = False
+player1.facing_left = True
 
 # Game loop stuffs
 done = False
@@ -85,10 +85,22 @@ while not(done):
                 menu.move_selected(False)
             elif event.key == pygame.K_UP:
                 menu.move_selected(True)
+            elif event.key == pygame.K_t:
+                face_event = pygame.event.Event(gameUtils.CHANGEFACEEVENT, player=1)
+                pygame.event.post(face_event)
+        elif event.type == gameUtils.CHANGEFACEEVENT:
+            if event.player == 1:
+                player1.facing_left = not player1.facing_left
+                if player1.facing_left:
+                    player1.location = [player1.location[0] + player1.cropSize[0],
+                                        player1.location[1]]
+                else:
+                    player1.location = [player1.location[0] - player1.cropSize[0],
+                                        player1.location[1]]
 
     # Collision testing
     for hitbox in player1.moves[player1.current_move].animation.get_current_frame().hitboxes:
-        if hitbox.hitActive and hitbox.rect.colliderect(collide_box.rect):
+        if hitbox.hitActive and gameUtils.trans_rect_to_world(hitbox.rect, player1.location).colliderect(collide_box.rect):
             print "COLLISION OCCURED"
        
     # Logic processing
@@ -114,9 +126,11 @@ while not(done):
     # Draw player image
     new_img = player1.playerImage if not player1.facing_left else pygame.transform.flip(player1.playerImage, True, False)
     cropRect = pygame.Rect(player1.imageLoc[0], player1.imageLoc[1], player1.cropSize[0], player1.cropSize[1])
+    draw_location = player1.location if not player1.facing_left else \
+        (player1.location[0] - cropRect[2], player1.location[1])
     if player1.facing_left:
         cropRect = gameUtils.get_reverse_crop(new_img, cropRect)
-    screen.blit(new_img, player1.location, cropRect)    
+    screen.blit(new_img, draw_location, cropRect)    
     if hitboxes:
         current_frame = player1.moves[player1.current_move].animation.get_current_frame()
         for hitbox in current_frame.hitboxes:
