@@ -35,8 +35,9 @@ def create_player(character_config, player_number):
     input_specials  = special_moves["inputspecials"]
     charge_specials = special_moves["chargespecials"]
 
-    this_player.name        = name
-    this_player.playerImage = image
+    this_player.name          = name
+    this_player.playerImage   = image
+    this_player.player_number = player_number
 
     # map projectiles
     for projectile in projectiles:

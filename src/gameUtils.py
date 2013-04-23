@@ -108,5 +108,10 @@ def get_reverse_crop(surface, rect):
 
 
 def trans_rect_to_world(rect, parent_loc, reverse=False):
-    return pygame.Rect(rect.x + parent_loc[0], rect.y + parent_loc[1],
-        rect.width, rect.height)
+    if reverse:
+        trans_rect = pygame.Rect(parent_loc[0] - (rect.x + rect.width),
+                                 rect.y + parent_loc[1], rect.width, rect.height)
+    else:
+        trans_rect = pygame.Rect(rect.x + parent_loc[0], rect.y + parent_loc[1],
+                                 rect.width, rect.height)
+    return trans_rect

@@ -7,18 +7,20 @@ import pymenu
 pygame.init()
 
 # Define colors
-black = (   0,   0,   0)
-white = ( 255, 255, 255)
-red   = ( 255,   0,   0)
-green = (   0, 255,   0)
-blue  = (   0,   0, 255)
+black  = (   0,   0,   0)
+white  = ( 255, 255, 255)
+red    = ( 255,   0,   0)
+green  = (   0, 255,   0)
+blue   = (   0,   0, 255)
+yellow = ( 255, 255,   0)
+purple = ( 255,   0, 255)
 
 # game state stuff
 debug = True
 debugFont = pygame.font.SysFont("monospace", 15, False, False)
 current_time = pygame.time.get_ticks()
 time_since_last_udate = 0
-hitboxes = True
+draw_hitboxes = True
 
 # Screen stuffs
 size = [700,500]
@@ -30,11 +32,17 @@ pygame.display.set_caption("Bam it's a game")
 # Initialize the stage
 ground = pygame.Rect(0, 450, size[0], 50)
 
-# Initialize a player
+# Initialize first player
 player1_config = playerUtils.load_character("stick")
 player1 = playerUtils.create_player(player1_config, 1)
 player1.inputState = gameUtils.Inputs()
-player1.facing_left = True
+
+# Initialize second player
+player2_config = playerUtils.load_character("stick")
+player2 = playerUtils.create_player(player2_config, 2)
+player2.inputState = gameUtils.Inputs()
+
+players = [player1, player2]
 
 # Game loop stuffs
 done = False
@@ -68,7 +76,7 @@ collide_box.hurtActive = True
 
 print pygame.joystick.get_count()
 
-# --- Here's da loop --- #
+""" Game Loop """
 while not(done):
 
     # update the game clock
@@ -98,97 +106,91 @@ while not(done):
                     player1.location = [player1.location[0] - player1.cropSize[0],
                                         player1.location[1]]
 
-    # Collision testing
-    for hitbox in player1.moves[player1.current_move].animation.get_current_frame().hitboxes:
-        if hitbox.hitActive and gameUtils.trans_rect_to_world(hitbox.rect, player1.location).colliderect(collide_box.rect):
-            print "COLLISION OCCURED"
-       
-    # Logic processing
-    playerRect = pygame.Rect(player1.location[0], player1.location[1], player1.cropSize[0], player1.cropSize[1])
-    if playerRect.colliderect(ground):
-        collisionShift = gameUtils.getMinTransVect(playerRect, ground)
-        player1.playerForces.append([0, collisionShift[1]])
-        player1.onGround = True
-        player1.playerVel[1] = 0
-        
-    player1.current_inputs = player1.inputState.getInputState(events)
-    player1.inputState.buffer.update_times(time_since_last_update)
-    player1.inputState.buffer.expireInputs()
-    player1.update()
-           
-    # Graphics processing
+    # Clear the screen
     screen.fill(white)
             
     # Draw the stage
     color = red
     pygame.draw.rect(screen, color, ground, 5)
-        
-    # Draw player image
-    new_img = player1.playerImage if not player1.facing_left else pygame.transform.flip(player1.playerImage, True, False)
-    cropRect = pygame.Rect(player1.imageLoc[0], player1.imageLoc[1], player1.cropSize[0], player1.cropSize[1])
-    draw_location = player1.location if not player1.facing_left else \
-        (player1.location[0] - cropRect[2], player1.location[1])
-    if player1.facing_left:
-        cropRect = gameUtils.get_reverse_crop(new_img, cropRect)
-    screen.blit(new_img, draw_location, cropRect)    
-    if hitboxes:
-        current_frame = player1.moves[player1.current_move].animation.get_current_frame()
-        for hitbox in current_frame.hitboxes:
-            if hitbox.hitActive:
-                color = red
-            elif hitbox.hurtActive:
-                color = blue
-            else:
-                color = green
-            offsetBox = [hitbox.rect[0] + player1.location[0],
-                         hitbox.rect[1] + player1.location[1],
-                         hitbox.rect[2], hitbox.rect[3]]
-            pygame.draw.rect(screen, color, offsetBox, 2)
 
-    # Draw projectiles
-    for projectile in player1.active_projectiles:
-        current_frame = projectile.animation.get_next_frame()
-        cropRect = pygame.Rect(current_frame.image_loc[0],
-                               current_frame.image_loc[1],
-                               current_frame.crop_size[0],
-                               current_frame.crop_size[1])
-        screen.blit(player1.playerImage, (projectile.location[0], projectile.location[1]), cropRect)
-        if hitboxes:
-            color = white
+    # Collision testing
+    for hitbox in player1.moves[player1.current_move].animation.get_current_frame().hitboxes:
+        if hitbox.hitActive and gameUtils.trans_rect_to_world(hitbox.rect, player1.location, player1.facing_left).colliderect(collide_box.rect):
+            print "COLLISION OCCURED"
+       
+
+    """Player Loop"""
+    for this_player in players:
+        playerRect = pygame.Rect(this_player.location[0], this_player.location[1], 
+                                 this_player.cropSize[0], this_player.cropSize[1])
+        if playerRect.colliderect(ground):
+            collisionShift = gameUtils.getMinTransVect(playerRect, ground)
+            this_player.playerForces.append([0, collisionShift[1]])
+            this_player.onGround = True
+            this_player.playerVel[1] = 0
+            
+        this_player.current_inputs = this_player.inputState.getInputState(events)
+        this_player.inputState.buffer.update_times(time_since_last_update)
+        this_player.inputState.buffer.expireInputs()
+        this_player.update()
+        
+        # Draw player image
+        new_img = this_player.playerImage if not this_player.facing_left else \
+            pygame.transform.flip(this_player.playerImage, True, False)
+        cropRect = pygame.Rect(this_player.imageLoc[0], this_player.imageLoc[1], 
+                               this_player.cropSize[0], this_player.cropSize[1])
+        draw_location = this_player.location if not this_player.facing_left else \
+            (this_player.location[0] - cropRect[2], this_player.location[1])
+        if this_player.facing_left:
+            cropRect = gameUtils.get_reverse_crop(new_img, cropRect)
+        screen.blit(new_img, draw_location, cropRect)    
+        if draw_hitboxes:
+            current_frame = this_player.moves[player1.current_move].animation.get_current_frame()
             for hitbox in current_frame.hitboxes:
                 if hitbox.hitActive:
+                    if hitbox.hurtActive:
+                        color = purple
+                    else:
+                        color = red
+                elif hitbox.hurtActive:
                     color = blue
-                elif box.hurtActive:
-                    color = red
                 else:
                     color = green
-                offsetBox = [hitbox.rect[0] + projectile.location[0],
-                             hitbox.rect[1] + projectile.location[1],
-                             hitbox.rect[2], hitbox.rect[3]]
+                offsetBox = pygame.Rect(hitbox.rect[0], hitbox.rect[1],
+                                        hitbox.rect[2], hitbox.rect[3])
+                offsetBox = gameUtils.trans_rect_to_world(offsetBox,
+                                                          this_player.location,
+                                                          this_player.facing_left)
                 pygame.draw.rect(screen, color, offsetBox, 2)
-        
-    # Draw player boxes
-    for box in player1.playerBoxes:
-        color = white
-        if box.hitActive:
-            color = blue
-        elif box.hurtActive:
-            color = red
-        else:
-            color = green
-        
-        offsetBox = [box.rect[0] + player1.location[0], box.rect[1] + player1.location[1], box.rect[2], box.rect[3]]
-            
-        pygame.draw.rect(screen, color, offsetBox, 2)
 
-    # Draw test collide box
-    if collide_box.hitActive:
-        color = blue
-    elif collide_box.hurtActive:
-        color = red
-    else:
-        color = green
-    pygame.draw.rect(screen, color, collide_box.rect, 2)
+        # Draw projectiles
+        for projectile in this_player.active_projectiles:
+            current_frame = projectile.animation.get_next_frame()
+            cropRect = pygame.Rect(current_frame.image_loc[0],
+                                   current_frame.image_loc[1],
+                                   current_frame.crop_size[0],
+                                   current_frame.crop_size[1])
+            draw_location = projectile.location if not projectile.moving_left else \
+                (projectile.location[0] - cropRect[2], projectile.location[1])
+            screen.blit(this_player.playerImage, draw_location, cropRect)
+            if draw_hitboxes:
+                color = white
+                for hitbox in current_frame.hitboxes:
+                    if hitbox.hitActive:
+                        if hitbox.hurtActive:
+                            color = purple
+                        else:
+                            color = red
+                    elif hitbox.hurtActive:
+                        color = blue
+                    else:
+                        color = green
+                    offsetBox = pygame.Rect(hitbox.rect[0], hitbox.rect[1],
+                                            hitbox.rect[2], hitbox.rect[3])
+                    offsetBox = gameUtils.trans_rect_to_world(offsetBox,
+                                                              projectile.location,
+                                                              projectile.moving_left)
+                    pygame.draw.rect(screen, color, offsetBox, 2)
 
 
     # Draw debug info
