@@ -115,3 +115,10 @@ def trans_rect_to_world(rect, parent_loc, reverse=False):
         trans_rect = pygame.Rect(rect.x + parent_loc[0], rect.y + parent_loc[1],
                                  rect.width, rect.height)
     return trans_rect
+
+
+def get_opponent(player_number, players):
+    if player_number == 1:
+        return players[1]
+    else:
+        return players[0]
