@@ -122,3 +122,7 @@ def get_opponent(player_number, players):
         return players[1]
     else:
         return players[0]
+
+
+def get_player(player_number, players):
+    return players[player_number - 1]

@@ -80,14 +80,7 @@ menu_surface = menu.render_menu()
 
 # joystick test stuff
 pygame.joystick.init()
-
-
-# collision test setup
-collide_box = player.HitBox()
-collide_box.rect = pygame.Rect(400, 300, 100, 150)
-collide_box.hurtActive = True
-
-print pygame.joystick.get_count()
+print ("%d joysticks found" % pygame.joystick.get_count())
 
 """ Game Loop """
 while not(done):
@@ -97,6 +90,7 @@ while not(done):
     current_time           = pygame.time.get_ticks()
     time_since_last_update = current_time - temp_time
 
+    # process events
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
@@ -106,18 +100,18 @@ while not(done):
                 menu.move_selected(False)
             elif event.key == pygame.K_UP:
                 menu.move_selected(True)
-            elif event.key == pygame.K_t:
-                face_event = pygame.event.Event(gameUtils.CHANGEFACEEVENT, player=1)
                 pygame.event.post(face_event)
         elif event.type == gameUtils.CHANGEFACEEVENT:
-            if event.player == 1:
-                player1.facing_left = not player1.facing_left
-                if player1.facing_left:
-                    player1.location = [player1.location[0] + player1.cropSize[0],
-                                        player1.location[1]]
-                else:
-                    player1.location = [player1.location[0] - player1.cropSize[0],
-                                        player1.location[1]]
+            this_player = gameUtils.get_player(event.player, players)
+            this_player.facing_left = not this_player.facing_left
+            if this_player.facing_left:
+                this_player.location = [this_player.location[0] + this_player.cropSize[0],
+                                        this_player.location[1]]
+            else:
+                this_player.location = [this_player.location[0] - this_player.cropSize[0],
+                                        this_player.location[1]]
+        elif event.type == gameUtils.COLLISIONEVENT:
+            print "COLLISION"
 
     # Clear the screen
     screen.fill(white)
@@ -125,11 +119,6 @@ while not(done):
     # Draw the stage
     color = red
     pygame.draw.rect(screen, color, ground, 5)
-
-    # Collision testing
-    for hitbox in player1.moves[player1.current_move].animation.get_current_frame().hitboxes:
-        if hitbox.hitActive and gameUtils.trans_rect_to_world(hitbox.rect, player1.location, player1.facing_left).colliderect(collide_box.rect):
-            print "COLLISION OCCURED"
        
 
     """Player Loop"""
@@ -143,7 +132,7 @@ while not(done):
             this_player.playerForces.append([0, collisionShift[1]])
             this_player.onGround = True
             this_player.playerVel[1] = 0
-            
+
         # Check facing
         if this_player.primary_state in (player.PlayerState.STANDING, 
                                          player.PlayerState.CROUCHING):
@@ -154,9 +143,38 @@ while not(done):
                 # in a possible state where player can change face
                 #     check orientation compared to other player
                 if (this_player.location[0] < opponent.location[0]):
-                    this_player.facing_left = False
+                    if this_player.facing_left:
+                       face_event = pygame.event.Event(gameUtils.CHANGEFACEEVENT,
+                                                       player=player_number) 
+                       pygame.event.post(face_event) 
                 else:
-                    this_player.facing_left = True
+                    if not this_player.facing_left:
+                       face_event = pygame.event.Event(gameUtils.CHANGEFACEEVENT,
+                                                       player=player_number) 
+                       pygame.event.post(face_event)   
+
+        # Check for collisions
+        current_frame = this_player.get_current_move().animation.get_current_frame()
+        opponent_frame = opponent.get_current_move().animation.get_current_frame()
+        for hitbox in current_frame.hitboxes:
+            if hitbox.hitActive:
+                for opp_hitbox in opponent_frame.hitboxes:
+                    if opp_hitbox.hurtActive:
+                        trans_box =  gameUtils.trans_rect_to_world(hitbox.rect, 
+                                                                   this_player.location, 
+                                                                   this_player.facing_left) 
+                        opp_trans_box = gameUtils.trans_rect_to_world(opp_hitbox.rect,
+                                                                      opponent.location,
+                                                                      opponent.facing_left)
+                        if trans_box.colliderect(opp_trans_box):
+                            collide_event = pygame.event.Event(gameUtils.COLLISIONEVENT,
+                                                               hitter=player_number,
+                                                               hittee=opponent.player_number,
+                                                               hitbox=hitbox,
+                                                               hurtbox=opp_hitbox
+                                                               )
+                            pygame.event.post(collide_event)
+
 
         this_player.current_inputs = this_player.inputState.getInputState(events)
         this_player.inputState.buffer.update_times(time_since_last_update)

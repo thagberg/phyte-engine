@@ -323,6 +323,9 @@ class Player:
         
         return "no match"
 
+    def get_current_move(self):
+        return self.moves[self.current_move]
+
    
 class Move:
     '''encapsulates the frames of a move, as well as the logic for executing the move'''
