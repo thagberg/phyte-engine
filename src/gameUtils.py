@@ -62,12 +62,13 @@ class Inputs:
 
 class InputBuffer:
     
-    def __init__(self):
+    def __init__(self, expire_time=800):
         self.buffer = list()
+        self.expire_time = expire_time
 
     def expireInputs(self):
         for thisInput in self.buffer:
-            if thisInput.timeSinceInput > 800:
+            if thisInput.timeSinceInput > self.expire_time:
                 self.buffer.remove(thisInput)
 
     def push(self, newInput):

@@ -1,7 +1,7 @@
 import gameUtils
 import copy
 
-# Player class
+
 class Player:
 
     gravity     = [0, 2]
@@ -33,6 +33,7 @@ class Player:
         self.move_inputs        = list()
         self.moves              = list()
         self.current_inputs     = dict()
+        self.last_inputs        = dict()
         self.move_mapping       = dict()
         self.current_move       = -1
 
@@ -138,12 +139,15 @@ class Player:
                 self.secondary_state = self.primary_state
             
         # determine if player is attacking now
-        if True in (self.current_inputs["lp"], self.current_inputs["mp"], self.current_inputs["hp"],
-                    self.current_inputs["lk"], self.current_inputs["mk"], self.current_inputs["hk"]):
+        if True in (self.pressed_input('lp'), self.pressed_input('mp'), self.pressed_input('hp'),
+                    self.pressed_input('lk'), self.pressed_input('mk'), self.pressed_input('hk')):
             self.secondary_state = PlayerState.ATTACKING
             #self.attacking = True
     
     
+    def pressed_input(self, input):
+        return self.current_inputs[input] and not(self.last_inputs[input])
+
     def find_move(self):
         ''' find_move: determine the player's current move'''
         new_move = self.move_mapping["stand"]
@@ -184,7 +188,6 @@ class Player:
         # the new move is found, so change the current move
         self.change_move(new_move)
 
-    
 
     def orient_boxes(self):
         ''' orient_boxes: hitbox coordinates are relative to the player's location, so their absolute position
