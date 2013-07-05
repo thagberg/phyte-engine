@@ -92,8 +92,8 @@ def create_move(move_config):
         for frame in frames:
             new_frame = create_frame(frame)
             if "repeatcount" in frame:
-                for repeat in range(frame["repeatcount"]):
-                    new_animation.frames.append(new_frame) 
+                new_frame.repeat = frame["repeatcount"]
+            new_animation.frames.append(new_frame)
     return new_move
 
 def create_projectile(projectile_config):
@@ -106,8 +106,8 @@ def create_projectile(projectile_config):
         for frame in projectile_config["frames"]:
             new_frame = create_frame(frame)
             if "repeatcount" in frame:
-                for repeat in range(frame["repeatcount"]):
-                    new_proj.animation.frames.append(new_frame)
+                new_frame.repeat = frame["repeatcount"]
+            new_proj.animation.frames.append(new_frame)
     return new_proj
 
 def create_frame(frame_config):

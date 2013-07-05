@@ -15,8 +15,6 @@ class Player:
         self.playerImage        = ""
 
         # player state attributes
-        #self.primary_state      = PlayerState.FALLING
-        #self.secondary_state    = PlayerState.FALLING
         self.states             = list()
         self.hit                = False                 # these values are flags which will help determine state/moves
         self.onGround           = False                 #
@@ -57,93 +55,76 @@ class Player:
     def do_move(self):
         ''' do_move : executes the current move, which includes managing each move frame's hit-boxes and forces'''
         '''if the current move is invalid, find a proper one'''
-        if self.current_move > -1:                                           # check for valid move index 
-            if self.current_move < len(self.moves):                          #
-                currentFrame = self.moves[self.current_move].execute()        
-                if currentFrame:                                            # was this a valid move?
-                    self.playerBoxes = currentFrame.hitboxes
-                    self.playerForces.append(currentFrame.force)
-                    self.imageLoc = currentFrame.image_loc
-                    self.cropSize = currentFrame.crop_size
-                    if currentFrame.projectile != None:
-                        proj_copy = copy.deepcopy(self.projectile_mapping[currentFrame.projectile])
-                        proj_copy.location[0] += self.location[0]
-                        proj_copy.location[1] += self.location[1]
-                        proj_copy.moving_left = self.facing_left
-                        self.active_projectiles.append(proj_copy)
-                else:
-                    self.reset_move(self.current_move)                        # nope, find the valid state and move
-                    self.attacking = False
-                    self.find_state()
-                    self.find_move()
-                    self.do_move()
+        if self.current_move in range(len(self.moves)):
+            currentFrame = self.moves[self.current_move].execute()        
+            if currentFrame:                                            # was this a valid move?
+                self.playerBoxes = currentFrame.hitboxes
+                self.playerForces.append(currentFrame.force)
+                self.imageLoc = currentFrame.image_loc
+                self.cropSize = currentFrame.crop_size
+                if currentFrame.projectile != None:
+                    proj_copy = copy.deepcopy(self.projectile_mapping[currentFrame.projectile])
+                    proj_copy.location[0] += self.location[0]
+                    proj_copy.location[1] += self.location[1]
+                    proj_copy.moving_left = self.facing_left
+                    self.active_projectiles.append(proj_copy)
             else:
+                self.reset_move(self.current_move)                        # nope, find the valid state and move
                 self.attacking = False
-                self.find_state()                                            # invalid move index
-                self.find_move()                                             #
-                self.do_move()                                               #
-        else:                                                           
+                self.find_state()
+                self.find_move()
+                self.do_move()
+        else:
             self.attacking = False
-            self.find_state()
-            self.find_move()
-            self.do_move()
-            
+            self.find_state()                                            # invalid move index
+            self.find_move()                                             #
+            self.do_move()                                               #
     
                 
     def find_state(self):
         ''' find_state : determine the player's current primary and secondary states'''
+        self.states = list()
         if self.onGround:       # player is on the ground
-            if self.current_inputs["down"]:  # player is in one of the crouching states
-                self.states.append(PlayerState.CROUCHING)
-                if self.attacking:
-                    self.secondary_state = PlayerState.ATTACKING
-                elif self.current_inputs["left"]:
-                    self.secondary_state = PlayerState.CROUCHING if self.facing_left else PlayerState.BLOCKING
-                elif self.current_inputs["right"]:
-                    self.secondary_state = PlayerState.BLOCKING if self.facing_left else PlayerState.CROUCHING
-            else:           # player is in one of the standing states
-                self.primary_state = PlayerState.STANDING
-                if self.attacking:
-                    self.secondary_state = PlayerState.ATTACKING
-                elif self.current_inputs["left"]:
-                    if self.facing_left:
-                        self.secondary_state = PlayerState.WALKING
-                    else:
-                        if self.opponent != None and self.opponent.attacking:
-                            self.secondary_state = PlayerState.BLOCKING
+            if not(self.attacking):
+                if self.current_inputs["down"]:  # player is in one of the crouching states
+                    self.states.append(PlayerState.CROUCHING)
+                    if self.current_inputs["left"]:
+                        self.states.append(PlayerState.CROUCHING if self.facing_left else PlayerState.BLOCKING)
+                    elif self.current_inputs["right"]:
+                        self.states.append(PlayerState.BLOCKING if self.facing_left else PlayerState.CROUCHING)
+                else:           # player is in one of the standing states
+                    self.states.append(PlayerState.STANDING)
+                    if self.current_inputs["left"]:
+                        if self.facing_left:
+                            self.states.append(PlayerState.WALKING)
                         else:
-                            self.secondary_state = PlayerState.BACKING                          
-                elif self.current_inputs["right"]:
-                    if self.facing_left:
-                        if self.opponent != None and self.opponent.attacking:
-                            self.secondary_state = PlayerState.BLOCKING
+                            if self.opponent != None and self.opponent.attacking:
+                                self.states.append(PlayerState.BLOCKING)
+                            else:
+                                self.states.append(PlayerState.BACKING)
+                    elif self.current_inputs["right"]:
+                        if self.facing_left:
+                            if self.opponent != None and self.opponent.attacking:
+                                self.states.append(PlayerState.BLOCKING)
+                            else:
+                                self.states.append(PlayerState.BACKING)
                         else:
-                            self.secondary_state = PlayerState.BACKING                            
+                            self.states.append(PlayerState.WALKING)
                     else:
-                        self.secondary_state = PlayerState.WALKING
-                else:
-                    self.secondary_state = PlayerState.STANDING
+                        self.states.append(PlayerState.STANDING)
 
-            if self.current_inputs["up"]:    # player is in one of the jumping states
-                if not(self.attacking):
-                    self.primary_state = PlayerState.JUMPING
+                if self.current_inputs["up"]:    # player is in one of the jumping states
+                    self.states.append(PlayerState.JUMPING)
 
         else:       # player is either in one of the jumping or falling states
             if self.playerVel[1] > 0:
-                self.primary_state = PlayerState.FALLING
+                self.states.append(PlayerState.FALLING)
             else:
-                self.primary_state = PlayerState.JUMPING
-
-            if self.attacking:
-                self.secondary_state = PlayerState.ATTACKING
-            else:
-                self.secondary_state = self.primary_state
+                self.states.append(PlayerState.JUMPING)
             
         # determine if player is attacking now
-        if True in (self.pressed_input('lp'), self.pressed_input('mp'), self.pressed_input('hp'),
-                    self.pressed_input('lk'), self.pressed_input('mk'), self.pressed_input('hk')):
-            self.secondary_state = PlayerState.ATTACKING
-            #self.attacking = True
+        if self.attacking:
+            self.states.append(PlayerState.ATTACKING)
     
     
     def pressed_input(self, input):
@@ -155,31 +136,35 @@ class Player:
         ### check the primary state, then the secondary state to determine the current move ###
 
         try:
-            if self.secondary_state == PlayerState.ATTACKING:
+            if PlayerState.ATTACKING in self.states or \
+                True in (self.pressed_input('lp'), self.pressed_input('mp'), self.pressed_input('hp'),
+                        self.pressed_input('lk'), self.pressed_input('mk'), self.pressed_input('hk')):
                 new_move = self.find_move_for_attack()
+                if new_move != self.current_move:
+                    self.attacking = True
             else:
-                if self.primary_state == PlayerState.STANDING:
-                    if self.secondary_state == PlayerState.WALKING:
+                if PlayerState.STANDING in self.states:
+                    if PlayerState.WALKING in self.states:
                         new_move = self.move_mapping["walk"]
-                    elif self.secondary_state == PlayerState.BACKING:
+                    elif PlayerState.BACKING in self.states:
                         new_move = self.move_mapping["walk"] # TODO: this should be a backing move
-                    elif self.secondary_state == PlayerState.BLOCKING:
+                    elif PlayerState.BLOCKING in self.states:
                         new_move = self.move_mapping["block"]
                     else:
                         new_move = self.move_mapping["stand"]
-                elif self.primary_state == PlayerState.CROUCHING:
-                    if self.secondary_state == PlayerState.BLOCKING:
+                elif PlayerState.CROUCHING in self.states:
+                    if PlayerState.BLOCKING in self.states:
                         new_move = self.move_mapping["crouchblock"] 
                     else:
                         new_move = self.move_mapping["crouch"]
-                elif self.primary_state == PlayerState.JUMPING:
-                    if self.secondary_state == PlayerState.WALKING:
+                elif PlayerState.JUMPING in self.states:
+                    if PlayerState.WALKING in self.states:
                         new_move = self.move_mapping["njump"] #TODO: this should be a forwards jump
-                    elif self.secondary_state == PlayerState.BACKING:
+                    elif PlayerState.BACKING in self.states:
                         new_move = self.move_mapping["njump"] #TODO: this should be a backward jump
                     else:
                         new_move = self.move_mapping["njump"]
-                elif self.primary_state == PlayerState.FALLING:
+                elif PlayerState.FALLING in self.states:
                     new_move = self.move_mapping["fall"]
                 else:
                     new_move = self.move_mapping["stand"]
@@ -196,13 +181,11 @@ class Player:
         for box in self.playerBoxes:
             box.rect[0] += self.location[1]
             box.rect[1] += self.location[1]
-        
     
             
     def reset_move(self, move):
         ''' reset_move: reset the frames of a move'''
         self.moves[move].reset()
-        
     
         
     def change_move(self, new_move):
@@ -210,19 +193,6 @@ class Player:
         if new_move != self.current_move:
             self.reset_move(new_move)
             self.current_move = new_move
-        
-    
-        
-    def change_state(self, newState):
-        self.primary_state = newState
-        if newState in (PlayerState.JUMPING, PlayerState.FALLING):
-            self.onGround = False
-        else:
-            self.onGround = True
-
-        if newState == PlayerState.CROUCHING:
-            self.crouching = True
-        
     
         
     def update(self):
@@ -233,20 +203,20 @@ class Player:
 
         if not(self.onGround):      # player is in the air
             self.playerForces.append(Player.gravity)
-            if self.primary_state == PlayerState.JUMPFORWARD:
+            if PlayerState.JUMPFORWARD in self.states:
                 self.playerVel[0] = self.walkingSpeed * (-1 if self.facing_left else 1)
-            elif self.primary_state == PlayerState.JUMPBACKWARD:
+            elif PlayerState.JUMPBACKWARD in self.states:
                 self.playerVel[0] = self.backSpeed * (1 if self.facing_left else -1)
         else:                       # player is on the ground
-            if self.secondary_state == PlayerState.WALKING:
+            if PlayerState.WALKING in self.states:
                 self.playerVel[0] = self.walkingSpeed * (-1 if self.facing_left else 1)
-            elif self.secondary_state == PlayerState.BACKING:
+            elif PlayerState.BACKING in self.states:
                 self.playerVel[0] = self.backSpeed * (1 if self.facing_left else -1)
             else:
                 self.playerVel[0] = 0
             
             # even if secondary state is walking or backing, the player can still be jumping
-            if self.primary_state == PlayerState.JUMPING:
+            if PlayerState.JUMPING in self.states:
                 self.playerForces.append([0, -self.jumpHeight])
                 self.onGround = False
         
@@ -266,11 +236,11 @@ class Player:
         new_move = self.current_move
         special_move_name = self.check_for_move()
         if special_move_name != "no match":
-            if self.moves[self.move_mapping[special_move_name]].state == self.primary_state:
+            if self.moves[self.move_mapping[special_move_name]].state in self.states:
                 new_move = self.move_mapping[special_move_name]
 
         # no special move match found, check for a normal
-        elif self.primary_state == PlayerState.STANDING:
+        elif PlayerState.STANDING in self.states:
             if self.current_inputs["hp"]:
 			    new_move = self.move_mapping["hp"]
             elif self.current_inputs["hk"]:
@@ -278,7 +248,7 @@ class Player:
             elif self.current_inputs["lp"]:
                 new_move = self.move_mapping["lp"]
 
-        # determine if current move can be cancelled
+        # determine if current move can be cancelled by new move
         if (self.moves[new_move] in self.moves[self.current_move].cancellable and self.hit_opponent) or not(self.attacking):
             self.attacking = True
             return new_move
@@ -347,20 +317,6 @@ class Move:
     def reset(self):
         self.animation.reset()
 
-
-
-class MoveFrame:
-    '''represents one frame of animation within a move and its boxes, forces, and images'''
-    
-    def __init__(self):
-        self.hitBoxes = list()
-        self.animation = Animation_Frame()
-        self.frameForce = [0,0]
-        self.projectile = None
-    
-    def execute(self):
-        return self
-   
 
 class MoveInput:
     '''describes the order of inputs for a special move and its move index'''
@@ -448,6 +404,7 @@ class Animation_Frame:
         self.crop_size          = [0, 0]
         self.projectile         = None
         self.animation_index    = 0         #TODO: decide whether or not I should remove this attribute
+        self.repeat             = 0
 
     def execute(self):
         return self

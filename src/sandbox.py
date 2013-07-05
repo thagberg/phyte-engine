@@ -5,6 +5,7 @@ import player
 import gameUtils
 import playerUtils
 import pymenu
+import copy
 
 pygame.init()
 
@@ -138,24 +139,23 @@ while not(done):
                 this_player.playerVel[1] = 0
 
             # Check facing
-            if this_player.primary_state in (player.PlayerState.STANDING, 
-                                             player.PlayerState.CROUCHING):
-                if this_player.secondary_state in (player.PlayerState.STANDING,
-                                                   player.PlayerState.CROUCHING,
-                                                   player.PlayerState.BLOCKING,
-                                                   player.PlayerState.WALKING):
-                    # in a possible state where player can change face
-                    #     check orientation compared to other player
-                    if (this_player.location[0] < opponent.location[0]):
-                        if this_player.facing_left:
-                           face_event = pygame.event.Event(gameUtils.CHANGEFACEEVENT,
-                                                           player=player_number) 
-                           pygame.event.post(face_event) 
-                    else:
-                        if not this_player.facing_left:
-                           face_event = pygame.event.Event(gameUtils.CHANGEFACEEVENT,
-                                                           player=player_number) 
-                           pygame.event.post(face_event)   
+            if (this_player.onGround and 
+                not(any(s in this_player.states for s in [player.PlayerState.ATTACKING,
+                                                      player.PlayerState.HIT,
+                                                      player.PlayerState.HITSTUN,
+                                                      player.PlayerState.LAYING]))):
+                # in a possible state where player can change face
+                #     check orientation compared to other player
+                if (this_player.location[0] < opponent.location[0]):
+                    if this_player.facing_left:
+                       face_event = pygame.event.Event(gameUtils.CHANGEFACEEVENT,
+                                                       player=player_number) 
+                       pygame.event.post(face_event) 
+                else:
+                    if not this_player.facing_left:
+                       face_event = pygame.event.Event(gameUtils.CHANGEFACEEVENT,
+                                                       player=player_number) 
+                       pygame.event.post(face_event)   
 
             # Check for collisions
             current_frame = this_player.get_current_move().animation.get_current_frame()
@@ -180,7 +180,7 @@ while not(done):
                                 pygame.event.post(collide_event)
 
 
-            this_player.last_inputs = this_player.current_inputs
+            this_player.last_inputs = copy.deepcopy(this_player.current_inputs)
             this_player.current_inputs = this_player.inputState.getInputState(events)
             this_player.inputState.buffer.update_times(time_since_last_update)
             this_player.inputState.buffer.expireInputs()
@@ -251,8 +251,7 @@ while not(done):
 
     # Draw debug info
     if debug:
-        primary_state   = debugFont.render("Primary State: " + str(player1.primary_state), 1, black)
-        secondary_state = debugFont.render("Secondary State: " + str(player1.secondary_state), 1, black)
+        states          = debugFont.render("States: %s" % ", ".join(str(n) for n in player1.states), 1, black)
         onGround        = debugFont.render("On Ground: " + str(player1.onGround), 1, black)
         current_move    = debugFont.render("Current Move: " + str(player1.current_move), 1, black)
         location        = debugFont.render("Location: " + str(player1.location), 1, black)
@@ -273,9 +272,7 @@ while not(done):
 
         debug_y = 0
 
-        screen.blit(primary_state, (0, debug_y))
-        debug_y += 18
-        screen.blit(secondary_state, (0, debug_y))
+        screen.blit(states, (0, debug_y))
         debug_y += 18
         screen.blit(onGround, (0, debug_y))
         debug_y += 18
