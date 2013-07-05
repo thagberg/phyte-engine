@@ -44,18 +44,20 @@ player1.location = [0, 300]
 # Initialize second player
 player2_config = playerUtils.load_character("stick")
 player2 = playerUtils.create_player(player2_config, 2)
-player2.inputState = gameUtils.Inputs()
-player2.inputState.bindings = {"up": pygame.K_KP8,
-                               "down": pygame.K_KP2,
-                               "left": pygame.K_KP4,
-                               "right": pygame.K_KP6,
-                               "lp": pygame.K_u,
-                               "mp": pygame.K_i,
-                               "hp": pygame.K_o,
-                               "lk": pygame.K_j,
-                               "mk": pygame.K_k,
-                               "hk": pygame.K_l,
-                               "pause": pygame.K_RETURN}
+player2.inputState = gameUtils.Inputs(
+    bindings={
+        "up": gameUtils.Binding(pygame.K_KP8),
+        "down": gameUtils.Binding(pygame.K_KP2),
+        "left": gameUtils.Binding(pygame.K_KP4),
+        "right": gameUtils.Binding(pygame.K_KP6),
+        "lp": gameUtils.Binding(pygame.K_u),
+        "mp": gameUtils.Binding(pygame.K_i),
+        "hp": gameUtils.Binding(pygame.K_o),
+        "lk": gameUtils.Binding(pygame.K_j),
+        "mk": gameUtils.Binding(pygame.K_k),
+        "hk": gameUtils.Binding(pygame.K_l),
+        "pause": gameUtils.Binding(pygame.K_RETURN)
+    })
 player2.location = [600, 300]
 
 players = [player1, player2]
@@ -79,8 +81,8 @@ items.append("Test 2")
 items.append("Test 3")
 items.append("Test 4")
 items.append("Test 5")
-menu = pymenu.Menu("../content/menu.jpg", style, items, "Test Header")
-menu_surface = menu.render_menu()
+#menu = pymenu.Menu("../content/menu.jpg", style, items, "Test Header")
+#menu_surface = menu.render_menu()
 
 # joystick test stuff
 pygame.joystick.init()
@@ -95,16 +97,11 @@ while not(done):
     time_since_last_update = current_time - temp_time
 
     # process events
+    input_events = list()
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
             done = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_DOWN:
-                menu.move_selected(False)
-            elif event.key == pygame.K_UP:
-                menu.move_selected(True)
-                pygame.event.post(face_event)
         elif event.type == gameUtils.CHANGEFACEEVENT:
             this_player = gameUtils.get_player(event.player, players)
             this_player.facing_left = not this_player.facing_left
@@ -317,8 +314,8 @@ while not(done):
 
 
     # draw menu test stuff
-    menu_surface = menu.render_menu()
-    screen.blit(menu_surface, (250, 0))
+    #menu_surface = menu.render_menu()
+    #screen.blit(menu_surface, (250, 0))
 
     pygame.display.flip()
             

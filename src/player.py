@@ -15,8 +15,9 @@ class Player:
         self.playerImage        = ""
 
         # player state attributes
-        self.primary_state      = PlayerState.FALLING
-        self.secondary_state    = PlayerState.FALLING
+        #self.primary_state      = PlayerState.FALLING
+        #self.secondary_state    = PlayerState.FALLING
+        self.states             = list()
         self.hit                = False                 # these values are flags which will help determine state/moves
         self.onGround           = False                 #
         self.facing_left        = False
@@ -93,7 +94,7 @@ class Player:
         ''' find_state : determine the player's current primary and secondary states'''
         if self.onGround:       # player is on the ground
             if self.current_inputs["down"]:  # player is in one of the crouching states
-                self.primary_state = PlayerState.CROUCHING
+                self.states.append(PlayerState.CROUCHING)
                 if self.attacking:
                     self.secondary_state = PlayerState.ATTACKING
                 elif self.current_inputs["left"]:

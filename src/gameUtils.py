@@ -3,21 +3,34 @@ import pygame
 MENUEVENT = pygame.USEREVENT + 1
 COLLISIONEVENT = pygame.USEREVENT + 2
 CHANGEFACEEVENT = pygame.USEREVENT + 3
+INPUTEVENT1 = pygame.USEREVENT + 4
+INPUTEVENT2 = pygame.USEREVENT + 5
+
+class Binding:
+    def __init__(self, key, hold_time=0):
+        self.key       = key
+        self.hold_time = hold_time
+
 
 class Inputs:
        
-    def __init__(self):
-        self.bindings = {"up":  pygame.K_UP,
-                         "down":  pygame.K_DOWN,
-                         "left":  pygame.K_LEFT,
-                         "right":   pygame.K_RIGHT,
-                         "lp":  pygame.K_a,
-                         "mp":  pygame.K_s,
-                         "hp":  pygame.K_d,
-                         "lk":  pygame.K_z,
-                         "mk":  pygame.K_x,
-                         "hk":  pygame.K_c,
-                         "pause":  pygame.K_RETURN}
+    def __init__(self, bindings=None):
+        if bindings == None:
+            self.bindings = {
+                "up": Binding(pygame.K_UP),
+                "down": Binding(pygame.K_DOWN),
+                "left": Binding(pygame.K_LEFT),
+                "right": Binding(pygame.K_RIGHT),
+                "lp": Binding(pygame.K_a),
+                "mp": Binding(pygame.K_s),
+                "hp": Binding(pygame.K_d),
+                "lk": Binding(pygame.K_z),
+                "mk": Binding(pygame.K_x),
+                "hk": Binding(pygame.K_c),
+                "pause": Binding(pygame.K_RETURN)
+            }
+        else:
+            self.bindings = bindings
         
         self.inputState = {"up": False,
                        "down": False,
@@ -33,10 +46,13 @@ class Inputs:
         
         self.buffer = InputBuffer()
         
-    def lookupBinding(self, keyEntered):
-        for binding, keyBound in self.bindings.items():
-            if keyEntered == keyBound:
-                return binding
+    def lookup_binding(self, key_entered):
+        for name, binding in self.bindings.items():
+            if key_entered == binding.key:
+                return name
+        """for binding, key_bound in self.bindings.items():
+            if key_entered == key_bound:
+                return binding"""
             
         return "not found"
         
@@ -44,19 +60,23 @@ class Inputs:
         for event in events:
             
             if event.type == pygame.KEYDOWN:
-                binding = self.lookupBinding(event.key)
+                binding = self.lookup_binding(event.key)
                 if binding != "not found":
+                    self.bindings[binding].hold_time += 1
                     newInput = Input()
                     newInput.inputName = binding
                     newInput.timeSinceInput = 0
                     self.buffer.push(newInput)
                     self.inputState[binding] = True
+                    print "KEYDOWN: %s" % binding
                     
             if event.type == pygame.KEYUP:
-                binding = self.lookupBinding(event.key)
+                binding = self.lookup_binding(event.key)
                 if binding != "not found":
+                    self.bindings[binding].hold_time = 0
                     self.inputState[binding] = False
-                    
+                    print "KEYUP: %s" % binding
+
         return self.inputState
 
 
@@ -127,3 +147,17 @@ def get_opponent(player_number, players):
 
 def get_player(player_number, players):
     return players[player_number - 1]
+
+def map_inputs_terminal(player):
+    print "Inputs for Player %d" % player.player_number
+    bindings = player.inputState.bindings
+    for key in bindings:
+        print "\tEnter input for: %s" % key
+        events = pygame.event.get([pygame.KEYDOWN, pygame.JOYBUTTONDOWN, pygame.JOYAXISMOTION])
+        if events[0].type == pygame.KEYDOWN:
+            bindings[key] = events[0].key
+        elif events[0].type == pygame.JOYBUTTONDOWN:
+            bindings[key] = events[0].button
+        elif events[0].type == pygame.JOYAXISMOTION:
+            bindings[key] = events[0].axis
+

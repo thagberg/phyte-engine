@@ -485,6 +485,10 @@
 		        			"rect": [18,99,27,19],
 		        			"hitActive": false,
 		        			"hurtActive": true
+		        		},{
+		        			"rect": [42,49,18,13],
+		        			"hitActive": true,
+		        			"hurtActive": false
 		        		}
 					]
 				}]
@@ -511,7 +515,7 @@
 		        			"rect": [18,99,27,19],
 		        			"hitActive": false,
 		        			"hurtActive": true
-		        		}		
+		        		}	
 					]
 				}, {
 					"imagecrop":	[261, 259],
@@ -541,7 +545,23 @@
 					"projectile":	false,
 					"repeatcount":	8,
 					"hitboxes":		[
-
+	        			{
+		        			"rect": [48,18,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [44,59,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [37,103,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [70,48,35,14],
+		        			"hitActive": true,
+		        			"hurtActive": false
+		        		}
 					]
 				}]
 			},
@@ -687,7 +707,7 @@
 						"cropsize":		[64, 128],
 						"force":			[0, 0],
 						"projectile":		false,
-						"repeatcount":	2,
+						"repeatcount":	8,
 						"hitboxes":		[
 		        			{
 			        			"rect": [15,12,31,35],
