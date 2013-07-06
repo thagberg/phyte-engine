@@ -377,12 +377,17 @@ class Animation:
         self.loop = False
 
     def get_next_frame(self):
-        if self.current_index >= len(self.frames):
-            self.current_index = 0
-            if not self.loop:
-                return False
-        self.current_frame = self.frames[self.current_index]
-        self.current_index += 1
+        if self.current_frame is not None and self.current_frame.repeat > self.current_frame.repeat_index:
+            self.current_frame.repeat_index += 1
+        else:
+            if self.current_frame is not None:
+                self.current_frame.repeat_index = 0 # reset this frame's repeat index
+                self.current_index += 1
+            if self.current_index >= len(self.frames):
+                self.current_index = 0
+                if not self.loop:
+                    return False
+            self.current_frame = self.frames[self.current_index]
         return self.current_frame
 
     def get_current_frame(self):
@@ -391,6 +396,7 @@ class Animation:
         return self.current_frame
 
     def reset(self):
+        self.current_frame = None
         self.current_index = 0
 
 
@@ -403,8 +409,8 @@ class Animation_Frame:
         self.image_loc          = [0, 0]
         self.crop_size          = [0, 0]
         self.projectile         = None
-        self.animation_index    = 0         #TODO: decide whether or not I should remove this attribute
         self.repeat             = 0
+        self.repeat_index       = 0
 
     def execute(self):
         return self
