@@ -38,6 +38,7 @@ def create_player(character_config, player_number):
     this_player.name          = name
     this_player.playerImage   = image
     this_player.player_number = player_number
+    this_player.jump_height   = jump_height
 
     # map projectiles
     for projectile in projectiles:
@@ -133,4 +134,12 @@ def create_hitbox(hitbox_config):
         new_hitbox.hitActive = hitbox_config["hitActive"]
     if "hurtActive" in hitbox_config:
         new_hitbox.hurtActive = hitbox_config["hurtActive"]
+    if "damage" in hitbox_config:
+        new_hitbox.damage = hitbox_config["damage"]
+    if "stun" in hitbox_config:
+        new_hitbox.stun = hitbox_config["stun"]
+    if "hitstun" in hitbox_config:
+        new_hitbox.hitstun = hitbox_config["hitstun"]
+    if "push" in hitbox_config:
+        new_hitbox.push = hitbox_config["push"]
     return new_hitbox

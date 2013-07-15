@@ -16,6 +16,7 @@ class Player:
 
         # player state attributes
         self.states             = list()
+        self.last_states        = None
         self.hit                = False                 # these values are flags which will help determine state/moves
         self.onGround           = False                 #
         self.facing_left        = False
@@ -25,7 +26,7 @@ class Player:
         # player stat attributes
         self.walkingSpeed       = 8
         self.backSpeed          = 5
-        self.jumpHeight         = 20
+        self.jump_height         = 20
 
         # player input/move attributes
         self.inputState         = gameUtils.Inputs()
@@ -46,6 +47,12 @@ class Player:
         self.player_number      = 1
         self.player_name        = "Stick"
         self.hit_opponent       = False
+        self.health             = 1000
+        self.stun               = 1000
+        self.hitstun            = 0
+        self.blockstun          = 0
+        self.push               = [0,0]
+        self.force_stand        = False
 
         # handle to opponent
         self.opponent           = None
@@ -83,38 +90,47 @@ class Player:
                 
     def find_state(self):
         ''' find_state : determine the player's current primary and secondary states'''
+        self.last_states = copy.deepcopy(self.states)
         self.states = list()
+
         if self.onGround:       # player is on the ground
             if not(self.attacking):
-                if self.current_inputs["down"]:  # player is in one of the crouching states
-                    self.states.append(PlayerState.CROUCHING)
-                    if self.current_inputs["left"]:
-                        self.states.append(PlayerState.CROUCHING if self.facing_left else PlayerState.BLOCKING)
-                    elif self.current_inputs["right"]:
-                        self.states.append(PlayerState.BLOCKING if self.facing_left else PlayerState.CROUCHING)
-                else:           # player is in one of the standing states
-                    self.states.append(PlayerState.STANDING)
-                    if self.current_inputs["left"]:
-                        if self.facing_left:
-                            self.states.append(PlayerState.WALKING)
-                        else:
-                            if self.opponent != None and self.opponent.attacking:
-                                self.states.append(PlayerState.BLOCKING)
-                            else:
-                                self.states.append(PlayerState.BACKING)
-                    elif self.current_inputs["right"]:
-                        if self.facing_left:
-                            if self.opponent != None and self.opponent.attacking:
-                                self.states.append(PlayerState.BLOCKING)
-                            else:
-                                self.states.append(PlayerState.BACKING)
-                        else:
-                            self.states.append(PlayerState.WALKING)
+                if self.hitstun > 0:
+                    self.states.append(PlayerState.HITSTUN)
+                    if PlayerState.CROUCHING in self.last_states:
+                        self.states.append(PlayerState.CROUCHING)
                     else:
                         self.states.append(PlayerState.STANDING)
+                else:    
+                    if self.current_inputs["down"]:  # player is in one of the crouching states
+                        self.states.append(PlayerState.CROUCHING)
+                        if self.current_inputs["left"]:
+                            self.states.append(PlayerState.CROUCHING if self.facing_left else PlayerState.BLOCKING)
+                        elif self.current_inputs["right"]:
+                            self.states.append(PlayerState.BLOCKING if self.facing_left else PlayerState.CROUCHING)
+                    else:           # player is in one of the standing states
+                        self.states.append(PlayerState.STANDING)
+                        if self.current_inputs["left"]:
+                            if self.facing_left:
+                                self.states.append(PlayerState.WALKING)
+                            else:
+                                if self.opponent != None and self.opponent.attacking:
+                                    self.states.append(PlayerState.BLOCKING)
+                                else:
+                                    self.states.append(PlayerState.BACKING)
+                        elif self.current_inputs["right"]:
+                            if self.facing_left:
+                                if self.opponent != None and self.opponent.attacking:
+                                    self.states.append(PlayerState.BLOCKING)
+                                else:
+                                    self.states.append(PlayerState.BACKING)
+                            else:
+                                self.states.append(PlayerState.WALKING)
+                        else:
+                            self.states.append(PlayerState.STANDING)
 
-                if self.current_inputs["up"]:    # player is in one of the jumping states
-                    self.states.append(PlayerState.JUMPING)
+                    if self.current_inputs["up"]:    # player is in one of the jumping states
+                        self.states.append(PlayerState.JUMPING)
 
         else:       # player is either in one of the jumping or falling states
             if self.playerVel[1] > 0:
@@ -144,7 +160,9 @@ class Player:
                     self.attacking = True
             else:
                 if PlayerState.STANDING in self.states:
-                    if PlayerState.WALKING in self.states:
+                    if PlayerState.HITSTUN in self.states:
+                        new_move = self.move_mapping["standingflinch"]
+                    elif PlayerState.WALKING in self.states:
                         new_move = self.move_mapping["walk"]
                     elif PlayerState.BACKING in self.states:
                         new_move = self.move_mapping["walk"] # TODO: this should be a backing move
@@ -153,12 +171,16 @@ class Player:
                     else:
                         new_move = self.move_mapping["stand"]
                 elif PlayerState.CROUCHING in self.states:
-                    if PlayerState.BLOCKING in self.states:
+                    if PlayerState.HITSTUN in self.states:
+                        new_move = self.move_mapping["crouch"] # TODO add crouching flinch move
+                    elif PlayerState.BLOCKING in self.states:
                         new_move = self.move_mapping["crouchblock"] 
                     else:
                         new_move = self.move_mapping["crouch"]
                 elif PlayerState.JUMPING in self.states:
-                    if PlayerState.WALKING in self.states:
+                    if PlayerState.HITSTUN in self.states:
+                        new_move = self.move_mapping["njump"] #TODO: add jumping flinch move
+                    elif PlayerState.WALKING in self.states:
                         new_move = self.move_mapping["njump"] #TODO: this should be a forwards jump
                     elif PlayerState.BACKING in self.states:
                         new_move = self.move_mapping["njump"] #TODO: this should be a backward jump
@@ -194,7 +216,12 @@ class Player:
             self.reset_move(new_move)
             self.current_move = new_move
     
-        
+    def take_hit(self, damage=0, hitstun=0, stun=0, push=[0,0]):
+        self.health -= damage
+        self.stun -= stun
+        self.hitstun = hitstun
+        self.push += push
+
     def update(self):
 
         self.find_state()
@@ -217,7 +244,7 @@ class Player:
             
             # even if secondary state is walking or backing, the player can still be jumping
             if PlayerState.JUMPING in self.states:
-                self.playerForces.append([0, -self.jumpHeight])
+                self.playerForces.append([0, -self.jump_height])
                 self.onGround = False
         
         self.apply_forces()
@@ -228,6 +255,10 @@ class Player:
         for projectile in self.active_projectiles:
             projectile.location[0] += -projectile.speed[0] if projectile.moving_left else projectile.speed[0]
             projectile.location[1] += projectile.speed[1]
+
+        # decrease hitstun frames, if any
+        if self.hitstun > 0:
+            self.hitstun -= 1
     
 
     def find_move_for_attack(self):
@@ -329,10 +360,16 @@ class MoveInput:
 class HitBox:
     '''represents a collideable hitbox'''
     
-    def __init__(self, rect=None, hit_active=False, hurt_active=False):
+    def __init__(self, rect=None, hit_active=False, hurt_active=False, expired=False,
+                 damage=0, stun=0, hitstun=0, push=[0,0]):
         self.rect = rect
         self.hitActive = hit_active
         self.hurtActive = hurt_active
+        self.expired = expired
+        self.damage = damage
+        self.stun = stun
+        self.hitstun = hitstun
+        self.push = push
 
 
 class PlayerState:
@@ -352,6 +389,7 @@ class PlayerState:
     HITSTUN         = 11
     JUMPFORWARD     = 12
     JUMPBACKWARD    = 13
+    BLOCKSTUN       = 14
 
 
 class Projectile:
@@ -387,12 +425,12 @@ class Animation:
                 self.current_index = 0
                 if not self.loop:
                     return False
-            self.current_frame = self.frames[self.current_index]
+            self.current_frame = copy.deepcopy(self.frames[self.current_index])
         return self.current_frame
 
     def get_current_frame(self):
         if self.current_frame is None:
-            self.current_frame = self.frames[self.current_index]
+            self.current_frame = copy.deepcopy(self.frames[self.current_index])
         return self.current_frame
 
     def reset(self):

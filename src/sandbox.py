@@ -65,7 +65,7 @@ players = [player1, player2]
 
 # Game loop stuffs
 done = False
-freeze_players = 0 
+freeze_players = 0
 
 clock = pygame.time.Clock()
 
@@ -114,7 +114,15 @@ while not(done):
                                         this_player.location[1]]
         elif event.type == gameUtils.COLLISIONEVENT:
             print "COLLISION"
-            freeze_players = 5
+            event.hitbox.expired = True
+            event.hittee.take_hit(event.damage, event.hitstun, event.stun, event.push)
+            freeze_event = pygame.event.Event(gameUtils.FREEZEEVENT,
+                                              frames=4)
+            pygame.event.post(freeze_event)
+        elif event.type == gameUtils.FREEZEEVENT:
+            print "FREEZE %d" % event.frames
+            freeze_players = event.frames
+
 
     # Clear the screen
     screen.fill(white)
@@ -128,15 +136,27 @@ while not(done):
     for this_player in players:
         player_number = this_player.player_number
         opponent = gameUtils.get_opponent(player_number, players)
-        playerRect = pygame.Rect(this_player.location[0], this_player.location[1], 
-                                 this_player.cropSize[0], this_player.cropSize[1])
+        player_rect = pygame.Rect(0, 0, this_player.cropSize[0], this_player.cropSize[1])
+        opp_rect = pygame.Rect(0, 0, opponent.cropSize[0], opponent.cropSize[1])
+        player_rect = gameUtils.trans_rect_to_world(player_rect, this_player.location, this_player.facing_left)
+        opp_rect = gameUtils.trans_rect_to_world(opp_rect, opponent.location, opponent.facing_left)
 
-        if freeze_players == 0:
-            if playerRect.colliderect(ground):
-                collisionShift = gameUtils.getMinTransVect(playerRect, ground)
+        # update input states
+        this_player.last_inputs = copy.deepcopy(this_player.current_inputs)
+        this_player.current_inputs = this_player.inputState.getInputState(events)
+        this_player.inputState.buffer.update_times(time_since_last_update)
+        this_player.inputState.buffer.expireInputs()
+
+        if freeze_players == 0: 
+            if player_rect.colliderect(ground):
+                collisionShift = gameUtils.getMinTransVect(player_rect, ground)
                 this_player.playerForces.append([0, collisionShift[1]])
                 this_player.onGround = True
                 this_player.playerVel[1] = 0
+
+            # is the player pushing into the opponent
+            if player_rect.colliderect(opp_rect):
+                opponent.location[0] += this_player.playerVel[0]
 
             # Check facing
             if (this_player.onGround and 
@@ -145,7 +165,7 @@ while not(done):
                                                       player.PlayerState.HITSTUN,
                                                       player.PlayerState.LAYING]))):
                 # in a possible state where player can change face
-                #     check orientation compared to other player
+               #      check orientation compared to other player
                 if (this_player.location[0] < opponent.location[0]):
                     if this_player.facing_left:
                        face_event = pygame.event.Event(gameUtils.CHANGEFACEEVENT,
@@ -161,7 +181,7 @@ while not(done):
             current_frame = this_player.get_current_move().animation.get_current_frame()
             opponent_frame = opponent.get_current_move().animation.get_current_frame()
             for hitbox in current_frame.hitboxes:
-                if hitbox.hitActive:
+                if hitbox.hitActive and not(hitbox.expired):
                     for opp_hitbox in opponent_frame.hitboxes:
                         if opp_hitbox.hurtActive:
                             trans_box =  gameUtils.trans_rect_to_world(hitbox.rect, 
@@ -172,19 +192,16 @@ while not(done):
                                                                           opponent.facing_left)
                             if trans_box.colliderect(opp_trans_box):
                                 collide_event = pygame.event.Event(gameUtils.COLLISIONEVENT,
-                                                                   hitter=player_number,
-                                                                   hittee=opponent.player_number,
-                                                                   hitbox=hitbox,
-                                                                   hurtbox=opp_hitbox
+                                                                   hitter=this_player, hittee=opponent,
+                                                                   hitbox=hitbox, hurtbox=opp_hitbox,
+                                                                   damage=hitbox.damage, stun=hitbox.stun,
+                                                                   hitstun=hitbox.hitstun, push=hitbox.push
                                                                    )
                                 pygame.event.post(collide_event)
 
-
-            this_player.last_inputs = copy.deepcopy(this_player.current_inputs)
-            this_player.current_inputs = this_player.inputState.getInputState(events)
-            this_player.inputState.buffer.update_times(time_since_last_update)
-            this_player.inputState.buffer.expireInputs()
             this_player.update()
+        else:
+            freeze_players -= 1
 
         # Draw player image
         new_img = this_player.playerImage if not this_player.facing_left else \
@@ -215,6 +232,8 @@ while not(done):
                                                           this_player.facing_left)
                 pygame.draw.rect(screen, color, offsetBox, 2)
 
+        pygame.draw.rect(screen, black, player_rect, 2)
+
         # Draw projectiles
         for projectile in this_player.active_projectiles:
             current_frame = projectile.animation.get_next_frame()
@@ -243,9 +262,6 @@ while not(done):
                                                               projectile.location,
                                                               projectile.moving_left)
                     pygame.draw.rect(screen, color, offsetBox, 2)
-
-        if freeze_players > 0:
-            freeze_players -= 1
 
 
 

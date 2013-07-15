@@ -3,7 +3,7 @@
 	"spritesheet": "sticksheet.png",
 	"walkingspeed": 8,
 	"backspeed": 5,
-	"jumpheight": 20,
+	"jumpheight": 30,
 	"moves":	{
 		"movement": {
 			"stand": {
@@ -439,7 +439,32 @@
 		        		}
 					]
 				}]
-			}
+			},
+            "standingflinch": {
+                "frames": [{
+                    "imagecrop":	[326, 0],
+					"cropsize":		[64, 128],
+					"force":		[0, 0],
+					"projectile":	false,
+					"repeatcount":	0,
+					"hitboxes":		[
+	        			{
+		        			"rect": [15,12,31,35],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [25,53,20,40],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		},{
+		        			"rect": [18,99,27,19],
+		        			"hitActive": false,
+		        			"hurtActive": true
+		        		}
+					]
+
+                }]
+            }
 		},
 		"normals": {
 			"lp": {
@@ -488,7 +513,11 @@
 		        		},{
 		        			"rect": [42,49,18,13],
 		        			"hitActive": true,
-		        			"hurtActive": false
+		        			"hurtActive": false,
+                            "damage": 10,
+                            "stun": 7,
+                            "hitstun": 4,
+                            "push": [3,0]
 		        		}
 					]
 				}]
@@ -560,7 +589,11 @@
 		        		},{
 		        			"rect": [70,48,35,14],
 		        			"hitActive": true,
-		        			"hurtActive": false
+		        			"hurtActive": false,
+                            "damage": 35,
+                            "stun": 22,
+                            "hitstun": 8,
+                            "push": [7,0]
 		        		}
 					]
 				}]

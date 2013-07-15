@@ -1,10 +1,23 @@
 import pygame
 
+## ---Custom Event Definitions--- ##
+
 MENUEVENT = pygame.USEREVENT + 1
 COLLISIONEVENT = pygame.USEREVENT + 2
+'''     COLLISIONEVENT:
+            hitter: reference to player owning the hitactive hitbox
+            hittee: reference to player owning the hurtactive hitbox
+            hitbox: the hitactive hitbox in the collision
+            hurtbox: the hurtactive hitbox in the collision
+            damage: amount of damage done by the move causing the collision
+            hitstun: number of frames of hitstun caused by the move
+            stun: amount of stun caused by the move
+            push: distance of push the hit causes
+'''
 CHANGEFACEEVENT = pygame.USEREVENT + 3
-INPUTEVENT1 = pygame.USEREVENT + 4
-INPUTEVENT2 = pygame.USEREVENT + 5
+FREEZEEVENT = pygame.USEREVENT + 4
+
+##--------------------------------##
 
 class Binding:
     def __init__(self, key, hold_time=0):
