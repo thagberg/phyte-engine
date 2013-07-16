@@ -4,6 +4,7 @@
 	"walkingspeed": 8,
 	"backspeed": 5,
 	"jumpheight": 30,
+    "boundingbox": [0, 0, 58, 128],
 	"moves":	{
 		"movement": {
 			"stand": {

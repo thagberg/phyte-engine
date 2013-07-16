@@ -26,7 +26,7 @@ class Player:
         # player stat attributes
         self.walkingSpeed       = 8
         self.backSpeed          = 5
-        self.jump_height         = 20
+        self.jump_height        = 20
 
         # player input/move attributes
         self.inputState         = gameUtils.Inputs()
@@ -39,6 +39,7 @@ class Player:
 
         # other player attributes
         self.location           = [0,0]
+        self.bounding_box       = None
         self.playerBoxes        = list()
         self.playerForces       = list()
         self.playerVel          = [0, 0]

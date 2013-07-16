@@ -29,6 +29,7 @@ def create_player(character_config, player_number):
     jump_height     = character["jumpheight"]
     projectiles     = character["projectiles"]
     moves           = character["moves"]
+    boundingbox     = character["boundingbox"]
     movements       = moves["movement"]
     normal_moves    = moves["normals"]
     special_moves   = moves["specials"]
@@ -39,6 +40,8 @@ def create_player(character_config, player_number):
     this_player.playerImage   = image
     this_player.player_number = player_number
     this_player.jump_height   = jump_height
+    this_player.bounding_box  = pygame.Rect(boundingbox[0], boundingbox[1],
+                                            boundingbox[2], boundingbox[3])
 
     # map projectiles
     for projectile in projectiles:

@@ -136,8 +136,10 @@ while not(done):
     for this_player in players:
         player_number = this_player.player_number
         opponent = gameUtils.get_opponent(player_number, players)
-        player_rect = pygame.Rect(0, 0, this_player.cropSize[0], this_player.cropSize[1])
-        opp_rect = pygame.Rect(0, 0, opponent.cropSize[0], opponent.cropSize[1])
+        #player_rect = pygame.Rect(0, 0, this_player.cropSize[0], this_player.cropSize[1])
+        #opp_rect = pygame.Rect(0, 0, opponent.cropSize[0], opponent.cropSize[1])
+        player_rect = this_player.bounding_box
+        opp_rect = opponent.bounding_box
         player_rect = gameUtils.trans_rect_to_world(player_rect, this_player.location, this_player.facing_left)
         opp_rect = gameUtils.trans_rect_to_world(opp_rect, opponent.location, opponent.facing_left)
 
