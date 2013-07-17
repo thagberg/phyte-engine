@@ -158,7 +158,8 @@ while not(done):
 
             # is the player pushing into the opponent
             if player_rect.colliderect(opp_rect):
-                opponent.location[0] += this_player.playerVel[0]
+                mtv = gameUtils.get_horizontal_translation(player_rect, opp_rect)
+                opponent.location[0] += -1 * mtv
 
             # Check facing
             if (this_player.onGround and 

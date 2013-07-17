@@ -150,6 +150,12 @@ def trans_rect_to_world(rect, parent_loc, reverse=False):
                                  rect.width, rect.height)
     return trans_rect
 
+def get_horizontal_translation(rect_1, rect_2):
+    """Returns the smallest horizontal translation required to rectify a collision
+    Only call this when there is a known collision between the two rect params"""
+    dist_1 = rect_2.left - rect_1.right
+    dist_2 = rect_2.right - rect_1.left
+    return dist_1 if abs(dist_1) <= abs(dist_2) else dist_2
 
 def get_opponent(player_number, players):
     if player_number == 1:
@@ -173,4 +179,5 @@ def map_inputs_terminal(player):
             bindings[key] = events[0].button
         elif events[0].type == pygame.JOYAXISMOTION:
             bindings[key] = events[0].axis
+
 

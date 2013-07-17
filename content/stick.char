@@ -3,7 +3,7 @@
 	"spritesheet": "sticksheet.png",
 	"walkingspeed": 8,
 	"backspeed": 5,
-	"jumpheight": 30,
+	"jumpheight": 26,
     "boundingbox": [0, 0, 58, 128],
 	"moves":	{
 		"movement": {
