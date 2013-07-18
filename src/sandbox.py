@@ -143,6 +143,12 @@ while not(done):
         player_rect = gameUtils.trans_rect_to_world(player_rect, this_player.location, this_player.facing_left)
         opp_rect = gameUtils.trans_rect_to_world(opp_rect, opponent.location, opponent.facing_left)
 
+        # push boxes
+        player_push = this_player.get_current_move().animation.get_current_frame().push_box
+        player_push.rect = gameUtils.trans_rect_to_world(player_push.rect, this_player.location, this_player.facing_left)
+        opp_push = opponent.get_current_move().animation.get_current_frame().push_box
+        opp_push.rect = gameUtils.trans_rect_to_world(opp_push.rect, opponent.location, opponent.facing_left)
+
         # update input states
         this_player.last_inputs = copy.deepcopy(this_player.current_inputs)
         this_player.current_inputs = this_player.inputState.getInputState(events)
@@ -157,8 +163,8 @@ while not(done):
                 this_player.playerVel[1] = 0
 
             # is the player pushing into the opponent
-            if player_rect.colliderect(opp_rect):
-                mtv = gameUtils.get_horizontal_translation(player_rect, opp_rect)
+            if player_push.rect.colliderect(opp_push.rect):
+                mtv = gameUtils.get_horizontal_translation(player_push.rect, opp_push.rect)
                 opponent.location[0] += -1 * mtv
 
             # Check facing
@@ -236,6 +242,7 @@ while not(done):
                 pygame.draw.rect(screen, color, offsetBox, 2)
 
         pygame.draw.rect(screen, black, player_rect, 2)
+        pygame.draw.rect(screen, purple, player_push, 2)
 
         # Draw projectiles
         for projectile in this_player.active_projectiles:

@@ -9,6 +9,10 @@
 		"movement": {
 			"stand": {
 				"frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[0, 0],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -30,6 +34,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[66, 0],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -51,6 +59,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[131, 0],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -72,6 +84,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[196, 0],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -93,6 +109,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[261, 0],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -114,6 +134,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[196, 0],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -135,6 +159,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[131, 0],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -156,6 +184,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[66, 0],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -180,6 +212,10 @@
 			},
 			"block": {
 				"frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop": 	[196, 517],
 					"cropsize": 	[63, 129],
 					"force": 		[0, 0],
@@ -192,6 +228,10 @@
 			},
 			"crouch": {
 				"frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[0, 390],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -212,6 +252,10 @@
 			}, 
 			"crouchblock": {
 				"frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop": 	[261, 517],
 					"cropsize": 	[63, 129],
 					"force": 		[0, 0],
@@ -224,6 +268,10 @@
 			},
 			"walk":	{
 				"frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[0, 129],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -245,6 +293,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[66, 129],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -266,6 +318,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[131, 129],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -287,6 +343,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[196, 129],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -308,6 +368,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[261, 129],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -329,6 +393,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[196, 129],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -350,6 +418,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[131, 129],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -371,6 +443,10 @@
 		        		}
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[66, 129],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -395,6 +471,10 @@
 			},
 			"njump": {
 				"frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[0, 259],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -419,6 +499,10 @@
 			},
 			"fall": {
 				"frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[66, 259],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -443,6 +527,10 @@
 			},
             "standingflinch": {
                 "frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
                     "imagecrop":	[326, 0],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -472,6 +560,10 @@
                 "priority":  1,
                 "cancellable": ["lfireball"],
 				"frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":		[66, 390],
 					"cropsize":		[64, 128],
 					"force":			[0, 0],
@@ -493,6 +585,10 @@
 		        		}	
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":		[132, 390],
 					"cropsize":		[64, 128],
 					"force":			[0, 0],
@@ -527,6 +623,10 @@
                 "priority": 1,
                 "cancellable": ["lfireball"],
 				"frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[196, 259],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -548,6 +648,10 @@
 		        		}	
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[261, 259],
 					"cropsize":		[64, 128],
 					"force":		[0, 0],
@@ -569,6 +673,10 @@
 		        		}	
 					]
 				}, {
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop":	[326, 259],
 					"cropsize":		[112, 128],
 					"force":		[0, 0],
@@ -603,6 +711,10 @@
 				"priority": 1,
 				"cancellable": [],
 				"frames": [{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop": 	[196, 390],
 					"cropsize": 	[63, 125],
 					"force": 		[0, 0],
@@ -624,6 +736,10 @@
 		        		}
 					]
 				},{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop": 	[261, 390],
 					"cropsize": 	[63, 125],
 					"force": 		[0, 0],
@@ -645,6 +761,10 @@
 		        		}
 					]
 				},{
+                    "pushbox":  {
+                        "rect": [20, 10, 40, 100],
+                        "push_active": true
+                    },
 					"imagecrop": 	[196, 390],
 					"cropsize": 	[63, 125],
 					"force": 		[0, 0],
@@ -674,6 +794,10 @@
                     "priority": 2,
                     "state": 0,
 					"frames": [{
+                        "pushbox":  {
+                            "rect": [20, 10, 40, 100],
+                            "push_active": true
+                        },
 						"imagecrop":		[0, 517],
 						"cropsize":		[64, 128],
 						"force":			[0, 0],
@@ -695,6 +819,10 @@
 			        		}
 						]
 					}, {
+                        "pushbox":  {
+                            "rect": [20, 10, 40, 100],
+                            "push_active": true
+                        },
 						"imagecrop":		[66, 517],
 						"cropsize":		[64, 128],
 						"force":			[0, 0],
@@ -716,6 +844,10 @@
 			        		}
 						]
 					}, {
+                        "pushbox":  {
+                            "rect": [20, 10, 40, 100],
+                            "push_active": true
+                        },
 						"imagecrop":		[132, 517],
 						"cropsize":		[64, 128],
 						"force":			[0, 0],
@@ -737,6 +869,10 @@
 			        		}
 						]
 					}, {
+                        "pushbox":  {
+                            "rect": [20, 10, 40, 100],
+                            "push_active": true
+                        },
 						"imagecrop":		[132, 517],
 						"cropsize":		[64, 128],
 						"force":			[0, 0],

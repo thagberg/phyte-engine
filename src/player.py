@@ -361,11 +361,13 @@ class MoveInput:
 class HitBox:
     '''represents a collideable hitbox'''
     
-    def __init__(self, rect=None, hit_active=False, hurt_active=False, expired=False,
-                 damage=0, stun=0, hitstun=0, push=[0,0]):
+    def __init__(self, rect=None, hit_active=False, hurt_active=False, 
+                 expired=False, push_active=False, damage=0, stun=0, 
+                 hitstun=0, push=[0,0]):
         self.rect = rect
         self.hitActive = hit_active
         self.hurtActive = hurt_active
+        self.push_active = push_active
         self.expired = expired
         self.damage = damage
         self.stun = stun
@@ -443,6 +445,7 @@ class Animation_Frame:
     '''represents one frame of an animation'''
 
     def __init__(self):
+        self.push_box            = None
         self.hitboxes           = list()
         self.force              = [0, 0]
         self.image_loc          = [0, 0]

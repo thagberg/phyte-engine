@@ -116,6 +116,8 @@ def create_projectile(projectile_config):
 
 def create_frame(frame_config):
     new_frame = player.Animation_Frame()
+    if "pushbox" in frame_config:
+        new_frame.push_box = create_hitbox(frame_config["pushbox"])
     if "force" in frame_config:
         new_frame.force = frame_config["force"]
     if "imagecrop" in frame_config:
@@ -137,6 +139,8 @@ def create_hitbox(hitbox_config):
         new_hitbox.hitActive = hitbox_config["hitActive"]
     if "hurtActive" in hitbox_config:
         new_hitbox.hurtActive = hitbox_config["hurtActive"]
+    if "push_active" in hitbox_config:
+        new_hitbox.push_active = hitbox_config["push_active"]
     if "damage" in hitbox_config:
         new_hitbox.damage = hitbox_config["damage"]
     if "stun" in hitbox_config:
