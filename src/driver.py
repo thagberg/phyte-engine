@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import pygame
 import gameUtils
 import playerUtils
@@ -36,12 +38,12 @@ eng = engine.PygameEngine()
 ani = animation.AnimationSystem()
 mov = move.MoveSystem()
 phy = physics2d.PhysicsSystem()
-eng.install_system(ani, (ANIMATIONCOMPLETEEVENT,ANIMATIONACTIVATEEVENT,
-						 ANIMATIONDEACTIVATEEVENT))
-eng.install_system(mov, (MOVECHANGEEVENT,MOVERESETEVENT,MOVEACTIVATEEVENT,
-						 MOVEDEACTIVATEEVENT))
-eng.install_system(phy, (ADDFORCEEVENT,ADDPHYSICSENTITYEVENT,
-						 REMOVEPHYSICSENTITYEVENT))
+eng.install_system(ani, (ANIMATIONCOMPLETE,ANIMATIONACTIVATE,
+						 ANIMATIONDEACTIVATE))
+eng.install_system(mov, (MOVECHANGE,MOVERESET,MOVEACTIVATE,
+						 MOVEDEACTIVATE))
+eng.install_system(phy, (ADDFORCE,ADDPHYSICSCOMPONENT,
+						 REMOVEPHYSICSCOMPONENT))
 
 # Game loop
 while not(done):

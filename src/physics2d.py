@@ -1,14 +1,16 @@
 from events import *
 
-class PhysicsEntity(object):
-	def __init__(self, body=None):
+class PhysicsComponent(object):
+	def __init__(self, entity_id, body=None):
+		self.entity_id = entity_id
 		self.body = body
 		self.forces = list()
 
-class HitboxEntity(object):
-	def __init__(self, rect=None, hit_active=False, hurt_active=False,
-				 push_active=False, expired=False, damage=0, stun=0,
-				 hitstun=0, push=(0,0)):
+class HitboxComponent(object):
+	def __init__(self, entity_id, rect=None, hit_active=False, 
+				 hurt_active=False, push_active=False, expired=False, 
+				 damage=0, stun=0, hitstun=0, push=(0,0)):
+		self.entity_id = entity_id
 		self.rect = rect
 		self.hit_active = hit_active
 		self.hurt_active = hurt_active
@@ -21,21 +23,21 @@ class HitboxEntity(object):
 
 
 class PhysicsSystem(object):
-	def __init__(self, entities=None):
-		self.entities = list() if entities is None else entities
+	def __init__(self, components=None):
+		self.components = list() if components is None else components
 
 	def update(self, time, events=None):
 		for event in events:
-			if event.type == ADDFORCEEVENT:
-				self.entities[event.id].forces.append(event.force)
-			elif event.type == ADDPHYSICSENTITYEVENT:
-				self._add(event.entity)
-			elif event.type == REMOVEPHYSICSENTITYEVENT:
-				self._remove(event.entity)
+			if event.type == ADDFORCE:
+				self.components[event.id].forces.append(event.force)
+			elif event.type == ADDPHYSICSCOMPONENT:
+				self._add(event.component)
+			elif event.type == REMOVEPHYSICSCOMPONENT:
+				self._remove(event.component)
 
-		for entity in entities:
-			body = entity.body
-			forces = entity.forces
+		for comp in self.component:
+			body = comp.body
+			forces = comp.forces
 			net = [0, 0]
 			for force in forces:
 				net[0] += force[0]
@@ -43,11 +45,11 @@ class PhysicsSystem(object):
 			body.x += net.x
 			body.y += net.y
 
-	def _add(self, entity):
-		self.entities.add(entity)
+	def _add(self, component):
+		self.components.add(component)
 
-	def _remove(self, entity):
+	def _remove(self, component):
 		try:
-			self.entities.remove(entity)
+			self.components.remove(component)
 		except ValueError as e:
-			print "Error when attempting to remove entity from PhysicsManager: %s" % e.strerror
+			print "Error when attempting to remove component from PhysicsManager: %s" % e.strerror
