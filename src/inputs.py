@@ -14,9 +14,10 @@ class BindingComponent(object):
 
 
 class Input(object):
-	def __init__(self):
-		self.name = None
-		self.time_since_input = 0	
+	def __init__(self, name, active=False, time_since_input=0):
+		self.name = name
+		self.active = active
+		self.time_since_input = time_since_input
 
 		
 class InputComponent(object):
@@ -121,9 +122,21 @@ class InputBufferSystem(object):
 					self.components[event.entity_id].buffer.append(event.input)
 
 		for component in self.components:
+			self._expire_inputs(time, component.buffer, component.expire_time)
 
 	def _expire_inputs(self, time_delta, buffered_inputs, expire_time):
+		pop_list = list()
 		for bi in buffered_inputs:
 			if not bi.active:
+				if bi.time_since_input > expire_time:
+					pop_list.append(bi)
+				else:
+					# if this input is too young to be expired, so will be all those after it
+					break
+
+		for pop in pop_list:
+			buffered_inputs.remove(pop)	
+				
+
 
 
