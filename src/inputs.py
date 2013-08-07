@@ -1,23 +1,23 @@
 import copy
 from collections import defaultdict
 from events import *
-from pygame import event
+from pygame import event, KEYDOWN, KEYUP, JOYBUTTONDOWN, JOYBUTTONUP, \
+				   MOUSEBUTTONDOWN, MOUSEBUTTONUP
 
 #joystick ids start at 0, so using -1 lets us use a universal device id system
 KEYB_MOUSE = -1 
 
 class BindingComponent(object):
-	def __init__(self, entity_id, key, active=False, hold_time=0):
+	def __init__(self, entity_id, key):
 		self.key = key
-		self.active = active
-		self.hold_time = hold_time
 
 
 class Input(object):
-	def __init__(self, name, active=False, time_since_input=0):
+	def __init__(self, name, active=False, time_since_input=0, hold_time=0):
 		self.name = name
 		self.active = active
 		self.time_since_input = time_since_input
+		self.hold_time = hold_time
 
 		
 class InputComponent(object):
@@ -43,32 +43,34 @@ class InputSystem(object):
 				comp.last_state = copy.deepcopy(comp.state)
 
 		for event in events:
-			target = self.components[event.entity_id]
 
 			# system events
 			if event.type == ADDINPUTCOMPONENT:
 				self.components[event.device].append(event.component)
+				print "Added new input component"
 			elif event.type == REMOVEINPUTCOMPONENT:
 				self.components[event.device].remove(event.component)
 			elif event.type == UPDATEBINDINGS:
 				pass
 
 			# keyboard events
-			elif event.type == event.KEYDOWN:
+			elif event.type == KEYDOWN:
 				self._apply_key_down(KEYB_MOUSE, event.key)
-			elif event.type == event.KEYUP:
+				print "KEYDOWN EVENT"
+			elif event.type == KEYUP:
 				self._apply_key_up(KEYB_MOUSE, event.key)
+				print 'KEYUP EVENT'
 
 			# joystick/gamepad events
-			elif event.type == event.JOYBUTTONDOWN:
+			elif event.type == JOYBUTTONDOWN:
 				self._apply_key_down(event.joy, event.button)
-			elif event.type == event.JOYBUTTONUP:
+			elif event.type == JOYBUTTONUP:
 				self._apply_key_up(event.joy, event.button)
 
 			# mouse events
-			elif event.type == event.MOUSEBUTTONDOWN:
+			elif event.type == MOUSEBUTTONDOWN:
 				self._apply_key_down(KEYB_MOUSE, event.button)
-			elif event.type == event.MOUSEBUTTONUP:
+			elif event.type == MOUSEBUTTONUP:
 				self._apply_key_up(KEYB_MOUSE, event.button)
 
 
@@ -80,6 +82,7 @@ class InputSystem(object):
 			if bind is None:
 				continue
 			component.state[bind] = True
+			print component.state
 
 	def _apply_key_up(self, device, key):	
 		components = self.components[device]
@@ -89,10 +92,11 @@ class InputSystem(object):
 			if bind is None:
 				continue
 			component.state[bind] = False
+			print component.state
 
 	def _lookup_binding(self, input, bindings):
-		for name, binding in bindings.items():
-			if input == binding:
+		for name, bound in bindings.items():
+			if input == bound:
 				return name
 		return None
 

@@ -7,6 +7,9 @@ import animation
 import move
 import physics2d
 import engine
+import inputs
+import factory
+import entity
 from events import *
 
 # Define colors
@@ -33,17 +36,39 @@ pygame.display.set_caption("Fighting Game Engine Test")
 
 done = False
 
+# initialize object factory
+factory = factory.ComponentFactory()
+
 # initialize systems
 eng = engine.PygameEngine()
-ani = animation.AnimationSystem()
-mov = move.MoveSystem()
-phy = physics2d.PhysicsSystem()
-eng.install_system(ani, (ANIMATIONCOMPLETE,ANIMATIONACTIVATE,
-						 ANIMATIONDEACTIVATE))
-eng.install_system(mov, (MOVECHANGE,MOVERESET,MOVEACTIVATE,
-						 MOVEDEACTIVATE))
-eng.install_system(phy, (ADDFORCE,ADDPHYSICSCOMPONENT,
-						 REMOVEPHYSICSCOMPONENT))
+#ani = animation.AnimationSystem()
+#mov = move.MoveSystem()
+#phy = physics2d.PhysicsSystem()
+#eng.install_system(ani, (ANIMATIONCOMPLETE,ANIMATIONACTIVATE,
+#						 ANIMATIONDEACTIVATE))
+#eng.install_system(mov, (MOVECHANGE,MOVERESET,MOVEACTIVATE,
+#						 MOVEDEACTIVATE))
+#eng.install_system(phy, (ADDFORCE,ADDPHYSICSCOMPONENT,
+#						 REMOVEPHYSICSCOMPONENT))
+
+## TESTING ##
+inp = inputs.InputSystem()
+eng.install_system(inp, (ADDINPUTCOMPONENT, REMOVEINPUTCOMPONENT,
+						 UPDATEBINDINGS, pygame.KEYDOWN,
+						 pygame.KEYUP, pygame.JOYBUTTONDOWN,
+						 pygame.JOYBUTTONUP, pygame.MOUSEBUTTONDOWN,
+						 pygame.MOUSEBUTTONUP))
+t_entity = factory.create_entity()
+print "ENTITY ID: %d" % t_entity.entity_id
+t_bindings = {
+	'up': pygame.K_UP,
+	'down': pygame.K_DOWN,
+	'left': pygame.K_LEFT,
+	'right': pygame.K_RIGHT
+}
+t_inp_component = factory.create_component('input', device=-1,
+										   entity_id=t_entity.entity_id,
+										   bindings=t_bindings)
 
 # Game loop
 while not(done):
@@ -52,3 +77,8 @@ while not(done):
 	time_since_last_update = current_time - last_time
 
 	eng.update(time_since_last_update)
+
+	events = pygame.event.get(pygame.QUIT)
+	for event in events:
+		if event.type == pygame.QUIT:
+			done = True

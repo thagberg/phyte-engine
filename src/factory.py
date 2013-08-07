@@ -3,15 +3,20 @@ import move
 import physics2d
 import inputs
 import engine
-
+import entity
 from events import *
+
+from bidict import bidict
 from pygame import event
+from threading import Lock
 
 class ComponentFactory(object):
 
 	def __init__(self, entities=None):
 		# entities are stored in list for contiguous memory allocation
 		self.entities = list() if entities is None else entities
+		# use this lock whenever adding or deleting from/to the entity list
+		self.entities_lock = Lock()
 		# append None to entities if no other elements currently exist
 		#     this allows us to always be able to use index of None to find
 		#     the first open entity id
@@ -21,19 +26,35 @@ class ComponentFactory(object):
 	def _get_new_entity_id(self):
 		return self.entities.index(None)
 
+	def create_entity(self):
+		with self.entities_lock:
+			entity_id = self._get_new_entity_id()
+			new_entity = entity.Entity(entity_id)
+			self.entities.append(new_entity)
+		return new_entity
+
+	def remove_entity(self, entity_id):
+		with self.entities_lock:
+			self.entities[entity_id] = None
+
 	def create_component(self, type, **props):
+		component = None
 
 		# InputComponent
-		if type == 'input'
+		if type == 'input':
 			device = props['device']
 			entity_id = props['entity_id']
-			bindings = dict()
-			if 'bindings' in props:
-				for name, key in props['bindings']:
-					bindings[name] = inputs.BindingComponent(entity_id, key)
+			# TODO: convert bindings to a bidict
+			bindings = dict() if not 'bindings' in props else props['bindings']
 			component = inputs.InputComponent(entity_id, bindings)
 			new_event = event.Event(ADDINPUTCOMPONENT, device=device, component=component)
 			event.post(new_event)
+
+		# BindingComponent
+		elif type == 'binding':
+			entity_id = props['entity_id']
+
+		return component
 
 
 
