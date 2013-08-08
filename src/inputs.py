@@ -38,9 +38,11 @@ class InputSystem(object):
 		self.components = defaultdict(list) if components is None else components
 
 	def update(self, time, events=None):
+
 		for device, components in self.components.items():
 			for comp in components:
 				comp.last_state = copy.deepcopy(comp.state)
+				print comp.state
 
 		for event in events:
 

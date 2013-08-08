@@ -26,6 +26,7 @@ trans  = (   0, 253, 255)
 screen_size = (1200, 900)
 current_time = pygame.time.get_ticks()
 time_since_last_update = 0
+system_events = [pygame.QUIT]
 
 # initialize pygame
 pygame.init()
@@ -59,7 +60,6 @@ eng.install_system(inp, (ADDINPUTCOMPONENT, REMOVEINPUTCOMPONENT,
 						 pygame.JOYBUTTONUP, pygame.MOUSEBUTTONDOWN,
 						 pygame.MOUSEBUTTONUP))
 t_entity = factory.create_entity()
-print "ENTITY ID: %d" % t_entity.entity_id
 t_bindings = {
 	'up': pygame.K_UP,
 	'down': pygame.K_DOWN,
@@ -69,16 +69,19 @@ t_bindings = {
 t_inp_component = factory.create_component('input', device=-1,
 										   entity_id=t_entity.entity_id,
 										   bindings=t_bindings)
-
 # Game loop
 while not(done):
 	last_time = current_time
 	current_time = pygame.time.get_ticks()
 	time_since_last_update = current_time - last_time
+	events = pygame.event.get()
 
-	eng.update(time_since_last_update)
+	eng.update(time_since_last_update, events)
 
-	events = pygame.event.get(pygame.QUIT)
-	for event in events:
+	# system processing stuffs
+	for event in filter(lambda x: x.type in system_events, events):
 		if event.type == pygame.QUIT:
+			print 'QUITTING NOW'
 			done = True
+
+	events = list()
