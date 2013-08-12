@@ -47,7 +47,8 @@ class ComponentFactory(object):
 			# TODO: convert bindings to a bidict
 			bindings = dict() if not 'bindings' in props else props['bindings']
 			component = inputs.InputComponent(entity_id, bindings)
-			new_event = event.Event(ADDINPUTCOMPONENT, device=device, component=component)
+			new_event = event.Event(INPUTEVENT, subtype=ADDINPUTCOMPONENT, 
+									device=device, component=component)
 			event.post(new_event)
 
 		# BindingComponent

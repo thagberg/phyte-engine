@@ -30,10 +30,12 @@ system_events = [pygame.QUIT]
 
 # initialize pygame
 pygame.init()
+pygame.joystick.init()
 screen = pygame.display.set_mode(screen_size)
 screen.set_alpha(None)
 screen.set_colorkey((0,255,255))
 pygame.display.set_caption("Fighting Game Engine Test")
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
 
 done = False
 
@@ -54,11 +56,10 @@ eng = engine.PygameEngine()
 
 ## TESTING ##
 inp = inputs.InputSystem()
-eng.install_system(inp, (ADDINPUTCOMPONENT, REMOVEINPUTCOMPONENT,
-						 UPDATEBINDINGS, pygame.KEYDOWN,
+eng.install_system(inp, (INPUTEVENT, pygame.KEYDOWN,
 						 pygame.KEYUP, pygame.JOYBUTTONDOWN,
 						 pygame.JOYBUTTONUP, pygame.MOUSEBUTTONDOWN,
-						 pygame.MOUSEBUTTONUP))
+						 pygame.MOUSEBUTTONUP, pygame.JOYAXISMOTION))
 t_entity = factory.create_entity()
 t_bindings = {
 	'up': pygame.K_UP,
@@ -69,6 +70,15 @@ t_bindings = {
 t_inp_component = factory.create_component('input', device=-1,
 										   entity_id=t_entity.entity_id,
 										   bindings=t_bindings)
+print "Joysticks available: %d" % len(joysticks)
+for joy in joysticks:
+	joy.init()
+	print "Info for joy id: %d" % joy.get_id()
+	print "\tName: %s" % joy.get_name()
+	print "\tNum Axes: %d" % joy.get_numaxes()
+	print "\tNum Balls: %d" % joy.get_numballs()
+	print "\tNum Buttons: %d" % joy.get_numbuttons()
+
 # Game loop
 while not(done):
 	last_time = current_time

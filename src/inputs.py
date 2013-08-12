@@ -2,7 +2,7 @@ import copy
 from collections import defaultdict
 from events import *
 from pygame import event, KEYDOWN, KEYUP, JOYBUTTONDOWN, JOYBUTTONUP, \
-				   MOUSEBUTTONDOWN, MOUSEBUTTONUP
+				   MOUSEBUTTONDOWN, MOUSEBUTTONUP, JOYAXISMOTION
 
 #joystick ids start at 0, so using -1 lets us use a universal device id system
 KEYB_MOUSE = -1 
@@ -42,32 +42,36 @@ class InputSystem(object):
 		for device, components in self.components.items():
 			for comp in components:
 				comp.last_state = copy.deepcopy(comp.state)
-				print comp.state
 
 		for event in events:
 
 			# system events
-			if event.type == ADDINPUTCOMPONENT:
-				self.components[event.device].append(event.component)
-				print "Added new input component"
-			elif event.type == REMOVEINPUTCOMPONENT:
-				self.components[event.device].remove(event.component)
-			elif event.type == UPDATEBINDINGS:
-				pass
+			if event.type == INPUTEVENT:
+				if event.subtype == ADDINPUTCOMPONENT:
+					self.components[event.device].append(event.component)
+					print "Added new input component"
+				elif event.subtype == REMOVEINPUTCOMPONENT:
+					self.components[event.device].remove(event.component)
+				elif event.type == UPDATEBINDINGS:
+					pass
 
 			# keyboard events
 			elif event.type == KEYDOWN:
 				self._apply_key_down(KEYB_MOUSE, event.key)
-				print "KEYDOWN EVENT"
+				print "KEYDOWN EVENT: %d" % event.key
 			elif event.type == KEYUP:
 				self._apply_key_up(KEYB_MOUSE, event.key)
-				print 'KEYUP EVENT'
+				print 'KEYUP EVENT: %d' % event.key
 
 			# joystick/gamepad events
 			elif event.type == JOYBUTTONDOWN:
 				self._apply_key_down(event.joy, event.button)
+				print "JOYBUTTONDOWN EVENT: %d-%s" % (event.joy, event.button)
 			elif event.type == JOYBUTTONUP:
 				self._apply_key_up(event.joy, event.button)
+				print "JOYBUTTONUP EVENT: %d-%s" % (event.joy, event.button)
+			elif event.type == JOYAXISMOTION:
+				print "JOYAXIS EVENT: %d-%s %f" % (event.joy, event.axis, event.value)
 
 			# mouse events
 			elif event.type == MOUSEBUTTONDOWN:
@@ -119,13 +123,14 @@ class InputBufferSystem(object):
 
 	def update(self, time, events=None):
 		for event in events:
-			if event.type == ADDINPUTBUFFERCOMPONENT:
-				self.components.add(event.buffer)
-			elif event.type == REMOVEINPUTBUFFERCOMPONENT:
-				self.components.remove(event.buffer)
-			elif event.type == BUFFERINPUT:
-				if not self.components[event.entity_id] is None:
-					self.components[event.entity_id].buffer.append(event.input)
+			if event.type == INPUTEVENT:
+				if event.subtype == ADDINPUTBUFFERCOMPONENT:
+					self.components.add(event.buffer)
+				elif event.type == REMOVEINPUTBUFFERCOMPONENT:
+					self.components.remove(event.buffer)
+				elif event.type == BUFFERINPUT:
+					if not self.components[event.entity_id] is None:
+						self.components[event.entity_id].buffer.append(event.input)
 
 		for component in self.components:
 			self._expire_inputs(time, component.buffer, component.expire_time)
