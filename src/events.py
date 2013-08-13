@@ -1,7 +1,10 @@
 from pygame import USEREVENT
 
-# misc events
-COLLISION = USEREVENT + 1
+# system events
+SYSTEM = USEREVENT + 0
+UPDATEDIRTY = 0
+FREEZE = 1
+COLLISION = 2
 '''     COLLISION:
             hitter: reference to player owning the hitactive hitbox
             hittee: reference to player owning the hurtactive hitbox
@@ -12,8 +15,7 @@ COLLISION = USEREVENT + 1
             stun: amount of stun caused by the move
             push: distance of push the hit causes
 '''
-CHANGEFACE = USEREVENT + 1
-FREEZE = USEREVENT + 1
+CHANGEFACE = 3
 
 # animation events
 ANIMATIONEVENT = USEREVENT + 2
@@ -42,3 +44,8 @@ UPDATEBINDINGS = 2
 ADDINPUTBUFFERCOMPONENT = 3
 REMOVEINPUTBUFFERNCOMPONENT = 4
 BUFFERINPUT = 5
+
+# graphics events
+GRAPHICSEVENT = USEREVENT + 6
+ADDGRAPHICSCOMPONENT = 0
+REMOVEGRAPHICSCOMPONENT = 1
