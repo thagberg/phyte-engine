@@ -32,7 +32,8 @@ class InputSystem(object):
 	"""InputSystem manages the state of InputComponents which hold the
 		bindings of keys/buttons to game actions"""
 
-	def __init__(self, components=None):
+	def __init__(self, factory, components=None):
+		self.factory = factory
 		# a map of lists, map keys are input devices, list items are
 		#   components mapped to that device
 		self.components = defaultdict(list) if components is None else components

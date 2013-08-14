@@ -10,6 +10,7 @@ import engine
 import inputs
 import factory
 import entity
+import graphics2d
 from events import *
 
 # Define colors
@@ -70,6 +71,9 @@ t_bindings = {
 t_inp_component = factory.create_component('input', device=-1,
 										   entity_id=t_entity.entity_id,
 										   bindings=t_bindings)
+gra = graphics.GraphicsSystem(screen)
+eng.install_sytem(gra, (GRAPHICSEVENT))
+
 print "Joysticks available: %d" % len(joysticks)
 for joy in joysticks:
 	joy.init()

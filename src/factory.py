@@ -4,6 +4,7 @@ import physics2d
 import inputs
 import engine
 import entity
+import graphics
 from events import *
 
 from bidict import bidict
@@ -37,6 +38,11 @@ class ComponentFactory(object):
 		with self.entities_lock:
 			self.entities[entity_id] = None
 
+	def get_entities_with_types(self, types):
+		e = filter(lambda x: all(t in x.components.keys() for t in types),
+				   self.entities)
+		return e
+
 	def create_component(self, type, **props):
 		component = None
 
@@ -54,6 +60,19 @@ class ComponentFactory(object):
 		# BindingComponent
 		elif type == 'binding':
 			entity_id = props['entity_id']
+
+		# GraphicsComponent
+		elif type == 'graphics':
+			entity_id = props['entity_id']
+			surface = props['surface']
+			dest = None if not 'dest' in props else props['dest']
+			area = None if not 'area' in props else props['area']
+			flgs = None if not 'flags' in props else props['flags']
+			component = graphics.GraphicsComponent(entity_id, surface, dest,
+												   area, flgs)
+			new_event = event.EVENT(GRAPHICSEVENT, subtype=ADDGRAPHICSCOMPONENT,
+									component=component)
+			event.post(new_event)
 
 		return component
 
