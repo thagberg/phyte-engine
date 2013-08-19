@@ -23,7 +23,8 @@ class HitboxComponent(object):
 
 
 class PhysicsSystem(object):
-	def __init__(self, components=None):
+	def __init__(self, factory, components=None):
+		self.factory = factory
 		self.components = list() if components is None else components
 
 	def update(self, time, events=None):

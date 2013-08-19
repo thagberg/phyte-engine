@@ -36,7 +36,8 @@ class CropComponent(object):
 
 
 class AnimationSystem(object):
-	def __init__(self, components=None):
+	def __init__(self, factory, components=None):
+		self.factory = factory
 		self.components = list() if components is None else components
 
 	def _add(self, component):

@@ -47,14 +47,15 @@ class InputSystem(object):
 		for event in events:
 
 			# system events
-			if event.type == INPUTEVENT:
-				if event.subtype == ADDINPUTCOMPONENT:
-					self.components[event.device].append(event.component)
-					print "Added new input component"
-				elif event.subtype == REMOVEINPUTCOMPONENT:
-					self.components[event.device].remove(event.component)
-				elif event.type == UPDATEBINDINGS:
-					pass
+			if event.type == USEREVENT:
+				if event.u_type == INPUTEVENT:
+					if event.subtype == ADDINPUTCOMPONENT:
+						self.components[event.device].append(event.component)
+						print "Added new input component"
+					elif event.subtype == REMOVEINPUTCOMPONENT:
+						self.components[event.device].remove(event.component)
+					elif event.type == UPDATEBINDINGS:
+						pass
 
 			# keyboard events
 			elif event.type == KEYDOWN:
@@ -124,7 +125,7 @@ class InputBufferSystem(object):
 
 	def update(self, time, events=None):
 		for event in events:
-			if event.type == INPUTEVENT:
+			if event.u_type == INPUTBUFFEREVENT:
 				if event.subtype == ADDINPUTBUFFERCOMPONENT:
 					self.components.add(event.buffer)
 				elif event.type == REMOVEINPUTBUFFERCOMPONENT:

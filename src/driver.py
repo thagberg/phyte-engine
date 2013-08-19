@@ -56,7 +56,7 @@ eng = engine.PygameEngine()
 #						 REMOVEPHYSICSCOMPONENT))
 
 ## TESTING ##
-inp = inputs.InputSystem()
+inp = inputs.InputSystem(factory)
 eng.install_system(inp, (INPUTEVENT, pygame.KEYDOWN,
 						 pygame.KEYUP, pygame.JOYBUTTONDOWN,
 						 pygame.JOYBUTTONUP, pygame.MOUSEBUTTONDOWN,
@@ -71,8 +71,8 @@ t_bindings = {
 t_inp_component = factory.create_component('input', device=-1,
 										   entity_id=t_entity.entity_id,
 										   bindings=t_bindings)
-gra = graphics.GraphicsSystem(screen)
-eng.install_sytem(gra, (GRAPHICSEVENT))
+gra = graphics2d.GraphicsSystem(screen, factory)
+eng.install_system(gra, (GRAPHICSEVENT,))
 
 print "Joysticks available: %d" % len(joysticks)
 for joy in joysticks:

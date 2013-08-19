@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 class Entity(object):
 
 	def __init__(self, entity_id, components=None):

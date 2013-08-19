@@ -14,8 +14,9 @@ class PygameEngine(object):
 		self.systems.append(new_system)
 
 	def update(self, time, events):
-		for entity in self.systems:
+		for sys in self.systems:
 			# TODO: investigate more efficient ways of filtering
 			#	the events list; possibly list comprehensions
-			entity.system.update(time, 
-				filter(lambda x: x.type in entity.event_types, events))
+			sys.system.update(time, 
+				filter(lambda x: x.type in sys.event_types or
+					x.u_type in sys.event_types, events))

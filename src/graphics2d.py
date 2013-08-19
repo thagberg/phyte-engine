@@ -15,37 +15,9 @@ class GraphicsComponent(object):
 		self.z_level = z_level
 
 
-class TextGraphicsComponent(GraphicsComponent):
-	default_color = ( 0, 0, 0)
-
-	def __init__(self, entity_id, text, dest=None, area=None, flags=None, 
-			     z_level=0, **style=None):
-		# render a font surface
-		self.text = text
-		self.size = 12 if not 'size' in style else style['size']
-		self.bold = False if not 'bold' in style else style['bold']
-		self.italic = False if not 'italic' in style else style['italic']
-		self.underlind = False if not 'underline' in style else style['underline']
-		self.background = None if not 'background' in style else style['background']
-		self.aa = False if not 'aa' in stle else style['aa']
-		if not 'color' in style:
-			self.color = TextGraphicsComponent.default_color
-		else:
-			self.color = style['color']
-		if not 'font' in style['font']:
-			self.font = font.SysFont('monospace', self.size, False, False)
-		else:
-			self.font = style['font']
-		self.font.set_underline(self.underline)
-		surface = self.font.render(self.text, self.aa, self.color, self.background)
-
-		# now create a graphics component out of the rendered text
-		super(TextGraphicsComponent, self).__init__(entity_id, surface, dest,
-													area, flags, z_level)
-
-
 class GraphicsSystem(object):
-	def __init__(self, surface, components=None):
+	def __init__(self, surface, factory, components=None):
+		self.factory = factory
 		self.components = list() if components is None else components
 		self.surface = surface
 		# dirties is a list of rects covering affected pixels
@@ -57,7 +29,7 @@ class GraphicsSystem(object):
 
 		# process events
 		for event in events:
-			if event.type == GRAPHICSEVENT:
+			if event.u_type == GRAPHICSEVENT:
 				if event.subtype == ADDGRAPHICSCOMPONENT:
 					self.components.append(event.component)
 					self.components.sort(key=lambda x: x.z_level)

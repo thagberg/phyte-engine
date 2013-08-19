@@ -4,7 +4,7 @@ import physics2d
 import inputs
 import engine
 import entity
-import graphics
+import graphics2d
 from events import *
 
 from bidict import bidict
