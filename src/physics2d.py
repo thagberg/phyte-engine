@@ -1,3 +1,4 @@
+from system import System
 from events import *
 
 class PhysicsComponent(object):
@@ -22,7 +23,7 @@ class HitboxComponent(object):
 		self.push = push
 
 
-class PhysicsSystem(object):
+class PhysicsSystem(System):
 	def __init__(self, factory, components=None):
 		self.factory = factory
 		self.components = list() if components is None else components

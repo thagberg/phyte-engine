@@ -11,6 +11,8 @@ import inputs
 import factory
 import entity
 import graphics2d
+import text
+import common
 from events import *
 
 # Define colors
@@ -40,11 +42,10 @@ joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_coun
 
 done = False
 
-# initialize object factory
-factory = factory.ComponentFactory()
-
 # initialize systems
 eng = engine.PygameEngine()
+# initialize object factory
+factory = factory.ComponentFactory(eng.process_event)
 #ani = animation.AnimationSystem()
 #mov = move.MoveSystem()
 #phy = physics2d.PhysicsSystem()
@@ -57,10 +58,10 @@ eng = engine.PygameEngine()
 
 ## TESTING ##
 inp = inputs.InputSystem(factory)
-eng.install_system(inp, (INPUTEVENT, pygame.KEYDOWN,
-						 pygame.KEYUP, pygame.JOYBUTTONDOWN,
-						 pygame.JOYBUTTONUP, pygame.MOUSEBUTTONDOWN,
-						 pygame.MOUSEBUTTONUP, pygame.JOYAXISMOTION))
+eng.install_system(inp, (ADDINPUTCOMPONENT, REMOVEINPUTCOMPONENT,
+						 UPDATEBINDINGS, KEYDOWN, KEYUP, JOYBUTTONDOWN, 
+						 JOYBUTTONUP, MOUSEBUTTONDOWN, MOUSEBUTTONUP, 
+						 JOYAXISMOTION))
 t_entity = factory.create_entity()
 t_bindings = {
 	'up': pygame.K_UP,
@@ -72,7 +73,15 @@ t_inp_component = factory.create_component('input', device=-1,
 										   entity_id=t_entity.entity_id,
 										   bindings=t_bindings)
 gra = graphics2d.GraphicsSystem(screen, factory)
-eng.install_system(gra, (GRAPHICSEVENT,))
+eng.install_system(gra, (ADDGRAPHICSCOMPONENT, REMOVEGRAPHICSCOMPONENT,
+						 CHANGECROP, CHANGEDEST, CHANGESURFACE,
+						 CHANGEDISPLAY, CHANGEZLEVEL))
+tex = text.TextSystem(factory)
+eng.install_system(tex, (ADDTEXTCOMPONENT, REMOVETEXTCOMPONENT,
+						  UPDATETEXT))
+t_tex_comp = factory.create_component('text', entity_id=t_entity.entity_id,
+									  text='Test Text', loc=[0,0], style=dict())
+
 
 print "Joysticks available: %d" % len(joysticks)
 for joy in joysticks:
@@ -88,6 +97,7 @@ while not(done):
 	last_time = current_time
 	current_time = pygame.time.get_ticks()
 	time_since_last_update = current_time - last_time
+	screen.fill(common.WHITE)
 	events = pygame.event.get()
 
 	eng.update(time_since_last_update, events)
@@ -98,4 +108,5 @@ while not(done):
 			print 'QUITTING NOW'
 			done = True
 
+	pygame.display.flip()
 	events = list()

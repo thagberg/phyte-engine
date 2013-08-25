@@ -5,6 +5,8 @@ import inputs
 import engine
 import entity
 import graphics2d
+import text
+import common
 from events import *
 
 from bidict import bidict
@@ -13,7 +15,8 @@ from threading import Lock
 
 class ComponentFactory(object):
 
-	def __init__(self, entities=None):
+	def __init__(self, delegate, entities=None):
+		self.delegate = delegate
 		# entities are stored in list for contiguous memory allocation
 		self.entities = list() if entities is None else entities
 		# use this lock whenever adding or deleting from/to the entity list
@@ -53,9 +56,8 @@ class ComponentFactory(object):
 			# TODO: convert bindings to a bidict
 			bindings = dict() if not 'bindings' in props else props['bindings']
 			component = inputs.InputComponent(entity_id, bindings)
-			new_event = event.Event(INPUTEVENT, subtype=ADDINPUTCOMPONENT, 
-									device=device, component=component)
-			event.post(new_event)
+			new_event = GameEvent(ADDINPUTCOMPONENT, device=device, component=component)
+			self.delegate(new_event)
 
 		# BindingComponent
 		elif type == 'binding':
@@ -68,11 +70,23 @@ class ComponentFactory(object):
 			dest = None if not 'dest' in props else props['dest']
 			area = None if not 'area' in props else props['area']
 			flgs = None if not 'flags' in props else props['flags']
-			component = graphics.GraphicsComponent(entity_id, surface, dest,
+			component = graphics2d.GraphicsComponent(entity_id, surface, dest,
 												   area, flgs)
-			new_event = event.EVENT(GRAPHICSEVENT, subtype=ADDGRAPHICSCOMPONENT,
-									component=component)
-			event.post(new_event)
+			new_event = GameEvent(ADDGRAPHICSCOMPONENT, component=component)
+			self.delegate(new_event)
+
+		# TextComponent
+		elif type == 'text':
+			entity_id = props['entity_id']
+			c_text = props['text']
+			style = props['style']
+			graphic = props['graphic'] if 'graphic' in props else None
+			loc = props['loc'] if 'loc' in props else [0,0]
+			component = text.TextComponent(entity_id=entity_id, text=c_text, 
+										   loc=loc, graphic=graphic, 
+										   style=style)
+			new_event = GameEvent(ADDTEXTCOMPONENT, component=component)
+			self.delegate(new_event)
 
 		return component
 
