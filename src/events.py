@@ -70,6 +70,12 @@ ADDTEXTCOMPONENT = 41
 REMOVETEXTCOMPONENT = 42
 UPDATETEXT = 43
 
+# player events
+ADDHEALTHCOMPONENT = 44
+REMOVEHEALTHCOMPONENT = 45
+UPDATEHEALTH = 46
+NOHEALTH = 47
+
 class GameEvent(object):
 	def __init__(self, type, **kwargs):
 		self.type = type

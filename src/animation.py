@@ -1,3 +1,4 @@
+from system import System
 from pygame import event
 from events import *
 
@@ -35,7 +36,7 @@ class CropComponent(object):
 		self.h = h
 
 
-class AnimationSystem(object):
+class AnimationSystem(System):
 	def __init__(self, factory, components=None):
 		self.factory = factory
 		self.components = list() if components is None else components
@@ -50,19 +51,16 @@ class AnimationSystem(object):
 		except ValueError as e:
 			print "Not able to remove component from AnimationSystem: %s" % e.strerror
 
-	def update(self, time, events=None):
-		# process events before updating targets
-		for event in events:
-			if event.type == ANIMATIONCOMPLETE:
-				try:
-					self._remove(event.component)
-				except ValueError as e:
-					print "Not able to remove component from AnimationSystem: %s" % e.strerror
-			elif event.type == ANIMATIONACTIVATE:
-				self._add(event.component)
-			elif event.type == ANIMATIONDEACTIVATE:
-				self._remove(event.component)
+	def handle_event(self, event):
+		if event.type == ANIMATIONCOMPLETE:
+			self._remove(event.component)
+		elif event.type == ANIMATIONACTIVATE:
+			self._add(event.component)
+		elif event.type == ANIMATIONDEACTIVATE:
+			self._remove(event.component)
+	
 
+	def update(self, time, events=None):
 		for component in self.components:
 			cur_frame = component.current_frame
 			# first determine if this frame needs to be repeated

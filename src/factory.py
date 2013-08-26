@@ -88,6 +88,53 @@ class ComponentFactory(object):
 			new_event = GameEvent(ADDTEXTCOMPONENT, component=component)
 			self.delegate(new_event)
 
+		# LocationComponent
+		elif type == 'loc':
+			entity_id = props['entity_id']
+			point = props['point']
+			component = common.LocationComponent(entity_id=entity_id, point=point)	
+
+		# MovementComponent
+		elif type == 'movement':
+			entity_id = props['entity_id']
+			walk_speed = props['walk_speed']
+			back_speed = props['back_speed']
+			jump_height = props['jump_height']
+			component = common.MovementComponent(entity_id=entity_id,
+												 walk_speed=walk_speed,
+												 back_speed=back_speed,
+												 jump_height=jump_height)
+
+		# VelocityComponent
+		elif type == 'vel':
+			entity_id = props['entity_id']
+			vel = props['vel']
+			component = common.VelocityComponent(entity_id=entity_id, vel=vel)
+
+		# HitboxComponent
+		elif type == 'hit':
+			entity_id = props['entity_id']
+			rect = props['rect']
+			hit_active = props['hit_active'] if 'hit_active' in props else False
+			hurt_active = props['hurt_active'] if 'hurt_active' in props else False
+			push_active = props['push_active'] if 'push_active' in props else False
+			expired = props['expired'] if 'expired' in props else False
+			damage = props['damage'] if 'damage' in props else 0
+			stun = props['stun'] if 'stun' in props else 0
+			hitstun = props['hitstun'] if 'hitstun' in props else 0
+			if 'push' in props:
+				push = props['push']
+			else:
+				push = self.create_component('vel', (0,0))
+			component = physics2d.HitboxComponent(entity_id=entity_id, rect=rect,
+												  hit_active=hit_active,
+												  hurt_active=hurt_active,
+												  push_active=push_active,
+												  expired=expired, damage=damage,
+												  stun=stun, hitstun=hitstun,
+												  push=push)
+
+
 		return component
 
 
