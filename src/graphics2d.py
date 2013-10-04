@@ -56,7 +56,7 @@ class GraphicsSystem(System):
 		for comp in self.components:
 			self._draw_component(self.surface, comp)
 
-		# post a system even holding the dirty rects
+		# post a system event holding the dirty rects
 		new_event = GameEvent(UPDATEDIRTY, dirties=self.dirties)
 		self.delegate(new_event)
 

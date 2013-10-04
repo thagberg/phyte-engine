@@ -134,6 +134,23 @@ class ComponentFactory(object):
 												  stun=stun, hitstun=hitstun,
 												  push=push)
 
+        # FrameComponent
+        elif type == 'fra':
+            entity_id = props['entity_id']
+            hitboxes = props['hitboxes']
+            force = props['force']
+            crop = props['crop']
+            repeat = props['repeat']
+            push_box = props['push_box']
+            component = animation.FrameComponent(entity_id=entity_id,
+                                                 hitboxes=hitboxes, force=force,
+                                                 crop=crop, repeat=repeat,
+                                                 push_box=push_box)
+        # AnimationComponent
+        elif type == 'ani':
+            entity_id = props['entity_id']
+            #TODO: add animation construction
+
 
 		return component
 
