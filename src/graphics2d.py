@@ -48,6 +48,7 @@ class GraphicsSystem(System):
 			self.components.sort(key=lambda x: x.z_level)
 
 	def update(self, time):
+		self.delta = time
 		# clear dirties list
 		self.dirties = list()
 

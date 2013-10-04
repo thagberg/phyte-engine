@@ -1,12 +1,11 @@
 from system import System
-from pygame import event
 from events import *
 
 class FrameComponent(object):
 	def __init__(self, entity_id, hitboxes=None, force=(0,0), crop=None, 
 				 repeat=0, push_box=None):
 		self.entity_id = entity_id
-		self.hitboxes = list() if hiboxes is None else hitboxes
+		self.hitboxes = list() if hitboxes is None else hitboxes
 		self.force = force
 		self.crop = crop
 		self.repeat = repeat
@@ -51,6 +50,26 @@ class AnimationSystem(System):
 		except ValueError as e:
 			print "Not able to remove component from AnimationSystem: %s" % e.strerror
 
+	def _step(self, component):
+		component.current_index += 1
+		if component.current_index > len(component.frames):
+			if component.loop:
+				component.current_index = 0
+			else:
+				self._reset(component)
+				return			
+		component.current_frame = component.frames[component.current_index]
+
+	def _jump(self, component, count):
+		component.current_index += count
+		if component.current_index > len(component.frames):
+			if component.loop:
+				component.current_index = 0 + (component.currend_index - len(component.frames))
+			else:
+				self._reset(component)
+				return
+		component.current_frame = component.frames[component.current_index]				
+
 	def handle_event(self, event):
 		if event.type == ANIMATIONCOMPLETE:
 			self._remove(event.component)
@@ -58,6 +77,8 @@ class AnimationSystem(System):
 			self._add(event.component)
 		elif event.type == ANIMATIONDEACTIVATE:
 			self._remove(event.component)
+		elif event.type == ANIMATIONSTEP:
+			self._step(event.component)
 	
 
 	def update(self, time, events=None):

@@ -47,6 +47,7 @@ class TextSystem(System):
 			self._update_graphic(event.component)
 
 	def update(self, time):
+		self.delta = time
 		pass
 
 	def _update_graphic(self, comp):

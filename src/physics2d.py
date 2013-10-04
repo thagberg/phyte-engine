@@ -28,15 +28,15 @@ class PhysicsSystem(System):
 		self.factory = factory
 		self.components = list() if components is None else components
 
-	def update(self, time, events=None):
-		for event in events:
-			if event.type == ADDFORCE:
-				self.components[event.id].forces.append(event.force)
-			elif event.type == ADDPHYSICSCOMPONENT:
-				self._add(event.component)
-			elif event.type == REMOVEPHYSICSCOMPONENT:
-				self._remove(event.component)
+	def handle_event(self, event):
+		if event.type == ADDPHYSICSCOMPONENT:
+			self._add(event.component)
+		elif event.type == REMOVEPHYSICSCOMPONENT:
+			self._remove(event.component)
+		elif event.type == ADDFORCE:
+			event.component.forces.append(event.force)
 
+	def update(self, time, events=None):
 		for comp in self.component:
 			body = comp.body
 			forces = comp.forces
