@@ -1,3 +1,4 @@
+import copy
 from system import System
 from events import *
 
@@ -15,7 +16,7 @@ class FrameComponent(object):
 
 class AnimationComponent(object):
     def __init__(self, entity_id, frames=None, loop=False, graphic=None):
-        self.entity_id
+        self.entity_id = entity_id
         self.frames = list() if frames is None else frames
         self.loop = loop
         self.current_frame = None
@@ -43,28 +44,61 @@ class AnimationSystem(System):
 
     def _add(self, component):
         self.components.append(component)
+        # crop the graphic component
+        c = component
+        if c.graphic and c.frames:
+            c.current_frame = c.frames[c.current_index]
+            c_f = c.current_frame
+            cr_event = GameEvent(CHANGECROP, component=c.graphic,
+                                 area=c_f.crop)
+            self.delegate(cr_event)
+
 
     def _remove(self, component):
         component.reset()
+        # must fire event to remove grahpics components as well
+        if component.graphic:
+            rg_event = GameEvent(REMOVEGRAPHICSCOMPONENT, component=component)
+            self.delegate(rg_event)
+        #TODO: once physics is implemented, will probably want to
+        # loop over frames and remove hitboxes components as well
         try:
             self.components.remove(component)
         except ValueError as e:
             print "Not able to remove component from AnimationSystem: %s" % e.strerror
 
     def _step(self, component):
-        component.current_index += 1
-        if component.current_index > len(component.frames):
-            if component.loop:
-                component.current_index = 0
+        '''Step to the next frame within the animation.  Deactivate the 
+        animation if we've burned all of the frames, or loop to the beginning
+        if this is a looping animation'''
+        # repeat the current frame again if necessary
+        c = component
+        c_f = c.current_frame
+        if c_f:
+            if c_f.repeat and c_f.repeat_index < c_f.repeat:
+                c_f.repeat_index += 1
+                return
+            # not repeating the current frame
+            c_f.repeat_index = 0
+        c.current_index += 1
+        # check if we have already iterated over each frame
+        if c.current_index >= len(c.frames):
+            # if this is a looping animation, start over
+            if c.loop:
+                c.current_index = 0
+            # if not a looping animation, we must now reset the animation
+            # object and deactivate it
             else:
-                self._reset(component)
+                self._reset(c)
+                de_event = GameEvent(ANIMATIONDEACTIVATE, component=c)
+                self.delegate(de_event)
                 return          
-        component.current_frame = component.frames[component.current_index]
+        c.current_frame = c.frames[c.current_index]
         # if this animation component has a surface, update the crop
-        if component.graphic:
-            crop_event = GameEvent(CHANGECROP, component=component, 
-                                   area=component.current_frame.crop)
-			self.delegate(crop_event)
+        if c.graphic:
+            crop_event = GameEvent(CHANGECROP, component=c.graphic, 
+                                   area=c_f.crop)
+            self.delegate(crop_event)
 
     def _jump(self, component, count):
         component.current_index += count
@@ -80,31 +114,14 @@ class AnimationSystem(System):
         if event.type == ANIMATIONCOMPLETE:
             self._remove(event.component)
         elif event.type == ANIMATIONACTIVATE:
+            print "Activated new animation component"
             self._add(event.component)
         elif event.type == ANIMATIONDEACTIVATE:
+            print "Deactivated animation component"
             self._remove(event.component)
         elif event.type == ANIMATIONSTEP:
             self._step(event.component)
     
-
     def update(self, time, events=None):
         for component in self.components:
-            cur_frame = component.current_frame
-            # first determine if this frame needs to be repeated
-            if cur_frame is not None and cur_frame.repeat > cur_frame.repeat_index:
-                cur_frame.repeat_index += 1
-            else:
-                # test if we need to reset values and move to next frame
-                if cur_frame is not None:
-                    cur_frame.repeat_index = 0
-                    component.current_index += 1
-                # have we gone past the end of this animation?
-                if component.current_index >= len(self.frames):
-                    component.current_index = 0
-                    if not component.loop:
-                        cur_frame = None
-                        new_event = event.Event(ANIMATIONCOMPLETE,
-                                                component=target)
-                        event.post(new_event)
-                        continue
-                cur_frame = copy.deepcopy(component.frames[component.current_index])
+            self._step(component)

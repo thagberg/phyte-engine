@@ -1,7 +1,7 @@
 from pygame import USEREVENT
 
 # use this to keep track of the highest event value
-__HIGHEVENT = 48
+__HIGHEVENT = 50
 
 # system events
 UPDATEDIRTY = 0
@@ -83,7 +83,7 @@ EMPTYMETER = 47
 FULLMETER = 48
 
 class GameEvent(object):
-	def __init__(self, type, **kwargs):
-		self.type = type
-		for key, value in kwargs.items():
-			setattr(self, key, value)
+    def __init__(self, type, **kwargs):
+        self.type = type
+        for key, value in kwargs.items():
+            setattr(self, key, value)
