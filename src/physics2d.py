@@ -7,21 +7,6 @@ class PhysicsComponent(object):
 		self.body = body
 		self.forces = list()
 
-class HitboxComponent(object):
-	def __init__(self, entity_id, rect=None, hit_active=False, 
-				 hurt_active=False, push_active=False, expired=False, 
-				 damage=0, stun=0, hitstun=0, push=(0,0)):
-		self.entity_id = entity_id
-		self.rect = rect
-		self.hit_active = hit_active
-		self.hurt_active = hurt_active
-		self.push_active = push_active
-		self.expired = expired
-		self.damage = damage
-		self.stun = stun
-		self.hitstun = hitstun
-		self.push = push
-
 
 class PhysicsSystem(System):
 	def __init__(self, factory, components=None):
