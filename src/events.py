@@ -1,22 +1,19 @@
 from pygame import USEREVENT
 
+class GameEvent(object):
+    def __init__(self, type, **kwargs):
+        self.type = type
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+
 # use this to keep track of the highest event value
-__HIGHEVENT = 50
+__HIGHEVENT = 57
 
 # system events
 UPDATEDIRTY = 0
 FREEZE = 1
 COLLISION = 2
-'''     COLLISION:
-            hitter: reference to player owning the hitactive hitbox
-            hittee: reference to player owning the hurtactive hitbox
-            hitbox: the hitactive hitbox in the collision
-            hurtbox: the hurtactive hitbox in the collision
-            damage: amount of damage done by the move causing the collision
-            hitstun: number of frames of hitstun caused by the move
-            stun: amount of stun caused by the move
-            push: distance of push the hit causes
-'''
 CHANGEFACE = 3
 
 # animation events
@@ -39,6 +36,10 @@ PHYSICSEVENT = 13
 ADDFORCE = 14
 ADDPHYSICSENTITY = 15
 REMOVEPHYSICSCOMPONENT = 16
+ADDCOLLIDEABLE = 54
+REMOVECOLLIDEABLE = 55
+SETCOLLIDEABLES = 56
+CLEARCOLLIDEABLES = 57
 
 # input events
 INPUTEVENT = 17
@@ -82,8 +83,8 @@ UPDATEMETER = 46
 EMPTYMETER = 47
 FULLMETER = 48
 
-class GameEvent(object):
-    def __init__(self, type, **kwargs):
-        self.type = type
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+# debug events
+ADDDEBUGCOMPONENT = 51
+REMOVEDEBUGCOMPONENT = 52
+UPDATEDEBUGCOMPONENT = 53
+
