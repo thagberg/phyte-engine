@@ -1,5 +1,5 @@
 import common
-from system import system
+from system import System
 from events import *
 from pygame import draw
 
@@ -26,7 +26,7 @@ class DebugSystem(System):
         self.components = list() if components is None else components
 
     def _add(self, component):
-        self.components.add(component)
+        self.components.append(component)
 
     def _remove(self, component):
         # remove sub-components at the same time (text or graphics)
@@ -43,13 +43,13 @@ class DebugSystem(System):
             t_event = GameEvent(UPDATETEXT, component.text)
 
     def handle_event(self, event):
-        if event.type == ADDDEBUGCOMPONENT
+        if event.type == ADDDEBUGCOMPONENT:
             print "Added debug component"
-            self._add(component)
-        elif event.type == REMOVEDEBUGCOMPONENT
+            self._add(event.component)
+        elif event.type == REMOVEDEBUGCOMPONENT:
             print "Removing debug component"
-            self._remove(component)
-        elif event.type == UPDATEDEBUGCOMPONENT
+            self._remove(event.component)
+        elif event.type == UPDATEDEBUGCOMPONENT:
             print "Updating debug component"
             self._update_debug(event.component)
 

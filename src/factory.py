@@ -7,6 +7,7 @@ import entity
 import graphics2d
 import text
 import common
+import debug
 from events import *
 
 from bidict import bidict
@@ -157,6 +158,23 @@ class ComponentFactory(object):
                                                      loop=loop,
                                                      graphic=graphic)
             new_event = GameEvent(ANIMATIONACTIVATE, component=component)
+            self.delegate(new_event)
+
+        # DebugComponent
+        elif type == 'deb':
+            entity_id = props['entity_id']
+            c_text = None if not 'text' in props else props['text']
+            rect = None if not 'rect' in props else props['rect']
+            line = None if not 'line' in props else props['line']
+            ellipse = None if not 'ellipse' in props else props['ellipse']
+            circle = None if not 'circle' in props else props['circle']
+            arc = None if not 'arc' in props else props['arc']
+            style = None if not 'style' in props else props['style']
+            component = debug.DebugComponent(entity_id=entity_id, text=c_text,
+                                             rect=rect, line=line,
+                                             ellipse=ellipse, circle=circle,
+                                             arc=arc, style=style)
+            new_event = GameEvent(ADDDEBUGCOMPONENT, component=component)
             self.delegate(new_event)
 
         return component

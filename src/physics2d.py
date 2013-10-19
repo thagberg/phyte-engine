@@ -55,7 +55,7 @@ class PhysicsSystem(System):
 		return mtv
 
 	def update(self, time, events=None):
-		for comp in self.component:
+		for comp in self.components:
 			comp_rect = comp.box.rect
 			coll_rects = [x.box.rect for x in comp.collideables]
 			# find the indices of collisions

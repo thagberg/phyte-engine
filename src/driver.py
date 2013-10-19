@@ -13,6 +13,7 @@ import entity
 import graphics2d
 import text
 import common
+import debug
 from events import *
 
 # Define colors
@@ -111,6 +112,24 @@ frames = [f_one, f_two, f_tre]
 ani_one = factory.create_component('ani', entity_id=a_entity.entity_id,
                                    frames=frames, loop=True,
                                    graphic=g_comp)
+
+# physics test objects
+phy = physics2d.PhysicsSystem(factory)
+eng.install_system(phy, (PHYSICSEVENT, ADDFORCE, ADDPHYSICSENTITY,
+                         REMOVEPHYSICSCOMPONENT, ADDCOLLIDEABLE,
+                         REMOVECOLLIDEABLE, SETCOLLIDEABLES,
+                         CLEARCOLLIDEABLES))
+p1_entity = factory.create_entity()
+p2_entity = factory.create_entity()
+
+# debug test objects
+deb = debug.DebugSystem(screen, factory)
+eng.install_system(deb, (ADDDEBUGCOMPONENT, REMOVEDEBUGCOMPONENT,
+                         UPDATEDEBUGCOMPONENT))
+d_entity = factory.create_entity()
+d_rect = pygame.Rect(200, 350, 100, 100)
+d_comp = factory.create_component('deb', entity_id=d_entity.entity_id,
+                                  rect=d_rect)
 
 
 print "Joysticks available: %d" % len(joysticks)
