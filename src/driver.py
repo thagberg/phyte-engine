@@ -135,6 +135,20 @@ d_comp = factory.create_component('deb', entity_id=d_entity.entity_id,
 # player test objects
 pla = player.PlayerSystem(factory)
 eng.install_system(pla, (ADDPLAYERCOMPONENT, REMOVEPLAYERCOMPONENT))
+p_entity = factory.create_entity()
+p_loc = factory.create_component('loc', entity_id=p_entity.entity_id,
+                                 point=[400,500])
+p_bindings = {
+    'up': pygame.K_UP,
+    'down': pygame.K_DOWN,
+    'left': pygame.K_LEFT,
+    'right': pygame.K_RIGHT
+}
+p_input = factory.create_component('input', entity_id=p_entity.entity_id,
+                                   device=-1, bindings=p_bindings)
+p_comp = factory.create_component('pla', entity_id=p_entity.entity_id,
+                                  location=p_loc, inputs=p_input,
+                                  input_device=-1, graphic=g_comp)
 
 
 print "Joysticks available: %d" % len(joysticks)

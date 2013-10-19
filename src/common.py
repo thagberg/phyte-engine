@@ -8,7 +8,7 @@ BLACK = (0, 0, 0)
 
 class LocationComponent(object):
 	def __init__(self, entity_id, point):
-		self.entity_id
+		self.entity_id = entity_id
 		self.x = point[0]
 		self.y = point[1]
 
