@@ -8,7 +8,7 @@ class GameEvent(object):
 
 
 # use this to keep track of the highest event value
-__HIGHEVENT = 57
+__HIGHEVENT = 59
 
 # system events
 UPDATEDIRTY = 0
@@ -82,6 +82,8 @@ REMOVEMETERCOMPONENT = 45
 UPDATEMETER = 46
 EMPTYMETER = 47
 FULLMETER = 48
+ADDPLAYERCOMPONENT = 58
+REMOVEPLAYERCOMPONENT = 59
 
 # debug events
 ADDDEBUGCOMPONENT = 51

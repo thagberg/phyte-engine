@@ -14,6 +14,7 @@ import graphics2d
 import text
 import common
 import debug
+import player
 from events import *
 
 # Define colors
@@ -130,6 +131,10 @@ d_entity = factory.create_entity()
 d_rect = pygame.Rect(200, 350, 100, 100)
 d_comp = factory.create_component('deb', entity_id=d_entity.entity_id,
                                   rect=d_rect)
+
+# player test objects
+pla = player.PlayerSystem(factory)
+eng.install_system(pla, (ADDPLAYERCOMPONENT, REMOVEPLAYERCOMPONENT))
 
 
 print "Joysticks available: %d" % len(joysticks)

@@ -150,7 +150,4 @@ class InputBufferSystem(System):
 
         for pop in pop_list:
             buffered_inputs.remove(pop) 
-                
-
-
-
+               

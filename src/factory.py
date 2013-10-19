@@ -8,6 +8,7 @@ import graphics2d
 import text
 import common
 import debug
+import player
 from events import *
 
 from bidict import bidict
@@ -177,8 +178,19 @@ class ComponentFactory(object):
             new_event = GameEvent(ADDDEBUGCOMPONENT, component=component)
             self.delegate(new_event)
 
+        #PlayerComponent
+        elif type == 'pla':
+            entity_id = props['entity_id']
+            location = props['location']
+            moves = None if not 'moves' in props else props['moves']
+            inputs = None if not 'inputs' in props else props['inputs']
+            graphic = None if not 'graphic' in props else props['graphic']
+            input_device = -1 if not 'input_device' in props else props['input_device']    
+            component = player.PlayerComponent(entity_id=entity_id,
+                                               location=location, moves=moves,
+                                               inputs=inputs, graphic=graphic,
+                                               input_device=input_device)
+            new_event = GameEvent(ADDPLAYERCOMPONENT, component=component)
+            self.delegate(new_event)
+
         return component
-
-
-
-
