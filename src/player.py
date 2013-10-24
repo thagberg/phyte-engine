@@ -2,14 +2,23 @@ from system import System
 from events import *
 
 class PlayerComponent(object):
-    def __init__(self, entity_id, location, moves=None, inputs=None, 
-                 graphic=None, input_device=-1):
+    def __init__(self, entity_id, location, moves=None, movements=None,
+                 inputs=None, graphic=None, input_device=-1):
         self.entity_id = entity_id
         self.location = location
         self.moves = list() if moves is None else moves
         self.inputs = inputs
         self.graphic = graphic
         self.input_device = input_device
+
+
+class PlayerStates(object):
+    STANDING = 0
+    WALKING = 1
+    CROUCHING = 2
+    JUMPING = 3
+    FALLING = 4
+    BACKING = 5
 
 
 class PlayerSystem(System):
@@ -27,21 +36,30 @@ class PlayerSystem(System):
             rm_event = GameEvent(MOVEDEACTIVATE, component=move)
             self.delegate(rm_event)
         # clear graphic
-        if self.graphic:
+        if c.graphic:
             rg_event = GameEvent(REMOVEGRAPHICSCOMPONENT,
-                                 component=self.graphic)
+                                 component=c.graphic)
             self.delegate(rg_event)
         # clear inputs
-        if self.inputs:
+        if c.inputs:
             ri_event = GameEvent(REMOVEINPUTCOMPONENT,
-                                 device=self.input_device, 
-                                 component=self.inputs)
+                                 device=c.input_device, 
+                                 component=c.inputs)
+            self.delegate(ri_event)
+        # remove player
+        try:
+            self.components.remove(c)
+        except ValueError as e:
+            print "Not able to remove component from PlayerSystem: %s" % e.strerror
+
 
     def handle_event(self, event):
         if event.type == ADDPLAYERCOMPONENT:
             self._add(event.component)
         elif event.type == REMOVEPLAYERCOMPONENT:
             self._remove(event.component)
+        elif event.type == MOVEDEACTIVATE:
+            pass
 
     def update(self, time):
         self.delta = time

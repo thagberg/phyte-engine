@@ -75,10 +75,17 @@ t_bindings = {
 t_inp_component = factory.create_component('input', device=-1,
                                            entity_id=t_entity.entity_id,
                                            bindings=t_bindings)
+
+# graphics
 gra = graphics2d.GraphicsSystem(screen, factory)
 eng.install_system(gra, (ADDGRAPHICSCOMPONENT, REMOVEGRAPHICSCOMPONENT,
                          CHANGECROP, CHANGEDEST, CHANGESURFACE,
                          CHANGEDISPLAY, CHANGEZLEVEL))
+
+# input buffer test objects
+inpb = inputs.InputBufferSystem(factory)
+eng.install_system(inpb, (ADDINPUTBUFFERCOMPONENT, REMOVEINPUTBUFFERCOMPONENT,
+                          BUFFERINPUT))
 
 # text test object
 tex = text.TextSystem(factory)
@@ -134,7 +141,8 @@ d_comp = factory.create_component('deb', entity_id=d_entity.entity_id,
 
 # player test objects
 pla = player.PlayerSystem(factory)
-eng.install_system(pla, (ADDPLAYERCOMPONENT, REMOVEPLAYERCOMPONENT))
+eng.install_system(pla, (ADDPLAYERCOMPONENT, REMOVEPLAYERCOMPONENT,
+                         MOVEDEACTIVATE))
 p_entity = factory.create_entity()
 p_loc = factory.create_component('loc', entity_id=p_entity.entity_id,
                                  point=[400,500])
@@ -144,8 +152,11 @@ p_bindings = {
     'left': pygame.K_LEFT,
     'right': pygame.K_RIGHT
 }
+p_inpbuf = factory.create_component('inbuf', entity_id=p_entity.entity_id,
+                                    expire_time=2000)
 p_input = factory.create_component('input', entity_id=p_entity.entity_id,
-                                   device=-1, bindings=p_bindings)
+                                   device=-1, bindings=p_bindings,
+                                   inp_buffer=p_inpbuf)
 p_comp = factory.create_component('pla', entity_id=p_entity.entity_id,
                                   location=p_loc, inputs=p_input,
                                   input_device=-1, graphic=g_comp)

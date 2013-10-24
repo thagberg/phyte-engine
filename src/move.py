@@ -6,6 +6,7 @@ class MoveComponent(object):
 		self.entity_id = entity_id
 		self.animation = animation
 		self.inputs = inputs
+		self.active = False
 
 
 class MoveSystem(object):
@@ -17,21 +18,34 @@ class MoveSystem(object):
 		self.components.append(component)
 
 	def _remove(self, component):
+		# clear animation
+		if component.animation:
+			ra_event = GameEvent(ANIMATIONDEACTIVATE,
+								 component=component.animation)
+			self.delegate(ra_event)
 		try:
 			self.components.remove(move)
 		except ValueError as e:
 			print "Not able to remove component from MoveSystem: %s" % e.strerror
 
+	def _activate(self, component):
+		component.active = True
+
+	def _deactivate(self, component):
+		component.active = False
+
+	def handle_event(self, event):
+		if event.type == ADDMOVECOMPONENT:
+			self._add(event.component)
+		elif event.type == REMOVEMOVECOMPONENT:
+			self._remove(event.component)
+		elif event.type == MOVEACTIVATE:
+			self._activate(event.component)
+		elif event.type == MOVEDEACTIVATE:
+			self._deactivate(event.component)
+
 	def update(self, time, events=None):
-		# process events before updating targets
-		for event in events:
-			if event.type == MOVEACTIVATE:
-				self._add(event.component)
-				new_event = event.EVENT(ANIMATIONACTIVATE,
-										animation=event.component.animation)
-				event.post(new_event)
-			elif event.type == MOVEDEACTIVATE:
-				self._remove(event.component)
-				new_event = event.EVENT(ANIMATIONDEACTIVATE,
-										animation=event.component.animation)
-				event.post(new_event)
+		self.delta = time
+		# iterate over active move components
+		for comp in [x for x in self.components if x.active]:
+			pass

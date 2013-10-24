@@ -20,11 +20,12 @@ class Input(object):
 
         
 class InputComponent(object):
-    def __init__(self, entity_id, bindings):
+    def __init__(self, entity_id, bindings, inp_buffer=None):
         self.entity_id = entity_id
         self.bindings = bindings
         self.state = dict.fromkeys(bindings.keys(), False)
         self.last_state = None
+        self.inp_buffer = inp_buffer
 
 
 class InputSystem(System):
@@ -45,6 +46,11 @@ class InputSystem(System):
             self.components[event.device].append(event.component)
             print "Added new input component"
         elif event.type == REMOVEINPUTCOMPONENT:
+            # make sure to remove the buffer for this input component as well
+            if event.component.inp_buffer:
+                rb_event = GameEvent(REMOVEINPUTBUFFERCOMPONENT,
+                                     component=event.component.inp_buffer)
+                self.delegate(rb_event)
             self.components[event.device].remove(event.component)
         elif event.type == UPDATEBINDINGS:
             pass
@@ -120,14 +126,26 @@ class InputBufferSystem(System):
     """InputBufferSystem manages InputBufferComponents which hold the buffered
        inputs from a player, and allow for time-based expiration of inputs from buffer"""
 
-    def __init__(self, components=None):
+    def __init__(self, factory, components=None):
+        self.factory = factory
         self.components = list() if components is None else components
         self.delta = 0
+        self.delegate = None
+
+    def _add(self, component):
+        self.components.append(component)
+
+    def _remove(self, component):
+        try:
+            self.components.remove(component)
+        except ValueError as e:
+            print "Not able to remove component from InputBufferSystem %s" % e.strerror
 
     def handle_event(self, event):
         if event.type == ADDINPUTBUFFERCOMPONENT:
-            self.components.add(event.buffer)
+            self._add(event.component)
         elif event.type == REMOVEINPUTBUFFERCOMPONENT:
+            self._remove(event.component)
             self.components.remove(event.buffer)
         elif event.type == BUFFERINPUT:
             if not self.components[event.entity_id] is None:

@@ -57,8 +57,19 @@ class ComponentFactory(object):
             entity_id = props['entity_id']
             # TODO: convert bindings to a bidict
             bindings = dict() if not 'bindings' in props else props['bindings']
+            inp_buffer = None if not 'inp_buffer' in props else props['inp_buffer']
             component = inputs.InputComponent(entity_id, bindings)
-            new_event = GameEvent(ADDINPUTCOMPONENT, device=device, component=component)
+            new_event = GameEvent(ADDINPUTCOMPONENT, device=device, component=component,
+                                  inp_buffer=inp_buffer)
+            self.delegate(new_event)
+
+        # InputBufferComponent
+        elif type == 'inbuf':
+            entity_id = props['entity_id']
+            expire_time = props['expire_time']
+            component = inputs.InputBufferComponent(entity_id=entity_id,
+                                                    expire_time=expire_time)
+            new_event = GameEvent(ADDINPUTBUFFERCOMPONENT, component=component)
             self.delegate(new_event)
 
         # BindingComponent
@@ -178,11 +189,12 @@ class ComponentFactory(object):
             new_event = GameEvent(ADDDEBUGCOMPONENT, component=component)
             self.delegate(new_event)
 
-        #PlayerComponent
+        # PlayerComponent
         elif type == 'pla':
             entity_id = props['entity_id']
             location = props['location']
             moves = None if not 'moves' in props else props['moves']
+            movements = None if not 'movements' in props else props['movements']
             p_inputs = None if not 'inputs' in props else props['inputs']
             graphic = None if not 'graphic' in props else props['graphic']
             input_device = -1 if not 'input_device' in props else props['input_device']    
@@ -192,5 +204,11 @@ class ComponentFactory(object):
                                                input_device=input_device)
             new_event = GameEvent(ADDPLAYERCOMPONENT, component=component)
             self.delegate(new_event)
+
+        # MoveComponent
+        elif type == 'move':
+            entity_id = props['entity_id']
+            m_animation = props['animation']
+            m_inputs = props['inputs']
 
         return component
