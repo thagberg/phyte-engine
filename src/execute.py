@@ -1,0 +1,102 @@
+from system import System
+from events import *
+from collections import defaultdict
+
+
+class ExecutionComponent(object):
+    def __init__(self, entity_id, executables, input, 
+                 mirror=False, active=False):
+        self.entity_id = entity_id
+        self.executables = list() if executables is None else executables
+        self.mirror = mirror
+        self.active = active
+
+
+class ExecutionSystem(System):
+    def __init__(self, factory, components=None):
+        super(ExecutionSystem, self).__init__() 
+        self.factory = factory
+        self.components = list() if components is None else components
+        self.entity_mapping = defaultdict(list)
+
+    def _build_entity_mapping(self):
+        self.entity_mapping = defaultdict(list)
+        em = self.entity_mapping
+        for comp in self.components:
+            em[comp.entity_id].append(comp)
+
+    def _add(self, component):
+        self.components.append(component)
+        self.entity_mapping[component.entity_id].append(component) 
+
+    def _remove(self, component):
+        try:
+            self.components.remove(component)
+            self.entity_mapping[component.entity_id].remove(component)
+        except ValueError as e:
+            print "Not able to remove component from ExecutionSystem: %s" % e.strerror
+
+    def _activate(self, entity_id):
+        comps = self.entity_mapping[entity_id]
+        for comp in comps:
+            comp.active = True
+
+    def _deactivate(self, entity_id):
+        comps = self.entity_mapping[entity_id]
+        for comp in comps:
+            comp.active = False
+
+    def _clean_input(self, dirty_input, mirror):
+        clean_input = dirty_input
+        if mirror:
+            if clean_input == 'forward':
+                clean_input = 'left'
+            elif clean_input == 'backward':
+                clean_input = 'right'
+        else:
+            if clean_input == 'forward':
+                clean_input = 'right'
+            elif clean_input == 'backward':
+                clean_input = 'left'
+        return clean_input
+
+    def _check_for_move(self, executables, input_buffer, mirror):
+        buf = input_buffer
+        for ex in executables:
+            input_index = 0
+            # if input is forward/backward, translate it to proper 
+            # directional input
+            clean = this.clean_input(ex.inputs[input_index], mirror)
+            for inp in buf: 
+                # check if this buffered input matches the next
+                # input value for this executable
+                if inp == clean:
+                    input_index += 1
+                if input_index >= len(ex.inputs):
+                    return ex
+                else:
+                    clean = this.clean_input(ex.inputs[input_index], mirror)
+        # no executable matched to input buffer
+        return None
+
+    def handle_event(self, event):
+        if event.type == ADDEXECUTIONCOMPONENT:
+            self._add(event.component)
+        elif event.type == REMOVEEXECUTIONCOMPONENT:
+            self._remove(event.component)
+        elif event.type == ACTIVATEEXECUTIONCOMPONENT:
+            self._activate(event.entity_id)
+        elif event.type == DEACTIVATEEXECUTIONCOMPONENT:
+            self._deactivate(event.entity_id)
+
+    def update(self, time):
+        self.delta = time
+        # iterate only over the active components
+        for comp in [x for x in self.components if x.active]:
+            execute = _check_for_move(comp.executables,
+                                      comp.inputs.input_buffer, comp.mirror)
+            if execute:
+                ma_event = GameEvent(MOVEACTIVATE, component=execute)
+                self.delegate(ma_event)
+
+

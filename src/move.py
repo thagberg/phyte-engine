@@ -2,11 +2,14 @@ from events import *
 from pygame import event
 
 class MoveComponent(object):
-	def __init__(self, entity_id, animation=None, inputs=None):
+	def __init__(self, entity_id, name, animation=None, inputs=None,
+				 states=None):
 		self.entity_id = entity_id
+		self.name = name
 		self.animation = animation
 		self.inputs = inputs
 		self.active = False
+		self.states = list() if states is None else states
 
 
 class MoveSystem(object):
@@ -24,7 +27,7 @@ class MoveSystem(object):
 								 component=component.animation)
 			self.delegate(ra_event)
 		try:
-			self.components.remove(move)
+			self.components.remove(component)
 		except ValueError as e:
 			print "Not able to remove component from MoveSystem: %s" % e.strerror
 
@@ -44,7 +47,7 @@ class MoveSystem(object):
 		elif event.type == MOVEDEACTIVATE:
 			self._deactivate(event.component)
 
-	def update(self, time, events=None):
+	def update(self, time):
 		self.delta = time
 		# iterate over active move components
 		for comp in [x for x in self.components if x.active]:
