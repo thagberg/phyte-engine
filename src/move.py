@@ -1,6 +1,7 @@
 from events import *
 from pygame import event
 
+
 class MoveComponent(object):
 	def __init__(self, entity_id, name, animation=None, inputs=None,
 				 states=None):

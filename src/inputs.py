@@ -6,6 +6,7 @@ from events import *
 #joystick ids start at 0, so using -1 lets us use a universal device id system
 KEYB_MOUSE = -1 
 
+
 class BindingComponent(object):
     def __init__(self, entity_id, key):
         self.key = key
@@ -37,7 +38,6 @@ class InputSystem(System):
         # a map of lists, map keys are input devices, list items are
         #   components mapped to that device
         self.components = defaultdict(list) if components is None else components
-        self.delta = 0
         self.delegate = None
 
     def handle_event(self, event):

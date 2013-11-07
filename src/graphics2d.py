@@ -1,9 +1,6 @@
 from system import System
 from events import *
-from pygame import display, draw, event, font, image, mask, \
-                   PixelArray, sprite, Surface, surfarray, transform
 
-#TODO: add events for crop update to graphics, for use with animation system
 
 class GraphicsComponent(object):
     def __init__(self, entity_id, surface, dest=None, area=None, flags=None,
