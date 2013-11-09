@@ -9,6 +9,7 @@ import text
 import common
 import debug
 import player
+import execute
 from events import *
 
 from bidict import bidict
@@ -208,7 +209,45 @@ class ComponentFactory(object):
         # MoveComponent
         elif type == 'move':
             entity_id = props['entity_id']
+            name = props['name']
             m_animation = props['animation']
             m_inputs = props['inputs']
+            rules = None if not 'rules' in props else props['rules']
+            component = move.MoveComponent(entity_id=entity_id, name=name,
+                                           animation=m_animation, inputs=m_inputs,
+                                           rules=rules)
+            new_event = GameEvent(ADDMOVECOMPONENT, component=component)
+            self.delegate(new_event)
+
+        # ExecutionComponent
+        elif type == 'exe':
+            entity_id = props['entity_id']
+            if 'executables' in props:
+                executables = props['executables']
+            else:
+                executables = None
+            mirror = False
+            active = False
+            component = execute.ExecutionComponent(entity_id=entity_id,
+                                                   executables=executables
+                                                   mirror=mirror, active=active)
+            new_event = GameEvent(ADDEXECUTIONCOMPONENT, component=component)
+            self.delegate(new_event)
+
+        # BufferedExecutionComponent
+        elif type == 'bexe':
+            entity_id = props['entity_id']
+            if 'executables' in props:
+                executables = props['executables']
+            else:
+                executables = None
+            mirror = False
+            active = False
+            component = execute.ExecutionComponent(entity_id=entity_id,
+                                                   executables=executables
+                                                   mirror=mirror, active=active)
+            new_event = GameEvent(ADDBUFFEREDEXECUTIONCOMPONENT, 
+                                  component=component)
+            self.delegate(new_event)
 
         return component

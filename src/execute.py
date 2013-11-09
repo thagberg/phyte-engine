@@ -7,6 +7,7 @@ class ExecutionComponent(object):
     def __init__(self, entity_id, executables, input, 
                  mirror=False, active=False):
         self.entity_id = entity_id
+        # NOTE: executables should be ordered based on priority
         self.executables = list() if executables is None else executables
         self.mirror = mirror
         self.active = active
@@ -29,6 +30,28 @@ class ExecutionSystem(System):
             self.entity_mapping[component.entity_id].remove(component)
         except ValueError as e:
             print "Not able to remove component from ExecutionSystem: %s" % e.strerror
+
+    def _build_entity_mapping(self):
+        self.entity_mapping = defaultdict(list)
+        em = self.entity_mapping
+        for comp in self.components:
+            em[comp.entity_id].append(comp)
+
+    def _activate(self, component):
+        component.active = True
+
+    def _deactivate(self, component):
+        component.active = False
+
+    def _activate_by_entity(self, entity_id):
+        comps = self.entity_mapping[entity_id]
+        for comp in comps:
+            comp.active = True
+
+    def _deactivate_by_entity(self, entity_id):
+        comps = self.entity_mapping[entity_id]
+        for comp in comps:
+            comp.active = False
 
     def _clean_input(self, dirty_input, mirror):
         clean_input = dirty_input
@@ -58,36 +81,38 @@ class ExecutionSystem(System):
                 return ex
         return None 
 
+    def _change_mirror(entity_id, mirror):
+        comps = [x for x in self.components if x.entity_id == entity_id]
+        for c in comps:
+            c.mirror = mirror
+
     def handle_event(self, event):
         if event.type == ADDEXECUTIONCOMPONENT:
             self._add(event.component)
         elif event.type == REMOVEEXECUTIONCOMPONENT:
             self._remove(event.component)
         elif event.type == ACTIVATEEXECUTIONCOMPONENT:
-            self._activate(event.entity_id)
+            self._activate(event.component)
         elif event.type == DEACTIVATEEXECUTIONCOMPONENT:
-            self._deactivate(event.entity_id)
+            self._deactivate(event.component)
+        elif event.type == FACINGCHANGE:
+            self._change_mirror(event.entity_id, event.mirror)
+
+    def update(self, time):
+        self.delta = time
+        # iterate only over the active components
+        for comp in [x for x in self.components if x.active]:
+            execute = _check_for_move(comp.executables,
+                                      comp.input, comp.mirror)
+            if execute:
+                ma_event = GameEvent(MOVEACTIVATE, component=execute)
+                self.delegate(ma_evnet)
+                break
 
 
 class BufferedExecutionSystem(ExecutionSystem):
     def __init__(self, factory, components=None):
         super(BufferedExecutionSystem, self).__init__(factory, components) 
-
-    def _build_entity_mapping(self):
-        self.entity_mapping = defaultdict(list)
-        em = self.entity_mapping
-        for comp in self.components:
-            em[comp.entity_id].append(comp)
-
-    def _activate(self, entity_id):
-        comps = self.entity_mapping[entity_id]
-        for comp in comps:
-            comp.active = True
-
-    def _deactivate(self, entity_id):
-        comps = self.entity_mapping[entity_id]
-        for comp in comps:
-            comp.active = False
 
     def _check_for_move(self, executables, input_buffer, mirror):
         buf = input_buffer
@@ -109,14 +134,16 @@ class BufferedExecutionSystem(ExecutionSystem):
         return None
 
     def handle_event(self, event):
-        if event.type == ADDEXECUTIONCOMPONENT:
+        if event.type == ADDBUFFEREDEXECUTIONCOMPONENT:
             self._add(event.component)
-        elif event.type == REMOVEEXECUTIONCOMPONENT:
+        elif event.type == REMOVEBUFFEREDEXECUTIONCOMPONENT:
             self._remove(event.component)
-        elif event.type == ACTIVATEEXECUTIONCOMPONENT:
-            self._activate(event.entity_id)
-        elif event.type == DEACTIVATEEXECUTIONCOMPONENT:
-            self._deactivate(event.entity_id)
+        elif event.type == ACTIVATEBUFFEREDEXECUTIONCOMPONENT:
+            self._activate(event.component)
+        elif event.type == DEACTIVATEBUFFEREDEXECUTIONCOMPONENT:
+            self._deactivate(event.component)
+        elif event.type == FACINGCHANGE:
+            self._change_mirror(event.entity_id, event.mirror)
 
     def update(self, time):
         self.delta = time
@@ -127,5 +154,6 @@ class BufferedExecutionSystem(ExecutionSystem):
             if execute:
                 ma_event = GameEvent(MOVEACTIVATE, component=execute)
                 self.delegate(ma_event)
+                break
 
 

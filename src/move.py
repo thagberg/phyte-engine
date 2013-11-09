@@ -4,13 +4,13 @@ from pygame import event
 
 class MoveComponent(object):
 	def __init__(self, entity_id, name, animation=None, inputs=None,
-				 states=None):
+				 rules=None):
 		self.entity_id = entity_id
 		self.name = name
 		self.animation = animation
 		self.inputs = inputs
 		self.active = False
-		self.states = list() if states is None else states
+		self.rules = list() if rules is None else rules
 
 
 class MoveSystem(object):
