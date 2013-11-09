@@ -29,10 +29,6 @@ class PlayerComponent(object):
         self.hitstun = 0
 
 
-class PlayerState(object):
-    def __init__(self):
-        
-
 class PlayerStates(object):
     STANDING = 0
     WALKING = 1
@@ -129,6 +125,7 @@ class PlayerSystem(System):
                     if c.inputs.state['up']:
                         c.states.append(PlayerStates.JUMPING)
         else:
+            pass
 
     def handle_event(self, event):
         if event.type == ADDPLAYERCOMPONENT:

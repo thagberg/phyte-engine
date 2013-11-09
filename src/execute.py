@@ -14,16 +14,10 @@ class ExecutionComponent(object):
 
 class ExecutionSystem(System):
     def __init__(self, factory, components=None):
-        super(ExecutionSystem, self).__init__() 
+        super(ExecutionSystem, self).__init__()
         self.factory = factory
         self.components = list() if components is None else components
         self.entity_mapping = defaultdict(list)
-
-    def _build_entity_mapping(self):
-        self.entity_mapping = defaultdict(list)
-        em = self.entity_mapping
-        for comp in self.components:
-            em[comp.entity_id].append(comp)
 
     def _add(self, component):
         self.components.append(component)
@@ -35,16 +29,6 @@ class ExecutionSystem(System):
             self.entity_mapping[component.entity_id].remove(component)
         except ValueError as e:
             print "Not able to remove component from ExecutionSystem: %s" % e.strerror
-
-    def _activate(self, entity_id):
-        comps = self.entity_mapping[entity_id]
-        for comp in comps:
-            comp.active = True
-
-    def _deactivate(self, entity_id):
-        comps = self.entity_mapping[entity_id]
-        for comp in comps:
-            comp.active = False
 
     def _clean_input(self, dirty_input, mirror):
         clean_input = dirty_input
@@ -58,7 +42,52 @@ class ExecutionSystem(System):
                 clean_input = 'right'
             elif clean_input == 'backward':
                 clean_input = 'left'
-        return clean_input
+        return clean_input 
+
+    def _check_for_move(self, executables, input, mirror):
+        for ex in executables:
+            # loop over the executable's inputs and verify that the
+            # current input state covers each of them
+            match = True
+            for ex_input in ex.inputs:
+                clean_input = self._clean_input(ex_input, mirror)
+                if not input[clean_input]:
+                    match = False
+                    break
+            if match:
+                return ex
+        return None 
+
+    def handle_event(self, event):
+        if event.type == ADDEXECUTIONCOMPONENT:
+            self._add(event.component)
+        elif event.type == REMOVEEXECUTIONCOMPONENT:
+            self._remove(event.component)
+        elif event.type == ACTIVATEEXECUTIONCOMPONENT:
+            self._activate(event.entity_id)
+        elif event.type == DEACTIVATEEXECUTIONCOMPONENT:
+            self._deactivate(event.entity_id)
+
+
+class BufferedExecutionSystem(ExecutionSystem):
+    def __init__(self, factory, components=None):
+        super(BufferedExecutionSystem, self).__init__(factory, components) 
+
+    def _build_entity_mapping(self):
+        self.entity_mapping = defaultdict(list)
+        em = self.entity_mapping
+        for comp in self.components:
+            em[comp.entity_id].append(comp)
+
+    def _activate(self, entity_id):
+        comps = self.entity_mapping[entity_id]
+        for comp in comps:
+            comp.active = True
+
+    def _deactivate(self, entity_id):
+        comps = self.entity_mapping[entity_id]
+        for comp in comps:
+            comp.active = False
 
     def _check_for_move(self, executables, input_buffer, mirror):
         buf = input_buffer
