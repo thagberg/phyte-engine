@@ -1,4 +1,5 @@
 from events import *
+from system import System
 from pygame import event
 
 
@@ -13,7 +14,7 @@ class MoveComponent(object):
 		self.rules = list() if rules is None else rules
 
 
-class MoveSystem(object):
+class MoveSystem(System):
 	def __init__(self, factory, components=None):
 		self.factory = factory
 		self.components = list() if components is None else components

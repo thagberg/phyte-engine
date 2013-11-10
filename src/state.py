@@ -3,6 +3,11 @@ from events import *
 from collections import defaultdict
 import operator
 
+def __reverse_contains(a, b):
+    '''operator.contains function uses opposite parameter ordering,
+    so we wrap the call up to maintain consistency in rule checking syntax'''
+    return operator.contains(b, a)
+    
 OP_MAP = {
     'lt': operator.lt,
     'le': operator.le,
@@ -12,11 +17,6 @@ OP_MAP = {
     'gt': operator.gt,
     'in': __reverse_contains
 }
-
-def __reverse_contains(a, b):
-    '''operator.contains function uses opposite parameter ordering,
-    so we wrap the call up to maintain consistency in rule checking syntax'''
-    return operator.contains(b, a)
 
 
 class RuleComponent(object):

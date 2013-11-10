@@ -2,6 +2,7 @@ import copy
 from system import System
 from events import *
 
+
 class FrameComponent(object):
     def __init__(self, entity_id, hitboxes=None, force=(0,0), crop=None, 
                  repeat=0, push_box=None):
@@ -66,6 +67,10 @@ class AnimationSystem(System):
             self.components.remove(component)
         except ValueError as e:
             print "Not able to remove component from AnimationSystem: %s" % e.strerror
+
+    def _reset(self, component):
+        component.currend_index = 0
+        component.current_frame = None
 
     def _step(self, component):
         '''Step to the next frame within the animation.  Deactivate the 

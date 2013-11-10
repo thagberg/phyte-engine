@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import pygame
-import player
+import player_old as player
 import gameUtils
 import playerUtils
 import pymenu

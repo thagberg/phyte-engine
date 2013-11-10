@@ -1,4 +1,4 @@
-import player
+import player_old as player
 import pygame
 import json
 

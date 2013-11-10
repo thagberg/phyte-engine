@@ -4,11 +4,12 @@ from collections import defaultdict
 
 
 class ExecutionComponent(object):
-    def __init__(self, entity_id, executables, input, 
+    def __init__(self, entity_id, executables, inputs, 
                  mirror=False, active=False):
         self.entity_id = entity_id
         # NOTE: executables should be ordered based on priority
         self.executables = list() if executables is None else executables
+        self.input = inputs
         self.mirror = mirror
         self.active = active
 
@@ -103,7 +104,7 @@ class ExecutionSystem(System):
         # iterate only over the active components
         for comp in [x for x in self.components if x.active]:
             execute = _check_for_move(comp.executables,
-                                      comp.input, comp.mirror)
+                                      comp.inputs, comp.mirror)
             if execute:
                 ma_event = GameEvent(MOVEACTIVATE, component=execute)
                 self.delegate(ma_evnet)

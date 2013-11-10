@@ -10,6 +10,7 @@ import common
 import debug
 import player
 import execute
+import state
 from events import *
 
 from bidict import bidict
@@ -43,6 +44,14 @@ class ComponentFactory(object):
     def remove_entity(self, entity_id):
         with self.entities_lock:
             self.entities[entity_id] = None
+
+    def get_entity(self, entity_id):
+        ret = None
+        try:
+            ret = self.entities[entity_id]
+        except Exception as e:
+            print "No entity for this id: %s" % entity_id
+        return ret
 
     def get_entities_with_types(self, types):
         e = filter(lambda x: all(t in x.components.keys() for t in types),
@@ -194,13 +203,15 @@ class ComponentFactory(object):
         elif type == 'pla':
             entity_id = props['entity_id']
             location = props['location']
-            moves = None if not 'moves' in props else props['moves']
-            movements = None if not 'movements' in props else props['movements']
+            b_moves = None if not 'buffered_moves' in props else props['buffered_moves']
+            i_moves = None if not 'immediate_moves' in props else props['immediate_moves']
             p_inputs = None if not 'inputs' in props else props['inputs']
             graphic = None if not 'graphic' in props else props['graphic']
             input_device = -1 if not 'input_device' in props else props['input_device']    
             component = player.PlayerComponent(entity_id=entity_id,
-                                               location=location, moves=moves,
+                                               location=location,
+                                               buffered_moves=b_moves,
+                                               immediate_moves=i_moves,
                                                inputs=p_inputs, graphic=graphic,
                                                input_device=input_device)
             new_event = GameEvent(ADDPLAYERCOMPONENT, component=component)
@@ -228,8 +239,10 @@ class ComponentFactory(object):
                 executables = None
             mirror = False
             active = False
+            e_input = props['inputs']
             component = execute.ExecutionComponent(entity_id=entity_id,
-                                                   executables=executables
+                                                   executables=executables,
+                                                   inputs=e_input,
                                                    mirror=mirror, active=active)
             new_event = GameEvent(ADDEXECUTIONCOMPONENT, component=component)
             self.delegate(new_event)
@@ -244,10 +257,34 @@ class ComponentFactory(object):
             mirror = False
             active = False
             component = execute.ExecutionComponent(entity_id=entity_id,
-                                                   executables=executables
+                                                   executables=executables,
                                                    mirror=mirror, active=active)
             new_event = GameEvent(ADDBUFFEREDEXECUTIONCOMPONENT, 
                                   component=component)
+            self.delegate(new_event)
+
+        # RuleComponent
+        elif type == 'rule':
+            name = props['name']
+            operator = props['operator']
+            value = props['value']    
+            component = state.RuleComponent(name=name, operator=operator,
+                                            value=value)
+
+        # StateComponent
+        elif type == 'state':
+            entity_id = props['entity_id']
+            rules = props['rules']
+            aet = props['activation_event_type']
+            daet = props['deactivation_event_type']
+            ac = props['activation_component']
+            rule_values = props['rule_values']
+            component = state.StateComponent(entity_id=entity_id, rules=rules,
+                                             activation_event_type=aet,
+                                             deactivation_event_type=daet,
+                                             activation_component=ac,
+                                             rule_values=rule_values)
+            new_event = GameEvent(ADDSTATECOMPONENT, component=component)
             self.delegate(new_event)
 
         return component

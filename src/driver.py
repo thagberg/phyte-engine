@@ -15,6 +15,8 @@ import text
 import common
 import debug
 import player
+import execute
+import state
 from events import *
 
 # Define colors
@@ -65,16 +67,17 @@ eng.install_system(inp, (ADDINPUTCOMPONENT, REMOVEINPUTCOMPONENT,
                          UPDATEBINDINGS, KEYDOWN, KEYUP, JOYBUTTONDOWN, 
                          JOYBUTTONUP, MOUSEBUTTONDOWN, MOUSEBUTTONUP, 
                          JOYAXISMOTION))
+player_entity = factory.create_entity()
 t_entity = factory.create_entity()
-t_bindings = {
+player_bindings = {
     'up': pygame.K_UP,
     'down': pygame.K_DOWN,
     'left': pygame.K_LEFT,
     'right': pygame.K_RIGHT
 }
-t_inp_component = factory.create_component('input', device=-1,
-                                           entity_id=t_entity.entity_id,
-                                           bindings=t_bindings)
+player_inp_component = factory.create_component('input', device=-1,
+                                           entity_id=player_entity.entity_id,
+                                           bindings=player_bindings)
 
 # graphics
 gra = graphics2d.GraphicsSystem(screen, factory)
@@ -95,10 +98,10 @@ t_tex_comp = factory.create_component('text', entity_id=t_entity.entity_id,
                                       text='Test Text', loc=[0,0], style=dict())
 
 # graphic test objects
-g_entity = factory.create_entity()
-g_surface = pygame.image.load('../content/sticksheet.png')
-g_comp = factory.create_component('graphics', entity_id=g_entity.entity_id,
-                                  surface=g_surface, dest=[200,200],
+#g_entity = factory.create_entity()
+player_surface = pygame.image.load('../content/sticksheet.png')
+g_comp = factory.create_component('graphics', entity_id=player_entity.entity_id,
+                                  surface=player_surface, dest=[200,200],
                                   area=[200,200,100,100])
 
 # animation test objects
@@ -106,20 +109,65 @@ ani = animation.AnimationSystem(factory)
 eng.install_system(ani, (ANIMATIONCOMPLETE, ANIMATIONACTIVATE,
                          ANIMATIONDEACTIVATE, ANIMATIONSTEP,
                          ANIMATIONJUMP))
-a_entity = factory.create_entity()
-f_one = factory.create_component('fra', entity_id=a_entity.entity_id,
-                                 hitboxes=None, force=[0,0], crop=[0,0,64,128],
+f_one = factory.create_component('fra', entity_id=player_entity.entity_id,
+                                 hitboxes=None, force=[0,0], crop=[0,128,64,128],
                                  repeat=20, push_box=None)
-f_two = factory.create_component('fra', entity_id=a_entity.entity_id,
-                                 hitboxes=None, force=[0,0], crop=[66,0,64,128],
+f_two = factory.create_component('fra', entity_id=player_entity.entity_id,
+                                 hitboxes=None, force=[0,0], crop=[66,128,64,128],
                                  repeat=3, push_box=None)
-f_tre = factory.create_component('fra', entity_id=a_entity.entity_id,
-                                 hitboxes=None, force=[0,0], crop=[131,0,64,128],
+f_tre = factory.create_component('fra', entity_id=player_entity.entity_id,
+                                 hitboxes=None, force=[0,0], crop=[131,128,64,128],
                                  repeat=3, push_box=None)
 frames = [f_one, f_two, f_tre]
-ani_one = factory.create_component('ani', entity_id=a_entity.entity_id,
-                                   frames=frames, loop=True,
+ani_one = factory.create_component('ani', entity_id=player_entity.entity_id,
+                                   frames=frames, loop=False,
                                    graphic=g_comp)
+# animation 2
+f2_one = factory.create_component('fra', entity_id=player_entity.entity_id,
+                                 hitboxes=None, force=[0,0], crop=[0,0,64,128],
+                                 repeat=20, push_box=None)
+f2_two = factory.create_component('fra', entity_id=player_entity.entity_id,
+                                 hitboxes=None, force=[0,0], crop=[66,0,64,128],
+                                 repeat=3, push_box=None)
+f2_tre = factory.create_component('fra', entity_id=player_entity.entity_id,
+                                 hitboxes=None, force=[0,0], crop=[131,0,64,128],
+                                 repeat=3, push_box=None)
+frames2 = [f_one, f_two, f_tre]
+ani_two = factory.create_component('ani', entity_id=player_entity.entity_id,
+                                   frames=frames2, loop=True,
+                                   graphic=g_comp)
+
+# move test objects
+mov = move.MoveSystem(factory)
+eng.install_system(mov, (MOVEEVENT, MOVECHANGE, MOVERESET, MOVEACTIVATE,
+                         MOVEDEACTIVATE, ADDMOVECOMPONENT,
+                         REMOVEMOVECOMPONENT))
+m_inputs = ['right']
+move_one = factory.create_component('move', entity_id=player_entity.entity_id,
+                                    name='testmove',
+                                    animation=ani_one,
+                                    inputs=m_inputs)
+
+# execution test objects
+exe = execute.ExecutionSystem(factory)
+eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
+                         ACTIVATEEXECUTIONCOMPONENT,
+                         DEACTIVATEEXECUTIONCOMPONENT))
+exe_one = factory.create_component('exe', entity_id=player_entity.entity_id,
+                                    executables=[move_one], 
+                                    inputs=player_inp_component)
+
+# state test objects
+sta = state.StateSystem(factory)
+eng.install_system(sta, (ADDSTATECOMPONENT, REMOVESTATECOMPONENT))
+rule_one = factory.create_component('rule', name='test', operator='eq',
+                                    value=True)
+state_one = factory.create_component('state', entity_id=player_entity.entity_id,
+                                     rules=[rule_one],
+                                     activation_event_type=ACTIVATEEXECUTIONCOMPONENT,
+                                     deactivation_event_type=DEACTIVATEEXECUTIONCOMPONENT,
+                                     activation_component=exe_one,
+                                     rule_values={'test':True})
 
 # physics test objects
 phy = physics2d.PhysicsSystem(factory)
