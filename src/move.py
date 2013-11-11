@@ -35,19 +35,28 @@ class MoveSystem(System):
 
 	def _activate(self, component):
 		component.active = True
+		aa_event = GameEvent(ANIMATIONACTIVATE,
+							 component=component.animation)
+		self.delegate(aa_event)
 
 	def _deactivate(self, component):
 		component.active = False
+		da_event = GameEvent(ANIMATIONDEACTIVATE,
+							 component=component.animation)
 
 	def handle_event(self, event):
 		if event.type == ADDMOVECOMPONENT:
 			self._add(event.component)
+			print "Added new MoveComponent: %s" % event.component
 		elif event.type == REMOVEMOVECOMPONENT:
 			self._remove(event.component)
+			print "Removed MoveComponent: %s" % event.component
 		elif event.type == MOVEACTIVATE:
 			self._activate(event.component)
+			print "Activated MoveComponent: %s" % event.component
 		elif event.type == MOVEDEACTIVATE:
 			self._deactivate(event.component)
+			print "Deactivated MoveComponent: %s" % event.component
 
 	def update(self, time):
 		self.delta = time

@@ -68,14 +68,14 @@ class ExecutionSystem(System):
                 clean_input = 'left'
         return clean_input 
 
-    def _check_for_move(self, executables, input, mirror):
+    def _check_for_move(self, executables, inputs, mirror):
         for ex in executables:
             # loop over the executable's inputs and verify that the
             # current input state covers each of them
             match = True
             for ex_input in ex.inputs:
                 clean_input = self._clean_input(ex_input, mirror)
-                if not input[clean_input]:
+                if not inputs.state[clean_input]:
                     match = False
                     break
             if match:
@@ -90,12 +90,16 @@ class ExecutionSystem(System):
     def handle_event(self, event):
         if event.type == ADDEXECUTIONCOMPONENT:
             self._add(event.component)
+            print "Added new ExecutionComponent: %s" % event.component
         elif event.type == REMOVEEXECUTIONCOMPONENT:
             self._remove(event.component)
+            print "Removed ExecutionComponent: %s" % event.component
         elif event.type == ACTIVATEEXECUTIONCOMPONENT:
             self._activate(event.component)
+            print "Activated ExecutionComponent: %s" % event.component
         elif event.type == DEACTIVATEEXECUTIONCOMPONENT:
             self._deactivate(event.component)
+            print "Removed ExecutionComponent: %s" % event.component
         elif event.type == FACINGCHANGE:
             self._change_mirror(event.entity_id, event.mirror)
 
@@ -103,11 +107,11 @@ class ExecutionSystem(System):
         self.delta = time
         # iterate only over the active components
         for comp in [x for x in self.components if x.active]:
-            execute = _check_for_move(comp.executables,
-                                      comp.inputs, comp.mirror)
+            execute = self._check_for_move(comp.executables,
+                                           comp.input, comp.mirror)
             if execute:
                 ma_event = GameEvent(MOVEACTIVATE, component=execute)
-                self.delegate(ma_evnet)
+                self.delegate(ma_event)
                 break
 
 
@@ -150,8 +154,8 @@ class BufferedExecutionSystem(ExecutionSystem):
         self.delta = time
         # iterate only over the active components
         for comp in [x for x in self.components if x.active]:
-            execute = _check_for_move(comp.executables,
-                                      comp.inputs.input_buffer, comp.mirror)
+            execute = self._check_for_move(comp.executables,
+                                           comp.inputs.input_buffer, comp.mirror)
             if execute:
                 ma_event = GameEvent(MOVEACTIVATE, component=execute)
                 self.delegate(ma_event)

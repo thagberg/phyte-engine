@@ -58,9 +58,11 @@ class StateSystem(System):
 
     def handle_event(self, event):
         if event.type == ADDSTATECOMPONENT:
-            pass
+            self._add(event.component)
+            print "Added new StateComponent: %s" % event.component
         elif event.type == REMOVESTATECOMPONENT:
-            pass
+            self._remove(event.component)
+            print "Removed StateComponent: %s" % event.component
 
     def _check_rule(self, rule, rule_values):
         retval = OP_MAP[rule.operator](rule_values, rule.value)

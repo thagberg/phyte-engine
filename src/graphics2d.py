@@ -23,7 +23,7 @@ class GraphicsSystem(System):
 
     def handle_event(self, event):  
         if event.type == ADDGRAPHICSCOMPONENT:
-            print "Added new graphic component"
+            print "Added new graphic component: %s" % event.component
             self.components.append(event.component)
             self.components.sort(key=lambda x: x.z_level)
         elif event.type == REMOVEGRAPHICSCOMPONENT:
@@ -32,6 +32,7 @@ class GraphicsSystem(System):
                 self.components.sort(key=lambda x: x.z_level)
             except ValueError, e:
                 pass
+            print "Removed graphic component: %s" % event.component
         elif event.type == CHANGECROP:
             event.component.area = event.area
         elif event.type == CHANGEDEST:

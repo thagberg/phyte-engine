@@ -23,10 +23,7 @@ class AnimationComponent(object):
         self.current_frame = None
         self.current_index = 0
         self.graphic = graphic
-
-    def reset(self):
-        self.current_frame = None
-        self.current_index = 0
+        self.active = False
 
 
 class CropComponent(object):
@@ -56,6 +53,7 @@ class AnimationSystem(System):
 
 
     def _remove(self, component):
+        self._reset(component)
         component.reset()
         # must fire event to remove grahpics components as well
         if component.graphic:
@@ -68,8 +66,16 @@ class AnimationSystem(System):
         except ValueError as e:
             print "Not able to remove component from AnimationSystem: %s" % e.strerror
 
+    def _activate(self, component):
+        component.active = True
+
+    def _deactivate(self, component, preserve=False):
+        component.active = False
+        if not preserve:
+            self._reset(component)
+
     def _reset(self, component):
-        component.currend_index = 0
+        component.current_index = 0
         component.current_frame = None
 
     def _step(self, component):
@@ -94,13 +100,12 @@ class AnimationSystem(System):
             # if not a looping animation, we must now reset the animation
             # object and deactivate it
             else:
-                self._reset(c)
                 de_event = GameEvent(ANIMATIONDEACTIVATE, component=c)
                 self.delegate(de_event)
-                return          
+                return
         c.current_frame = c.frames[c.current_index]
         # if this animation component has a surface, update the crop
-        if c.graphic:
+        if c.graphic and c_f:
             crop_event = GameEvent(CHANGECROP, component=c.graphic, 
                                    area=c_f.crop)
             self.delegate(crop_event)
@@ -116,17 +121,23 @@ class AnimationSystem(System):
         component.current_frame = component.frames[component.current_index]             
 
     def handle_event(self, event):
-        if event.type == ANIMATIONCOMPLETE:
-            self._remove(event.component)
-        elif event.type == ANIMATIONACTIVATE:
-            print "Activated new animation component"
+        if event.type == ADDANIMATIONCOMPONENT:
+            print "Added new animation component: %s" % event.component
             self._add(event.component)
-        elif event.type == ANIMATIONDEACTIVATE:
-            print "Deactivated animation component"
+        elif event.type == REMOVEANIMATIONCOMPONENT:
+            print "Removed animation component: %s" % event.component
             self._remove(event.component)
+        elif event.type == ANIMATIONCOMPLETE:
+            self._reset(event.component)
+        elif event.type == ANIMATIONACTIVATE:
+            print "Activated new animation component: %s" % event.component
+            self._activate(event.component)
+        elif event.type == ANIMATIONDEACTIVATE:
+            print "Deactivated animation component: %s" % event.component
+            self._deactivate(event.component)
         elif event.type == ANIMATIONSTEP:
             self._step(event.component)
     
     def update(self, time, events=None):
-        for component in self.components:
+        for component in [ x for x in self.components if x.active]:
             self._step(component)

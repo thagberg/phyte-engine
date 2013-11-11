@@ -108,7 +108,8 @@ g_comp = factory.create_component('graphics', entity_id=player_entity.entity_id,
 ani = animation.AnimationSystem(factory)
 eng.install_system(ani, (ANIMATIONCOMPLETE, ANIMATIONACTIVATE,
                          ANIMATIONDEACTIVATE, ANIMATIONSTEP,
-                         ANIMATIONJUMP))
+                         ANIMATIONJUMP, ADDANIMATIONCOMPONENT,
+                         REMOVEANIMATIONCOMPONENT))
 f_one = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[0,128,64,128],
                                  repeat=20, push_box=None)
@@ -147,6 +148,11 @@ move_one = factory.create_component('move', entity_id=player_entity.entity_id,
                                     name='testmove',
                                     animation=ani_one,
                                     inputs=m_inputs)
+m2_inputs = []
+move_two = factory.create_component('move', entity_id=player_entity.entity_id,
+                                     name='neutral',
+                                     animation=ani_two,
+                                     inputs=m2_inputs)
 
 # execution test objects
 exe = execute.ExecutionSystem(factory)
@@ -154,7 +160,7 @@ eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
                          ACTIVATEEXECUTIONCOMPONENT,
                          DEACTIVATEEXECUTIONCOMPONENT))
 exe_one = factory.create_component('exe', entity_id=player_entity.entity_id,
-                                    executables=[move_one], 
+                                    executables=[move_one, move_two], 
                                     inputs=player_inp_component)
 
 # state test objects

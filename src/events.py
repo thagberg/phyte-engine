@@ -8,7 +8,7 @@ class GameEvent(object):
 
 
 # use this to keep track of the highest event value
-__HIGHEVENT = 72
+__HIGHEVENT = 74
 
 # system events
 UPDATEDIRTY = 0
@@ -23,6 +23,8 @@ ANIMATIONACTIVATE = 6
 ANIMATIONDEACTIVATE = 7
 ANIMATIONSTEP = 49
 ANIMATIONJUMP = 50
+ADDANIMATIONCOMPONENT = 73
+REMOVEANIMATIONCOMPONENT = 74
 
 # move events
 MOVEEVENT = 8

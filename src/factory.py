@@ -179,7 +179,7 @@ class ComponentFactory(object):
                                                      frames=frames,
                                                      loop=loop,
                                                      graphic=graphic)
-            new_event = GameEvent(ANIMATIONACTIVATE, component=component)
+            new_event = GameEvent(ADDANIMATIONCOMPONENT, component=component)
             self.delegate(new_event)
 
         # DebugComponent
