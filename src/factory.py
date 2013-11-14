@@ -192,10 +192,11 @@ class ComponentFactory(object):
             circle = None if not 'circle' in props else props['circle']
             arc = None if not 'arc' in props else props['arc']
             style = None if not 'style' in props else props['style']
+            get_value = None if not 'get_value' in props else props['get_value']
             component = debug.DebugComponent(entity_id=entity_id, text=c_text,
-                                             rect=rect, line=line,
-                                             ellipse=ellipse, circle=circle,
-                                             arc=arc, style=style)
+                                             get_value=get_value, rect=rect, 
+                                             line=line, ellipse=ellipse, 
+                                             circle=circle, arc=arc, style=style)
             new_event = GameEvent(ADDDEBUGCOMPONENT, component=component)
             self.delegate(new_event)
 

@@ -5,16 +5,19 @@ from pygame import draw
 
 
 class DebugComponent(object):
-    def __init__(self, entity_id, text=None, rect=None, line=None, 
-                 ellipse=None, circle=None, arc=None, **style):
+    def __init__(self, entity_id, text=None, get_value=None, 
+                 rect=None, line=None, ellipse=None, circle=None, 
+                 arc=None, **style):
         self.entity_id = entity_id
         self.text = text
+        self.get_value = get_value
         self.rect = rect
         self.line = line
         self.ellipse = ellipse
         self.circle = circle
         self.arc = arc
         self.style = style
+        self.last_value = None
 
 
 class DebugSystem(System):
@@ -31,7 +34,7 @@ class DebugSystem(System):
     def _remove(self, component):
         # remove sub-components at the same time (text or graphics)
         if component.text:
-            t_event = GameEvent(REMOVETEXTCOMPONENT, component=component.text)
+            t_event = GameEvent(REMOVETEXTCOMPONENT, component=component.value)
             self.delegate(t_event)
         try:
             self.components.remove(component)
@@ -81,3 +84,11 @@ class DebugSystem(System):
             if comp.line:
                 draw.line(self.surface, color, comp.line.closed,
                           comp.line.points, width)
+
+            if comp.get_value:
+                text_val = str(comp.get_value())
+                if text_val != comp.last_value:
+                    # fire event to update rendered graphic for this
+                    tu_event = GameEvent(UPDATETEXT, component=comp.text,
+                                         text=text_val)
+                    comp.last_value = text_val

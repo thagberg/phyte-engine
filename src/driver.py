@@ -192,6 +192,11 @@ d_entity = factory.create_entity()
 d_rect = pygame.Rect(200, 350, 100, 100)
 d_comp = factory.create_component('deb', entity_id=d_entity.entity_id,
                                   rect=d_rect)
+d_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
+                                       text=str(g_comp.area), loc=[0, 100], style=dict())
+d2_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=d_text_comp,
+                                   get_value=lambda: g_comp.area)
+
 
 # player test objects
 pla = player.PlayerSystem(factory)

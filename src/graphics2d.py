@@ -49,7 +49,7 @@ class GraphicsSystem(System):
         self.delta = time
         # clear dirties list
         self.dirties = list()
-
+        
         # update components
         for comp in self.components:
             self._draw_component(self.surface, comp)
