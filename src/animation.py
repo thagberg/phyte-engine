@@ -130,10 +130,8 @@ class AnimationSystem(System):
         elif event.type == ANIMATIONCOMPLETE:
             self._reset(event.component)
         elif event.type == ANIMATIONACTIVATE:
-            print "Activated new animation component: %s" % event.component
             self._activate(event.component)
         elif event.type == ANIMATIONDEACTIVATE:
-            print "Deactivated animation component: %s" % event.component
             self._deactivate(event.component)
         elif event.type == ANIMATIONSTEP:
             self._step(event.component)

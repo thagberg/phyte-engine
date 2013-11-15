@@ -89,6 +89,7 @@ class DebugSystem(System):
                 text_val = str(comp.get_value())
                 if text_val != comp.last_value:
                     # fire event to update rendered graphic for this
+                    comp.last_value = text_val
                     tu_event = GameEvent(UPDATETEXT, component=comp.text,
                                          text=text_val)
-                    comp.last_value = text_val
+                    self.delegate(tu_event)

@@ -96,10 +96,8 @@ class ExecutionSystem(System):
             print "Removed ExecutionComponent: %s" % event.component
         elif event.type == ACTIVATEEXECUTIONCOMPONENT:
             self._activate(event.component)
-            print "Activated ExecutionComponent: %s" % event.component
         elif event.type == DEACTIVATEEXECUTIONCOMPONENT:
             self._deactivate(event.component)
-            print "Removed ExecutionComponent: %s" % event.component
         elif event.type == FACINGCHANGE:
             self._change_mirror(event.entity_id, event.mirror)
 

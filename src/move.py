@@ -53,10 +53,8 @@ class MoveSystem(System):
 			print "Removed MoveComponent: %s" % event.component
 		elif event.type == MOVEACTIVATE:
 			self._activate(event.component)
-			print "Activated MoveComponent: %s" % event.component
 		elif event.type == MOVEDEACTIVATE:
 			self._deactivate(event.component)
-			print "Deactivated MoveComponent: %s" % event.component
 
 	def update(self, time):
 		self.delta = time

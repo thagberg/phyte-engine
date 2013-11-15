@@ -133,7 +133,7 @@ f2_two = factory.create_component('fra', entity_id=player_entity.entity_id,
 f2_tre = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[131,0,64,128],
                                  repeat=3, push_box=None)
-frames2 = [f_one, f_two, f_tre]
+frames2 = [f2_one, f2_two, f2_tre]
 ani_two = factory.create_component('ani', entity_id=player_entity.entity_id,
                                    frames=frames2, loop=True,
                                    graphic=g_comp)
