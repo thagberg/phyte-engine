@@ -34,6 +34,7 @@ screen_size = (1200, 900)
 current_time = pygame.time.get_ticks()
 time_since_last_update = 0
 system_events = [pygame.QUIT]
+clock = pygame.time.Clock()
 
 # initialize pygame
 pygame.init()
@@ -115,10 +116,10 @@ f_one = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  repeat=20, push_box=None)
 f_two = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[66,128,64,128],
-                                 repeat=3, push_box=None)
+                                 repeat=20, push_box=None)
 f_tre = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[131,128,64,128],
-                                 repeat=3, push_box=None)
+                                 repeat=20, push_box=None)
 frames = [f_one, f_two, f_tre]
 ani_one = factory.create_component('ani', entity_id=player_entity.entity_id,
                                    frames=frames, loop=False,
@@ -133,7 +134,13 @@ f2_two = factory.create_component('fra', entity_id=player_entity.entity_id,
 f2_tre = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[131,0,64,128],
                                  repeat=3, push_box=None)
-frames2 = [f2_one, f2_two, f2_tre]
+f2_four = factory.create_component('fra', entity_id=player_entity.entity_id,
+                                   hitboxes=None, force=[0,0], crop=[196,0,64,128],
+                                   repeat=3, push_box=None)
+f2_five = factory.create_component('fra', entity_id=player_entity.entity_id,
+                                   hitboxes=None, force=[0,0], crop=[261,0,64,128],
+                                   repeat=3, push_box=None)
+frames2 = [f2_one, f2_two, f2_tre, f2_four, f2_five]
 ani_two = factory.create_component('ani', entity_id=player_entity.entity_id,
                                    frames=frames2, loop=True,
                                    graphic=g_comp)
@@ -196,6 +203,16 @@ d_text_comp = factory.create_component('text', entity_id=player_entity.entity_id
                                        text=str(g_comp.area), loc=[0, 100], style=dict())
 d2_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=d_text_comp,
                                    get_value=lambda: g_comp.area)
+d3_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
+                                         text='%s:%s' % (move_one.name, str(move_one.active)), 
+                                         loc=[0, 120], style=dict())
+d3_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=d3_text_comp,
+                                   get_value=lambda: '%s:%s' % (move_one.name, str(move_one.active)))
+d4_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
+                                         text='%s:%s' % (move_two.name, str(move_two.active)), 
+                                         loc=[0, 140], style=dict())
+d4_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=d4_text_comp,
+                                   get_value=lambda: '%s:%s' % (move_two.name, str(move_two.active)))
 
 
 # player test objects
@@ -249,3 +266,4 @@ while not(done):
 
     pygame.display.flip()
     events = list()
+    clock.tick(60) 
