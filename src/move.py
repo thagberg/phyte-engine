@@ -1,6 +1,7 @@
 from events import *
 from system import System
 from pygame import event
+from collections import defaultdict
 
 
 class MoveComponent(object):
@@ -18,9 +19,11 @@ class MoveSystem(System):
 	def __init__(self, factory, components=None):
 		self.factory = factory
 		self.components = list() if components is None else components
+		self.entity_mapping = defaultdict(list)
 
 	def _add(self, component):
 		self.components.append(component)
+		self.entity_mapping[component.entity_id].append(component)
 
 	def _remove(self, component):
 		# clear animation
@@ -30,19 +33,28 @@ class MoveSystem(System):
 			self.delegate(ra_event)
 		try:
 			self.components.remove(component)
+			self.entity_mapping[component.entity_id].remove(component)
 		except ValueError as e:
 			print "Not able to remove component from MoveSystem: %s" % e.strerror
 
 	def _activate(self, component):
 		component.active = True
+		# an entity may only be engaging in 1 move at a time
+		for comp in self.entity_mapping[component.entity_id]:
+			if comp != component:
+				dm_event = GameEvent(MOVEDEACTIVATE, component=comp)
+				self.delegate(dm_event)
+		# if a move is activated, its animation must be active as well
 		aa_event = GameEvent(ANIMATIONACTIVATE,
 							 component=component.animation)
 		self.delegate(aa_event)
 
 	def _deactivate(self, component):
 		component.active = False
+		# if a move is deactivated, its animation must be inactive as well
 		da_event = GameEvent(ANIMATIONDEACTIVATE,
 							 component=component.animation)
+		self.delegate(da_event)
 
 	def handle_event(self, event):
 		if event.type == ADDMOVECOMPONENT:

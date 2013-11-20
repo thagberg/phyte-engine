@@ -51,7 +51,6 @@ class AnimationSystem(System):
                                  area=c_f.crop)
             self.delegate(cr_event)
 
-
     def _remove(self, component):
         self._reset(component)
         component.reset()

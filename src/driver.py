@@ -214,6 +214,14 @@ d4_text_comp = factory.create_component('text', entity_id=player_entity.entity_i
 d4_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=d4_text_comp,
                                    get_value=lambda: '%s:%s' % (move_two.name, str(move_two.active)))
 
+# FPS output stuff
+fps = 0
+fps_entity = factory.create_entity()
+fps_text_component = factory.create_component('text', entity_id=fps_entity.entity_id,
+                                              text=str(fps), loc=[10, 400], style=dict())
+fps_debug_component = factory.create_component('deb', entity_id=fps_entity.entity_id,
+                                               text=fps_text_component,
+                                               get_value=lambda: '%d' % fps)
 
 # player test objects
 pla = player.PlayerSystem(factory)
@@ -252,6 +260,7 @@ while not(done):
     last_time = current_time
     current_time = pygame.time.get_ticks()
     time_since_last_update = current_time - last_time
+    fps = 1000 / time_since_last_update
     screen.fill(common.WHITE)
     events = pygame.event.get()
 
