@@ -11,6 +11,7 @@ import debug
 import player
 import execute
 import state
+import movement
 from events import *
 
 from bidict import bidict
@@ -116,17 +117,6 @@ class ComponentFactory(object):
             entity_id = props['entity_id']
             point = props['point']
             component = common.LocationComponent(entity_id=entity_id, point=point)  
-
-        # MovementComponent
-        elif type == 'movement':
-            entity_id = props['entity_id']
-            walk_speed = props['walk_speed']
-            back_speed = props['back_speed']
-            jump_height = props['jump_height']
-            component = common.MovementComponent(entity_id=entity_id,
-                                                 walk_speed=walk_speed,
-                                                 back_speed=back_speed,
-                                                 jump_height=jump_height)
 
         # VelocityComponent
         elif type == 'vel':
@@ -286,6 +276,17 @@ class ComponentFactory(object):
                                              activation_component=ac,
                                              rule_values=rule_values)
             new_event = GameEvent(ADDSTATECOMPONENT, component=component)
+            self.delegate(new_event)
+
+        # MovementComponent
+        elif type == 'movement':
+            entity_id = props['entity_id']
+            location = props['location']
+            velocity = props['velocity']
+            component = movement.MovementComponent(entity_id=entity_id,
+                                                   location=location,
+                                                   velocity=velocity)     
+            new_event = GameEvent(ADDMOVEMENTCOMPONENT, component=component)
             self.delegate(new_event)
 
         return component

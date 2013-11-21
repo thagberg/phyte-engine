@@ -76,6 +76,10 @@ class StateSystem(System):
                 # check if rule_values satisfy rule
                 if rule.name in comp.rule_values:
                     check_values = comp.rule_values[rule.name]
+                    # rule value might actually be a function call that
+                    # returns the value we want to check
+                    if callable(check_values):
+                        check_values = check_values()
                     pass_rule = self._check_rule(rule, check_values)
                 # early-out if a rule was not met
                 if not pass_rule:

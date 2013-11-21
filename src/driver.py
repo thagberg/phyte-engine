@@ -17,6 +17,7 @@ import debug
 import player
 import execute
 import state
+import movement
 from events import *
 
 # Define colors
@@ -113,13 +114,13 @@ eng.install_system(ani, (ANIMATIONCOMPLETE, ANIMATIONACTIVATE,
                          REMOVEANIMATIONCOMPONENT))
 f_one = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[0,128,64,128],
-                                 repeat=60, push_box=None)
+                                 repeat=20, push_box=None)
 f_two = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[66,128,64,128],
-                                 repeat=60, push_box=None)
+                                 repeat=20, push_box=None)
 f_tre = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[131,128,64,128],
-                                 repeat=60, push_box=None)
+                                 repeat=20, push_box=None)
 frames = [f_one, f_two, f_tre]
 ani_one = factory.create_component('ani', entity_id=player_entity.entity_id,
                                    frames=frames, loop=True,
@@ -161,6 +162,13 @@ move_two = factory.create_component('move', entity_id=player_entity.entity_id,
                                      animation=ani_two,
                                      inputs=m2_inputs)
 
+# movement test objects
+movm = movement.MovementSystem(factory)
+eng.install_system(movm, (ADDMOVEMENTCOMPONENT, REMOVEMOVEMENTCOMPONENT,
+                          ACTIVATEMOVEMENTCOMPONENT, DEACTIVATEMOVEMENTCOMPONENT))
+movm_comp = factory.create_component('movement', entity_id=player_entity.entity_id,
+                                     location=g_comp.dest, velocity=[5, 0])
+
 # execution test objects
 exe = execute.ExecutionSystem(factory)
 eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
@@ -181,6 +189,14 @@ state_one = factory.create_component('state', entity_id=player_entity.entity_id,
                                      deactivation_event_type=DEACTIVATEEXECUTIONCOMPONENT,
                                      activation_component=exe_one,
                                      rule_values={'test':True})
+movement_rule = factory.create_component('rule', name='move', operator='eq',
+                                         value=True)
+movement_state = factory.create_component('state', entity_id=player_entity.entity_id,
+                                          rules=[movement_rule],
+                                          activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
+                                          deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
+                                          activation_component=movm_comp,
+                                          rule_values={'move':lambda: move_one.active})
 
 # physics test objects
 phy = physics2d.PhysicsSystem(factory)
@@ -223,6 +239,16 @@ ani2_text_comp = factory.create_component('text', entity_id=player_entity.entity
                                           loc=[0,180], style=dict())
 ani2_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=ani2_text_comp,
                                            get_value=lambda: '%s-%s-%s' % (ani_two.active, ani_two.current_index, len(ani_two.frames)))
+movstate_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
+                                              text=str(move_one.active), loc=[100,10], style=dict())
+movestate_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id,
+                                                text=movstate_text_comp,
+                                                get_value=lambda: str(move_one.active))
+movmcmp_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
+                                             text=str(movm_comp.active), loc=[100,20], style=dict())
+movmcmp_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id,
+                                              text=movmcmp_text_comp,
+                                              get_value=lambda: str(movm_comp.active))
 
 # FPS output stuff
 fps = 0
