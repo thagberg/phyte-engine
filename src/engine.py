@@ -2,20 +2,22 @@ from collections import defaultdict
 from events import *
 import pygame
 
+
 class SystemEntity(object):
     def __init__(self, system, event_types=None):
         self.system = system
         self.event_types = list() if event_types is None else event_types
 
+
 class PygameEngine(object):
     def __init__(self, systems=None):
-        self.systems = list() if systems is None else systems
+        self.systems = defaultdict(list) if systems is None else systems
         self.system_event_map = defaultdict(list)
 
-    def install_system(self, system, event_types=None):
+    def install_system(self, system, event_types=None, stage=1):
         system.attach_delegate(self.process_event)
         new_system = SystemEntity(system, event_types)
-        self.systems.append(new_system)
+        self.systems[stage].append(new_system)
         for e_type in event_types:
             self.system_event_map[e_type].append(system)
 
@@ -23,6 +25,9 @@ class PygameEngine(object):
         handlers = self.system_event_map[event.type]
         for handler in handlers:
             handler.handle_event(event)
+
+    def _update_system(self, system, time):
+        system.system.update(time)
 
     def update(self, time, events):
         for event in events:
@@ -49,8 +54,12 @@ class PygameEngine(object):
 
             if parsed_event:
                 self.process_event(parsed_event)
-        for sys in self.systems:
-            sys.system.update(time)
-            # TODO: investigate more efficient ways of filtering
-            #   the events list; possibly list comprehensions
-            #sys.system.update(time, filter(lambda x: x.type in sys.event_types or (hasattr(x, 'u_type') and x.u_type in sys.event_types), events))
+        # stage 1 systems likely include state-dependent systems or
+        # systems which will alter game state
+        for sys in self.systems[1]:
+            self._update_system(sys, time)
+        # state 2 systems are systems which will act on state but
+        # not change them, like rendering graphics where state should
+        # have an opportunity to be updated before graphics are drawn
+        for sys in self.systems[2]:
+            self._update_system(sys, time)

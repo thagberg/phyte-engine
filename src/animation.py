@@ -42,14 +42,6 @@ class AnimationSystem(System):
 
     def _add(self, component):
         self.components.append(component)
-        # crop the graphic component
-        c = component
-        if c.graphic and c.frames:
-            c.current_frame = c.frames[c.current_index]
-            c_f = c.current_frame
-            cr_event = GameEvent(CHANGECROP, component=c.graphic,
-                                 area=c_f.crop)
-            self.delegate(cr_event)
 
     def _remove(self, component):
         self._reset(component)
@@ -66,7 +58,15 @@ class AnimationSystem(System):
             print "Not able to remove component from AnimationSystem: %s" % e.strerror
 
     def _activate(self, component):
-        component.active = True
+        c = component
+        c.active = True
+        # crop the graphic component
+        if c.graphic and c.frames:
+            c.current_frame = c.frames[c.current_index]
+            c_f = c.current_frame
+            cr_event = GameEvent(CHANGECROP, component=c.graphic,
+                                 area=c_f.crop)
+            self.delegate(cr_event)
 
     def _deactivate(self, component, preserve=False):
         component.active = False
@@ -104,7 +104,7 @@ class AnimationSystem(System):
                 return
         c.current_frame = c.frames[c.current_index]
         # if this animation component has a surface, update the crop
-        if c.graphic and c_f:
+        if c.graphic and c.current_frame:
             crop_event = GameEvent(CHANGECROP, component=c.graphic, 
                                    area=c_f.crop)
             self.delegate(crop_event)

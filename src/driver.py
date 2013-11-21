@@ -84,7 +84,7 @@ player_inp_component = factory.create_component('input', device=-1,
 gra = graphics2d.GraphicsSystem(screen, factory)
 eng.install_system(gra, (ADDGRAPHICSCOMPONENT, REMOVEGRAPHICSCOMPONENT,
                          CHANGECROP, CHANGEDEST, CHANGESURFACE,
-                         CHANGEDISPLAY, CHANGEZLEVEL))
+                         CHANGEDISPLAY, CHANGEZLEVEL), stage=2)
 
 # input buffer test objects
 inpb = inputs.InputBufferSystem(factory)
@@ -113,16 +113,16 @@ eng.install_system(ani, (ANIMATIONCOMPLETE, ANIMATIONACTIVATE,
                          REMOVEANIMATIONCOMPONENT))
 f_one = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[0,128,64,128],
-                                 repeat=20, push_box=None)
+                                 repeat=60, push_box=None)
 f_two = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[66,128,64,128],
-                                 repeat=20, push_box=None)
+                                 repeat=60, push_box=None)
 f_tre = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[131,128,64,128],
-                                 repeat=20, push_box=None)
+                                 repeat=60, push_box=None)
 frames = [f_one, f_two, f_tre]
 ani_one = factory.create_component('ani', entity_id=player_entity.entity_id,
-                                   frames=frames, loop=False,
+                                   frames=frames, loop=True,
                                    graphic=g_comp)
 # animation 2
 f2_one = factory.create_component('fra', entity_id=player_entity.entity_id,
@@ -130,16 +130,16 @@ f2_one = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  repeat=20, push_box=None)
 f2_two = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[66,0,64,128],
-                                 repeat=3, push_box=None)
+                                 repeat=20, push_box=None)
 f2_tre = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[131,0,64,128],
-                                 repeat=3, push_box=None)
+                                 repeat=20, push_box=None)
 f2_four = factory.create_component('fra', entity_id=player_entity.entity_id,
                                    hitboxes=None, force=[0,0], crop=[196,0,64,128],
-                                   repeat=3, push_box=None)
+                                   repeat=20, push_box=None)
 f2_five = factory.create_component('fra', entity_id=player_entity.entity_id,
                                    hitboxes=None, force=[0,0], crop=[261,0,64,128],
-                                   repeat=3, push_box=None)
+                                   repeat=20, push_box=None)
 frames2 = [f2_one, f2_two, f2_tre, f2_four, f2_five]
 ani_two = factory.create_component('ani', entity_id=player_entity.entity_id,
                                    frames=frames2, loop=True,
@@ -213,6 +213,16 @@ d4_text_comp = factory.create_component('text', entity_id=player_entity.entity_i
                                          loc=[0, 140], style=dict())
 d4_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=d4_text_comp,
                                    get_value=lambda: '%s:%s' % (move_two.name, str(move_two.active)))
+ani1_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
+                                          text='%s-%s-%s' % (ani_one.active, ani_one.current_index, len(ani_one.frames)), 
+                                          loc=[0,160], style=dict())
+ani1_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=ani1_text_comp,
+                                           get_value=lambda: '%s-%s-%s' % (ani_one.active, ani_one.current_index, len(ani_one.frames)))
+ani2_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
+                                          text='%s-%s-%s' % (ani_two.active, ani_two.current_index, len(ani_two.frames)),
+                                          loc=[0,180], style=dict())
+ani2_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=ani2_text_comp,
+                                           get_value=lambda: '%s-%s-%s' % (ani_two.active, ani_two.current_index, len(ani_two.frames)))
 
 # FPS output stuff
 fps = 0
@@ -275,4 +285,4 @@ while not(done):
 
     pygame.display.flip()
     events = list()
-    clock.tick(60) 
+    clock.tick(20) 
