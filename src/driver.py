@@ -161,6 +161,10 @@ move_two = factory.create_component('move', entity_id=player_entity.entity_id,
                                      name='neutral',
                                      animation=ani_two,
                                      inputs=m2_inputs)
+jump_move_inputs = ['up']
+jump_move = factory.create_component('move', entity_id=player_entity.entity_id,
+                                     name='jump', animation=ani_two,
+                                     inputs=jump_move_inputs)
 
 # movement test objects
 movm = movement.MovementSystem(factory)
@@ -168,6 +172,8 @@ eng.install_system(movm, (ADDMOVEMENTCOMPONENT, REMOVEMOVEMENTCOMPONENT,
                           ACTIVATEMOVEMENTCOMPONENT, DEACTIVATEMOVEMENTCOMPONENT))
 movm_comp = factory.create_component('movement', entity_id=player_entity.entity_id,
                                      location=g_comp.dest, velocity=[5, 0])
+jump_movement_comp = factory.create_component('movement', entity_id=player_entity.entity_id,
+                                             location=g_comp.dest, velocity=[0,20])
 
 # execution test objects
 exe = execute.ExecutionSystem(factory)
@@ -175,7 +181,7 @@ eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
                          ACTIVATEEXECUTIONCOMPONENT,
                          DEACTIVATEEXECUTIONCOMPONENT))
 exe_one = factory.create_component('exe', entity_id=player_entity.entity_id,
-                                    executables=[move_one, move_two], 
+                                    executables=[move_one, move_two, jump_move], 
                                     inputs=player_inp_component)
 
 # state test objects
@@ -197,6 +203,15 @@ movement_state = factory.create_component('state', entity_id=player_entity.entit
                                           deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                           activation_component=movm_comp,
                                           rule_values={'move':lambda: move_one.active})
+jump_rule = factory.create_component('rule', name='jump', operator='eq',
+                                     value=True)
+jump_rule_value = lambda: jump_move.active and jump_movement_comp.velocity[1] > 0
+jump_state = factory.create_component('state', entity_id=player_entity.entity_id,
+                                      rules=[jump_rule],
+                                      activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
+                                      deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
+                                      activation_component=jump_movement_comp,
+                                      rule_values={'jump': jump_rule_value})
 
 # physics test objects
 phy = physics2d.PhysicsSystem(factory)
@@ -311,4 +326,4 @@ while not(done):
 
     pygame.display.flip()
     events = list()
-    clock.tick(20) 
+    clock.tick(60) 
