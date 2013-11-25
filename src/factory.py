@@ -68,7 +68,7 @@ class ComponentFactory(object):
             entity_id = props['entity_id']
             # TODO: convert bindings to a bidict
             bindings = dict() if not 'bindings' in props else props['bindings']
-            inp_buffer = None if not 'inp_buffer' in props else props['inp_buffer']
+            inp_buffer = props.get('inp_buffer')
             component = inputs.InputComponent(entity_id, bindings)
             new_event = GameEvent(ADDINPUTCOMPONENT, device=device, component=component,
                                   inp_buffer=inp_buffer)
@@ -91,9 +91,9 @@ class ComponentFactory(object):
         elif type == 'graphics':
             entity_id = props['entity_id']
             surface = props['surface']
-            dest = None if not 'dest' in props else props['dest']
-            area = None if not 'area' in props else props['area']
-            flgs = None if not 'flags' in props else props['flags']
+            dest = props.get('dest')
+            area = props.get('area')
+            flgs = props.get('flags')
             component = graphics2d.GraphicsComponent(entity_id, surface, dest,
                                                    area, flgs)
             new_event = GameEvent(ADDGRAPHICSCOMPONENT, component=component)
@@ -175,14 +175,14 @@ class ComponentFactory(object):
         # DebugComponent
         elif type == 'deb':
             entity_id = props['entity_id']
-            c_text = None if not 'text' in props else props['text']
-            rect = None if not 'rect' in props else props['rect']
-            line = None if not 'line' in props else props['line']
-            ellipse = None if not 'ellipse' in props else props['ellipse']
-            circle = None if not 'circle' in props else props['circle']
-            arc = None if not 'arc' in props else props['arc']
-            style = None if not 'style' in props else props['style']
-            get_value = None if not 'get_value' in props else props['get_value']
+            c_text = props.get('text')
+            rect = props.get('rect')
+            line = props.get('line')
+            ellipse = props.get('ellipse')
+            circle = props.get('circle')
+            arc = props.get('arc')
+            style = props.get('style')
+            get_value = props.get('get_value')
             component = debug.DebugComponent(entity_id=entity_id, text=c_text,
                                              get_value=get_value, rect=rect, 
                                              line=line, ellipse=ellipse, 
@@ -194,10 +194,10 @@ class ComponentFactory(object):
         elif type == 'pla':
             entity_id = props['entity_id']
             location = props['location']
-            b_moves = None if not 'buffered_moves' in props else props['buffered_moves']
-            i_moves = None if not 'immediate_moves' in props else props['immediate_moves']
-            p_inputs = None if not 'inputs' in props else props['inputs']
-            graphic = None if not 'graphic' in props else props['graphic']
+            b_moves = props.get('buffered_moves')
+            i_moves = props.get('immediate_moves')
+            p_inputs = props.get('inputs')
+            graphic = props.get('graphic')
             input_device = -1 if not 'input_device' in props else props['input_device']    
             component = player.PlayerComponent(entity_id=entity_id,
                                                location=location,
@@ -214,7 +214,7 @@ class ComponentFactory(object):
             name = props['name']
             m_animation = props['animation']
             m_inputs = props['inputs']
-            rules = None if not 'rules' in props else props['rules']
+            rules = props.get('rules')
             component = move.MoveComponent(entity_id=entity_id, name=name,
                                            animation=m_animation, inputs=m_inputs,
                                            rules=rules)

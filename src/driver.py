@@ -112,6 +112,7 @@ eng.install_system(ani, (ANIMATIONCOMPLETE, ANIMATIONACTIVATE,
                          ANIMATIONDEACTIVATE, ANIMATIONSTEP,
                          ANIMATIONJUMP, ADDANIMATIONCOMPONENT,
                          REMOVEANIMATIONCOMPONENT))
+
 f_one = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[0,128,64,128],
                                  repeat=20, push_box=None)
@@ -145,6 +146,12 @@ frames2 = [f2_one, f2_two, f2_tre, f2_four, f2_five]
 ani_two = factory.create_component('ani', entity_id=player_entity.entity_id,
                                    frames=frames2, loop=True,
                                    graphic=g_comp)
+# jump animation
+jf_one = factory.create_component('fra', entity_id=player_entity.entity_id,
+                                  hitboxes=None, force=[0,0], crop=[0,259,64,128],
+                                  repeat=0, push_box=None)
+jump_ani = factory.create_component('ani', entity_id=player_entity.entity_id,
+                                    frames=[jf_one], loop=True, graphic=g_comp)
 
 # move test objects
 mov = move.MoveSystem(factory)
@@ -163,7 +170,7 @@ move_two = factory.create_component('move', entity_id=player_entity.entity_id,
                                      inputs=m2_inputs)
 jump_move_inputs = ['up']
 jump_move = factory.create_component('move', entity_id=player_entity.entity_id,
-                                     name='jump', animation=ani_two,
+                                     name='jump', animation=jump_ani,
                                      inputs=jump_move_inputs)
 
 # movement test objects
@@ -181,7 +188,7 @@ eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
                          ACTIVATEEXECUTIONCOMPONENT,
                          DEACTIVATEEXECUTIONCOMPONENT))
 exe_one = factory.create_component('exe', entity_id=player_entity.entity_id,
-                                    executables=[move_one, move_two, jump_move], 
+                                    executables=[jump_move, move_one, move_two], 
                                     inputs=player_inp_component)
 
 # state test objects
@@ -205,7 +212,8 @@ movement_state = factory.create_component('state', entity_id=player_entity.entit
                                           rule_values={'move':lambda: move_one.active})
 jump_rule = factory.create_component('rule', name='jump', operator='eq',
                                      value=True)
-jump_rule_value = lambda: jump_move.active and jump_movement_comp.velocity[1] > 0
+#jump_rule_value = lambda: jump_move.active and jump_movement_comp.velocity[1] > 0
+jump_rule_value = lambda: jump_move.active
 jump_state = factory.create_component('state', entity_id=player_entity.entity_id,
                                       rules=[jump_rule],
                                       activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
@@ -244,26 +252,26 @@ d4_text_comp = factory.create_component('text', entity_id=player_entity.entity_i
                                          loc=[0, 140], style=dict())
 d4_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=d4_text_comp,
                                    get_value=lambda: '%s:%s' % (move_two.name, str(move_two.active)))
+jump_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
+                                          text='%s:%s' % (jump_move.name, jump_move.active),
+                                          loc=[0,160], style=dict())
+jump_deb_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=jump_text_comp,
+                                         get_value=lambda: '%s:%s' %(jump_move.name, jump_move.active))
 ani1_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
                                           text='%s-%s-%s' % (ani_one.active, ani_one.current_index, len(ani_one.frames)), 
-                                          loc=[0,160], style=dict())
+                                          loc=[0,180], style=dict())
 ani1_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=ani1_text_comp,
                                            get_value=lambda: '%s-%s-%s' % (ani_one.active, ani_one.current_index, len(ani_one.frames)))
 ani2_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
                                           text='%s-%s-%s' % (ani_two.active, ani_two.current_index, len(ani_two.frames)),
-                                          loc=[0,180], style=dict())
+                                          loc=[0,200], style=dict())
 ani2_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=ani2_text_comp,
                                            get_value=lambda: '%s-%s-%s' % (ani_two.active, ani_two.current_index, len(ani_two.frames)))
-movstate_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
-                                              text=str(move_one.active), loc=[100,10], style=dict())
-movestate_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id,
-                                                text=movstate_text_comp,
-                                                get_value=lambda: str(move_one.active))
-movmcmp_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
-                                             text=str(movm_comp.active), loc=[100,20], style=dict())
-movmcmp_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id,
-                                              text=movmcmp_text_comp,
-                                              get_value=lambda: str(movm_comp.active))
+jani_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
+                                          text='%s-%s-%s' % (jump_ani.active, jump_ani.current_index, len(jump_ani.frames)),
+                                          loc=[0,220], style=dict())
+jani_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=jani_text_comp,
+                                           get_value=lambda: '%s-%s-%s' % (jump_ani.active, jump_ani.current_index, len(jump_ani.frames)))
 
 # FPS output stuff
 fps = 0

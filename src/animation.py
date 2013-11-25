@@ -4,6 +4,7 @@ from events import *
 
 
 class FrameComponent(object):
+    type_string = 'fra'
     def __init__(self, entity_id, hitboxes=None, force=(0,0), crop=None, 
                  repeat=0, push_box=None):
         self.entity_id = entity_id
