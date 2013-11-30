@@ -52,23 +52,67 @@ done = False
 eng = engine.PygameEngine()
 # initialize object factory
 factory = factory.ComponentFactory(eng.process_event)
-#ani = animation.AnimationSystem()
-#mov = move.MoveSystem()
-#phy = physics2d.PhysicsSystem()
-#eng.install_system(ani, (ANIMATIONCOMPLETE,ANIMATIONACTIVATE,
-#                        ANIMATIONDEACTIVATE))
-#eng.install_system(mov, (MOVECHANGE,MOVERESET,MOVEACTIVATE,
-#                        MOVEDEACTIVATE))
-#eng.install_system(phy, (ADDFORCE,ADDPHYSICSCOMPONENT,
-#                        REMOVEPHYSICSCOMPONENT))
 
 ## TESTING ##
-# input test object
+
+### CREATE SYSTEMS HERE ###
 inp = inputs.InputSystem(factory)
 eng.install_system(inp, (ADDINPUTCOMPONENT, REMOVEINPUTCOMPONENT,
                          UPDATEBINDINGS, KEYDOWN, KEYUP, JOYBUTTONDOWN, 
                          JOYBUTTONUP, MOUSEBUTTONDOWN, MOUSEBUTTONUP, 
                          JOYAXISMOTION))
+
+inpb = inputs.InputBufferSystem(factory)
+eng.install_system(inpb, (ADDINPUTBUFFERCOMPONENT, REMOVEINPUTBUFFERCOMPONENT,
+                          BUFFERINPUT))
+
+gra = graphics2d.GraphicsSystem(screen, factory)
+eng.install_system(gra, (ADDGRAPHICSCOMPONENT, REMOVEGRAPHICSCOMPONENT,
+                         CHANGECROP, CHANGEDEST, CHANGESURFACE,
+                         CHANGEDISPLAY, CHANGEZLEVEL), stage=2)
+
+tex = text.TextSystem(factory)
+eng.install_system(tex, (ADDTEXTCOMPONENT, REMOVETEXTCOMPONENT,
+                          UPDATETEXT))
+
+ani = animation.AnimationSystem(factory)
+eng.install_system(ani, (ANIMATIONCOMPLETE, ANIMATIONACTIVATE,
+                         ANIMATIONDEACTIVATE, ANIMATIONSTEP,
+                         ANIMATIONJUMP, ADDANIMATIONCOMPONENT,
+                         REMOVEANIMATIONCOMPONENT))
+
+mov = move.MoveSystem(factory)
+eng.install_system(mov, (MOVEEVENT, MOVECHANGE, MOVERESET, MOVEACTIVATE,
+                         MOVEDEACTIVATE, ADDMOVECOMPONENT,
+                         REMOVEMOVECOMPONENT))
+
+movm = movement.MovementSystem(factory)
+eng.install_system(movm, (ADDMOVEMENTCOMPONENT, REMOVEMOVEMENTCOMPONENT,
+                          ACTIVATEMOVEMENTCOMPONENT, DEACTIVATEMOVEMENTCOMPONENT))
+
+exe = execute.ExecutionSystem(factory)
+eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
+                         ACTIVATEEXECUTIONCOMPONENT,
+                         DEACTIVATEEXECUTIONCOMPONENT))
+
+sta = state.StateSystem(factory)
+eng.install_system(sta, (ADDSTATECOMPONENT, REMOVESTATECOMPONENT))
+
+phy = physics2d.PhysicsSystem(factory)
+eng.install_system(phy, (PHYSICSEVENT, ADDFORCE, ADDPHYSICSENTITY,
+                         REMOVEPHYSICSCOMPONENT, ADDCOLLIDEABLE,
+                         REMOVECOLLIDEABLE, SETCOLLIDEABLES,
+                         CLEARCOLLIDEABLES))
+
+deb = debug.DebugSystem(screen, factory)
+eng.install_system(deb, (ADDDEBUGCOMPONENT, REMOVEDEBUGCOMPONENT,
+                         UPDATEDEBUGCOMPONENT))
+
+pla = player.PlayerSystem(factory)
+eng.install_system(pla, (ADDPLAYERCOMPONENT, REMOVEPLAYERCOMPONENT,
+                         MOVEDEACTIVATE))
+
+# input test object
 player_entity = factory.create_entity()
 t_entity = factory.create_entity()
 player_bindings = {
@@ -81,38 +125,18 @@ player_inp_component = factory.create_component('input', device=-1,
                                            entity_id=player_entity.entity_id,
                                            bindings=player_bindings)
 
-# graphics
-gra = graphics2d.GraphicsSystem(screen, factory)
-eng.install_system(gra, (ADDGRAPHICSCOMPONENT, REMOVEGRAPHICSCOMPONENT,
-                         CHANGECROP, CHANGEDEST, CHANGESURFACE,
-                         CHANGEDISPLAY, CHANGEZLEVEL), stage=2)
-
-# input buffer test objects
-inpb = inputs.InputBufferSystem(factory)
-eng.install_system(inpb, (ADDINPUTBUFFERCOMPONENT, REMOVEINPUTBUFFERCOMPONENT,
-                          BUFFERINPUT))
 
 # text test object
-tex = text.TextSystem(factory)
-eng.install_system(tex, (ADDTEXTCOMPONENT, REMOVETEXTCOMPONENT,
-                          UPDATETEXT))
 t_tex_comp = factory.create_component('text', entity_id=t_entity.entity_id,
                                       text='Test Text', loc=[0,0], style=dict())
 
 # graphic test objects
-#g_entity = factory.create_entity()
 player_surface = pygame.image.load('../content/sticksheet.png')
 g_comp = factory.create_component('graphics', entity_id=player_entity.entity_id,
                                   surface=player_surface, dest=[200,200],
                                   area=[200,200,100,100])
 
 # animation test objects
-ani = animation.AnimationSystem(factory)
-eng.install_system(ani, (ANIMATIONCOMPLETE, ANIMATIONACTIVATE,
-                         ANIMATIONDEACTIVATE, ANIMATIONSTEP,
-                         ANIMATIONJUMP, ADDANIMATIONCOMPONENT,
-                         REMOVEANIMATIONCOMPONENT))
-
 f_one = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[0,128,64,128],
                                  repeat=20, push_box=None)
@@ -154,10 +178,6 @@ jump_ani = factory.create_component('ani', entity_id=player_entity.entity_id,
                                     frames=[jf_one], loop=True, graphic=g_comp)
 
 # move test objects
-mov = move.MoveSystem(factory)
-eng.install_system(mov, (MOVEEVENT, MOVECHANGE, MOVERESET, MOVEACTIVATE,
-                         MOVEDEACTIVATE, ADDMOVECOMPONENT,
-                         REMOVEMOVECOMPONENT))
 m_inputs = ['right']
 move_one = factory.create_component('move', entity_id=player_entity.entity_id,
                                     name='testmove',
@@ -174,26 +194,22 @@ jump_move = factory.create_component('move', entity_id=player_entity.entity_id,
                                      inputs=jump_move_inputs)
 
 # movement test objects
-movm = movement.MovementSystem(factory)
-eng.install_system(movm, (ADDMOVEMENTCOMPONENT, REMOVEMOVEMENTCOMPONENT,
-                          ACTIVATEMOVEMENTCOMPONENT, DEACTIVATEMOVEMENTCOMPONENT))
+g_movement_comp = factory.create_component('movement', entity_id=player_entity.entity_id,
+                                           body=g_comp.dest, velocity=[0,0])
 movm_comp = factory.create_component('movement', entity_id=player_entity.entity_id,
-                                     location=g_comp.dest, velocity=[5, 0])
+                                     body=g_movement_comp.velocity, velocity=[5, 0])
 jump_movement_comp = factory.create_component('movement', entity_id=player_entity.entity_id,
-                                             location=g_comp.dest, velocity=[0,20])
+                                             body=g_movement_comp.velocity, velocity=[0,0],
+                                             inc_velocity=[0,-20])
 
 # execution test objects
-exe = execute.ExecutionSystem(factory)
-eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
-                         ACTIVATEEXECUTIONCOMPONENT,
-                         DEACTIVATEEXECUTIONCOMPONENT))
+
 exe_one = factory.create_component('exe', entity_id=player_entity.entity_id,
                                     executables=[jump_move, move_one, move_two], 
                                     inputs=player_inp_component)
 
 # state test objects
-sta = state.StateSystem(factory)
-eng.install_system(sta, (ADDSTATECOMPONENT, REMOVESTATECOMPONENT))
+
 rule_one = factory.create_component('rule', name='test', operator='eq',
                                     value=True)
 state_one = factory.create_component('state', entity_id=player_entity.entity_id,
@@ -220,20 +236,23 @@ jump_state = factory.create_component('state', entity_id=player_entity.entity_id
                                       deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                       activation_component=jump_movement_comp,
                                       rule_values={'jump': jump_rule_value})
+moveable_rule = factory.create_component('rule', name='moveable', operator='eq',
+                                         value=True)
+moveable_rule_value = lambda: True
+moveable_state = factory.create_component('state', entity_id=player_entity.entity_id,
+                                          rules=[moveable_rule],
+                                          activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
+                                          deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
+                                          activation_component=g_movement_comp,
+                                          rule_values={'moveable': moveable_rule_value})
 
 # physics test objects
-phy = physics2d.PhysicsSystem(factory)
-eng.install_system(phy, (PHYSICSEVENT, ADDFORCE, ADDPHYSICSENTITY,
-                         REMOVEPHYSICSCOMPONENT, ADDCOLLIDEABLE,
-                         REMOVECOLLIDEABLE, SETCOLLIDEABLES,
-                         CLEARCOLLIDEABLES))
+
 p1_entity = factory.create_entity()
 p2_entity = factory.create_entity()
 
 # debug test objects
-deb = debug.DebugSystem(screen, factory)
-eng.install_system(deb, (ADDDEBUGCOMPONENT, REMOVEDEBUGCOMPONENT,
-                         UPDATEDEBUGCOMPONENT))
+
 d_entity = factory.create_entity()
 d_rect = pygame.Rect(200, 350, 100, 100)
 d_comp = factory.create_component('deb', entity_id=d_entity.entity_id,
@@ -283,9 +302,7 @@ fps_debug_component = factory.create_component('deb', entity_id=fps_entity.entit
                                                get_value=lambda: '%d' % fps)
 
 # player test objects
-pla = player.PlayerSystem(factory)
-eng.install_system(pla, (ADDPLAYERCOMPONENT, REMOVEPLAYERCOMPONENT,
-                         MOVEDEACTIVATE))
+
 p_entity = factory.create_entity()
 p_loc = factory.create_component('loc', entity_id=p_entity.entity_id,
                                  point=[400,500])

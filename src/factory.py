@@ -281,11 +281,13 @@ class ComponentFactory(object):
         # MovementComponent
         elif type == 'movement':
             entity_id = props['entity_id']
-            location = props['location']
-            velocity = props['velocity']
+            body = props['body']
+            velocity = props.get('velocity')
+            inc_velocity = props.get('inc_velocity')
             component = movement.MovementComponent(entity_id=entity_id,
-                                                   location=location,
-                                                   velocity=velocity)     
+                                                   body=body,
+                                                   velocity=velocity,
+                                                   inc_velocity=inc_velocity)     
             new_event = GameEvent(ADDMOVEMENTCOMPONENT, component=component)
             self.delegate(new_event)
 

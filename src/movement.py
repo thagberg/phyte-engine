@@ -4,10 +4,13 @@ from events import *
 
 
 class MovementComponent(object):
-    def __init__(self, entity_id, location, velocity):
+    def __init__(self, entity_id, body, velocity, inc_velocity):
         self.entity_id = entity_id
-        self.location = location
+        self.body = body 
         self.velocity = velocity
+        # incidental velocity (happens when component is first activated)
+        #   not applied on each update
+        self.inc_velocity = inc_velocity
         self.active = False
 
 
@@ -27,7 +30,13 @@ class MovementSystem(System):
             print "Not able to remove component from MovementSystem: %s" % e.strerror
 
     def _activate(self, component):
-        component.active = True
+        comp = component
+        # if this component was not already active, apply
+        # incidental velocity
+        if not comp.active and comp.inc_velocity:
+            comp.body[0] += comp.inc_velocity[0]
+            comp.body[1] += comp.inc_velocity[1]
+        comp.active = True
 
     def _deactivate(self, component):
         component.active = False
@@ -45,5 +54,5 @@ class MovementSystem(System):
     def update(self, time):
         self.delta = time
         for comp in [x for x in self.components if x.active]:
-            comp.location[0] += comp.velocity[0]
-            comp.location[1] += comp.velocity[1]
+            comp.body[0] += comp.velocity[0]
+            comp.body[1] += comp.velocity[1]
