@@ -194,13 +194,27 @@ jump_move = factory.create_component('move', entity_id=player_entity.entity_id,
                                      inputs=jump_move_inputs)
 
 # movement test objects
-g_movement_comp = factory.create_component('movement', entity_id=player_entity.entity_id,
-                                           body=g_comp.dest, velocity=[0,0])
-movm_comp = factory.create_component('movement', entity_id=player_entity.entity_id,
-                                     body=g_movement_comp.velocity, velocity=[5, 0])
-jump_movement_comp = factory.create_component('movement', entity_id=player_entity.entity_id,
-                                             body=g_movement_comp.velocity, velocity=[0,0],
-                                             inc_velocity=[0,-20])
+g_movement_comp = factory.create_component('movement', 
+                                           entity_id=player_entity.entity_id,
+                                           body=g_comp.dest, 
+                                           velocity=[0,0])
+movm_comp = factory.create_component('movement', 
+                                     entity_id=player_entity.entity_id,
+                                     body=g_movement_comp.velocity, 
+                                     velocity=[5, 0])
+jump_movement_comp = factory.create_component('movement', 
+                                              entity_id=player_entity.entity_id,
+                                              body=g_movement_comp.velocity, 
+                                              velocity=[0,0],
+                                              inc_velocity=[0,-20])
+gravity_movement_comp = factory.create_component('movement', 
+                                                 entity_id=player_entity.entity_id,
+                                                 body=g_movement_comp.velocity, 
+                                                 velocity=[0,3])
+friction_movement_comp = factory.create_component('movement', 
+                                                  entity_id=player_entity.entity_id,
+                                                  body=g_movement_comp.velocity, 
+                                                  velocity=[-2,0])
 
 # execution test objects
 
@@ -245,6 +259,22 @@ moveable_state = factory.create_component('state', entity_id=player_entity.entit
                                           deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                           activation_component=g_movement_comp,
                                           rule_values={'moveable': moveable_rule_value})
+gravity_rule = factory.create_component('rule', name='gravity', operator='ne', value=0)
+gravity_rule_value = lambda: g_movement_comp.velocity[1]
+gravity_state = factory.create_component('state', entity_id=player_entity.entity_id,
+                                         rules=[gravity_rule],
+                                         activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
+                                         deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
+                                         activation_component=gravity_movement_comp,
+                                         rule_values={'gravity': gravity_rule_value})
+friction_rule = factory.create_component('rule', name='friction', operator='gt', value=0)
+friction_rule_value = lambda: abs(g_movement_comp.velocity[0])
+friction_state = factory.create_component('state', entity_id=player_entity.entity_id,
+                                          rules=[friction_rule],
+                                          activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
+                                          deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
+                                          activation_component=friction_movement_comp,
+                                          rule_values={'friction': friction_rule_value})
 
 # physics test objects
 
