@@ -14,6 +14,19 @@ class MovementComponent(object):
         self.active = False
 
 
+class VaryingMovementComponent(object):
+    def __init__(self, entity_id, body, velocity_func, inc_velocity):
+        self.entity_id = entity_id
+        self.body = body
+        self.velocity_func = velocity_func
+        self.inc_velocity = inc_velocity
+        self.active = False
+
+    @property
+    def velocity(self):
+        return self.velocity_func()
+
+
 class MovementSystem(System):
     def __init__(self, factory, components=None):
         super(MovementSystem, self).__init__()

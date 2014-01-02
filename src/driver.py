@@ -211,10 +211,22 @@ gravity_movement_comp = factory.create_component('movement',
                                                  entity_id=player_entity.entity_id,
                                                  body=g_movement_comp.velocity, 
                                                  velocity=[0,3])
-friction_movement_comp = factory.create_component('movement', 
+def friction_movement_vel():
+    friction = [0,0]
+    x = g_movement_comp.velocity[0]
+    abs_x = abs(x)
+    if abs_x > 0:
+        if abs_x >= 2:
+            friction[0] = 2
+        else:
+            friction[0] = abs_x
+        if x > 0:
+            friction[0] = 0 - friction[0]
+    return friction
+friction_movement_comp = factory.create_component('varmovement',
                                                   entity_id=player_entity.entity_id,
-                                                  body=g_movement_comp.velocity, 
-                                                  velocity=[-2,0])
+                                                  body=g_movement_comp.velocity,
+                                                  velocity_func=friction_movement_vel)
 
 # execution test objects
 

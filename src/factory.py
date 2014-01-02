@@ -291,4 +291,17 @@ class ComponentFactory(object):
             new_event = GameEvent(ADDMOVEMENTCOMPONENT, component=component)
             self.delegate(new_event)
 
+        # VaryingMovementComponent
+        elif type == 'varmovement':
+            entity_id = props['entity_id']
+            body = props['body']
+            velocity_func = props.get('velocity_func')
+            inc_velocity = props.get('inc_velocity')
+            component = movement.VaryingMovementComponent(entity_id=entity_id,
+                                                          body=body,
+                                                          velocity_func=velocity_func,
+                                                          inc_velocity=inc_velocity)
+            new_event = GameEvent(ADDMOVEMENTCOMPONENT, component=component)
+            self.delegate(new_event)
+
         return component
