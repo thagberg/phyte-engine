@@ -99,8 +99,9 @@ sta = state.StateSystem(factory)
 eng.install_system(sta, (ADDSTATECOMPONENT, REMOVESTATECOMPONENT))
 
 phy = physics2d.PhysicsSystem(factory)
-eng.install_system(phy, (PHYSICSEVENT, ADDFORCE, ADDPHYSICSENTITY,
-                         REMOVEPHYSICSCOMPONENT, ADDCOLLIDEABLE,
+eng.install_system(phy, (PHYSICSEVENT, ADDFORCE, ADDPHYSICSCOMPONENT,
+                         REMOVEPHYSICSCOMPONENT, ADDPHYSICSCOMPONENTACTIVE,
+                         REMOVEPHYSICSCOMPONENTACTIVE, ADDCOLLIDEABLE,
                          REMOVECOLLIDEABLE, SETCOLLIDEABLES,
                          CLEARCOLLIDEABLES))
 

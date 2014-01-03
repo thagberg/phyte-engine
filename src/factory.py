@@ -124,13 +124,13 @@ class ComponentFactory(object):
             vel = props['vel']
             component = common.VelocityComponent(entity_id=entity_id, vel=vel)
 
-        # HitboxComponent
+        # BoxComponent
         elif type == 'hit':
             entity_id = props['entity_id']
             rect = props['rect']
             hit_active = props['hit_active'] if 'hit_active' in props else False
             hurt_active = props['hurt_active'] if 'hurt_active' in props else False
-            push_active = props['push_active'] if 'push_active' in props else False
+            solid = props['solid'] if 'solid' in props else False
             expired = props['expired'] if 'expired' in props else False
             damage = props['damage'] if 'damage' in props else 0
             stun = props['stun'] if 'stun' in props else 0
@@ -139,13 +139,15 @@ class ComponentFactory(object):
                 push = props['push']
             else:
                 push = self.create_component('vel', (0,0))
-            component = physics2d.HitboxComponent(entity_id=entity_id, rect=rect,
-                                                  hit_active=hit_active,
-                                                  hurt_active=hurt_active,
-                                                  push_active=push_active,
-                                                  expired=expired, damage=damage,
-                                                  stun=stun, hitstun=hitstun,
-                                                  push=push)
+            moveable = props.get('moveable')
+            component = common.BoxComponent(entity_id=entity_id, rect=rect,
+                                            hit_active=hit_active,
+                                            hurt_active=hurt_active,
+                                            solid=solid,
+                                            expired=expired, damage=damage,
+                                            stun=stun, hitstun=hitstun,
+                                            push=push,
+                                            moveable=moveable)
 
         # FrameComponent
         elif type == 'fra':
@@ -302,6 +304,15 @@ class ComponentFactory(object):
                                                           velocity_func=velocity_func,
                                                           inc_velocity=inc_velocity)
             new_event = GameEvent(ADDMOVEMENTCOMPONENT, component=component)
+            self.delegate(new_event)
+
+        # PhysicsComponent
+        elif type == 'physics':
+            entity_id = props['entity_id']
+            box = props['box']
+            component = physics2d.PhysicsComponent(entity_id=entity_id,
+                                                   box=box)
+            new_event = GameEvent(ADDPHYSICSCOMPONENT, component=component)
             self.delegate(new_event)
 
         return component

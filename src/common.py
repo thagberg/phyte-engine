@@ -7,31 +7,32 @@ GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 
 class LocationComponent(object):
-	def __init__(self, entity_id, point):
-		self.entity_id = entity_id
-		self.x = point[0]
-		self.y = point[1]
+    def __init__(self, entity_id, point):
+        self.entity_id = entity_id
+        self.x = point[0]
+        self.y = point[1]
 
 
 class VelocityComponent(object):
-	def __init__(self, entity_id, vel):
-		self.entity_id = entity_id
-		self.x = vel[0]
-		self.y = vel[1]
+    def __init__(self, entity_id, vel):
+        self.entity_id = entity_id
+        self.x = vel[0]
+        self.y = vel[1]
 
 
 class BoxComponent(object):
-	def __init__(self, entity_id, loc, dim=[0,0], hitactive=False, hurtactive=False,
-				 expired=False, pushactive=False, blockactive=False, damage=0, 
-				 stun=0, hitstun=0, push=[0,0]):
-		self.entity_id = entity_id
-		self.rect = Rect((loc.x, loc.y), (dim[0], dim[1]))
-		self.hitactive = hitactive
-		self.hurtactive = hurtactive
-		self.expired= expired
-		self.pushactive = pushactive
-		self.blockactive = blockactive
-		self.damage = damage
-		self.stun = stun
-		self.hitstun = hitstun
-		self.push = push
+    def __init__(self, entity_id, loc, dim=[0,0], hitactive=False, hurtactive=False,
+                 expired=False, solid=False, blockactive=False, damage=0, 
+                 stun=0, hitstun=0, push=[0,0], moveable=False):
+        self.entity_id = entity_id
+        self.rect = Rect((loc.x, loc.y), (dim[0], dim[1]))
+        self.hitactive = hitactive
+        self.hurtactive = hurtactive
+        self.expired = expired
+        self.solid = solid 
+        self.blockactive = blockactive
+        self.damage = damage
+        self.stun = stun
+        self.hitstun = hitstun
+        self.push = push
+        self.moveable = moveable 
