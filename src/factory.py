@@ -285,11 +285,9 @@ class ComponentFactory(object):
             entity_id = props['entity_id']
             body = props['body']
             velocity = props.get('velocity')
-            inc_velocity = props.get('inc_velocity')
             component = movement.MovementComponent(entity_id=entity_id,
                                                    body=body,
-                                                   velocity=velocity,
-                                                   inc_velocity=inc_velocity)     
+                                                   velocity=velocity)
             new_event = GameEvent(ADDMOVEMENTCOMPONENT, component=component)
             self.delegate(new_event)
 
@@ -298,12 +296,22 @@ class ComponentFactory(object):
             entity_id = props['entity_id']
             body = props['body']
             velocity_func = props.get('velocity_func')
-            inc_velocity = props.get('inc_velocity')
             component = movement.VaryingMovementComponent(entity_id=entity_id,
                                                           body=body,
-                                                          velocity_func=velocity_func,
-                                                          inc_velocity=inc_velocity)
+                                                          velocity_func=velocity_func)
             new_event = GameEvent(ADDMOVEMENTCOMPONENT, component=component)
+            self.delegate(new_event)
+
+        # Incidental MovementComponent
+        elif type == 'incmovement':
+            entity_id = props['entity_id']
+            body = props['body']
+            velocity = props.get('velocity')
+            component = movement.MovementComponent(entity_id=entity_id,
+                                                   body=body,
+                                                   velocity=velocity)
+            new_event = GameEvent(ADDINCIDENTALMOVEMENTCOMPONENT,
+                                  component=component)
             self.delegate(new_event)
 
         # PhysicsComponent

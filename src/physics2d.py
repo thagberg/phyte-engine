@@ -1,13 +1,13 @@
 from system import System
 from events import *
+from math import ceil
 
 class PhysicsComponent(object):
-    def __init__(self, entity_id, box=None, collideables=None):
+    def __init__(self, entity_id, box=None, body=None):
         self.entity_id = entity_id
         self.box = box 
-        self.collideables = list() if not collideables else collideables
-        self.forces = list()
-        self.pulses = list()
+        self.collideables = list()
+        self.body = body
 
 
 class PhysicsSystem(System):
@@ -18,17 +18,17 @@ class PhysicsSystem(System):
         self.active_components = list() if active_components is None else active_components
 
     def _add(self, component):
-        self.components.add(component)
+        self.components.append(component)
 
     def _remove(self, component):
         try:
             self.components.remove(component)
-            self.components.add(component)
+            self.components.append(component)
         except ValueError as e:
             print "Error when attempting to remove component from PhysicsManager: %s" % e.strerror
 
     def _add_active(self, component):
-        self.active_components.add(component)
+        self.active_components.append(component)
 
     def _remove_active(self, component):
         try:
@@ -48,19 +48,6 @@ class PhysicsSystem(System):
             self._remove_active(event.component)
         elif event.type == COLLISION:
             self.handle_collision(event.box1, event.box2, event.mtv)
-        elif event.type == ADDFORCE:
-            event.component.forces.append(event.force)
-        elif event.type == ADDCOLLIDEABLE:
-            event.component.collideables.append(event.collideable)
-        elif event.type == REMOVECOLLIDEABLE:
-            try:
-                event.component.collideables.remove(event.collideable)
-            except ValueError, e:
-                print "Cannot remove collideable from PhysicsComponent: %s" % e.strerror
-        elif event.type == SETCOLLIDEABLES:
-            event.component.collideables = event.collideables
-        elif event.type == CLEARCOLLIDEABLES:
-            event.component.collideables = list()
 
     def get_min_trans_vect(self, rect1, rect2):
         mtv = [0, 0]
@@ -93,7 +80,34 @@ class PhysicsSystem(System):
                                           push=box1.push)
                 self.delegate(hit_event)
         elif box1.solid and box2.solid:
-            pass 
+            create_comp = self.factory.create_component
+            if box1.moveable:
+                if box2.moveable:
+                    # move each box half the mtv
+                    split_mtv = [int(ceil(float(mtv[0])/2)), 
+                                 int(ceil(float(mtv[1])/2))]
+                    box2_mtv = [0-split_mtv[0], 0-split_mtv[1]]
+                    create_comp('incmovement',
+                                entity_id=box1.entity_id,
+                                body=box1,
+                                velocity=split_mtv)
+                    create_comp('incmovement',
+                                entity_id=box2.entity_id,
+                                body=box2,
+                                velocity=box2_mtv)
+                else:
+                    # move box1 the entire mtv
+                    create_comp('incmovement',
+                                entity_id=box1.entity_id,
+                                body=box1,
+                                velocity=mtv)
+            elif box2.moveable:
+                # move box2 the entire mtv
+                box2_mtv = [0-mtv[0], 0-mtv[1]]
+                create_comp('incmovement',
+                            entity_id=box2.entity_id,
+                            body=box2,
+                            velocity=box2_mtv)
 
     def update(self, time, events=None):
         for comp in self.active_components:

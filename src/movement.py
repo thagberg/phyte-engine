@@ -4,22 +4,18 @@ from events import *
 
 
 class MovementComponent(object):
-    def __init__(self, entity_id, body, velocity, inc_velocity):
+    def __init__(self, entity_id, body, velocity=None):
         self.entity_id = entity_id
         self.body = body 
         self.velocity = velocity
-        # incidental velocity (happens when component is first activated)
-        #   not applied on each update
-        self.inc_velocity = inc_velocity
         self.active = False
 
 
 class VaryingMovementComponent(object):
-    def __init__(self, entity_id, body, velocity_func, inc_velocity):
+    def __init__(self, entity_id, body, velocity_func):
         self.entity_id = entity_id
         self.body = body
         self.velocity_func = velocity_func
-        self.inc_velocity = inc_velocity
         self.active = False
 
     @property
@@ -44,15 +40,14 @@ class MovementSystem(System):
 
     def _activate(self, component):
         comp = component
-        # if this component was not already active, apply
-        # incidental velocity
-        if not comp.active and comp.inc_velocity:
-            comp.body[0] += comp.inc_velocity[0]
-            comp.body[1] += comp.inc_velocity[1]
         comp.active = True
 
     def _deactivate(self, component):
         component.active = False
+
+    def _add_incidental(self, component):
+        component.body[0] += component.velocity[0]
+        component.body[1] += component.velocity[1]
 
     def handle_event(self, event):
         if event.type == ADDMOVEMENTCOMPONENT:
@@ -63,6 +58,8 @@ class MovementSystem(System):
             self._activate(event.component)
         elif event.type == DEACTIVATEMOVEMENTCOMPONENT:
             self._deactivate(event.component)
+        elif event.type == ADDINCIDENTALMOVEMENTCOMPONENT:
+            self._add_incidental(event.component)
 
     def update(self, time):
         self.delta = time

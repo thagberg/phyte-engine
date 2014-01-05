@@ -101,9 +101,7 @@ eng.install_system(sta, (ADDSTATECOMPONENT, REMOVESTATECOMPONENT))
 phy = physics2d.PhysicsSystem(factory)
 eng.install_system(phy, (PHYSICSEVENT, ADDFORCE, ADDPHYSICSCOMPONENT,
                          REMOVEPHYSICSCOMPONENT, ADDPHYSICSCOMPONENTACTIVE,
-                         REMOVEPHYSICSCOMPONENTACTIVE, ADDCOLLIDEABLE,
-                         REMOVECOLLIDEABLE, SETCOLLIDEABLES,
-                         CLEARCOLLIDEABLES))
+                         REMOVEPHYSICSCOMPONENTACTIVE, COLLISION))
 
 deb = debug.DebugSystem(screen, factory)
 eng.install_system(deb, (ADDDEBUGCOMPONENT, REMOVEDEBUGCOMPONENT,
@@ -134,7 +132,7 @@ t_tex_comp = factory.create_component('text', entity_id=t_entity.entity_id,
 # graphic test objects
 player_surface = pygame.image.load('../content/sticksheet.png')
 g_comp = factory.create_component('graphics', entity_id=player_entity.entity_id,
-                                  surface=player_surface, dest=[200,200],
+                                  surface=player_surface, dest=[200,200,64,128],
                                   area=[200,200,100,100])
 
 # animation test objects
@@ -290,9 +288,14 @@ friction_state = factory.create_component('state', entity_id=player_entity.entit
                                           rule_values={'friction': friction_rule_value})
 
 # physics test objects
+ground_entity = factory.create_entity()
+ground_comp = factory.create_component('physics',
+                                       entity_id=ground_entity.entity_id,
+                                       box=[0,500,600,50])
+player_physics_comp = factory.create_component('physics',
+                                               entity_id=player_entity.entity_id,
+                                               box=g_comp.dest)
 
-p1_entity = factory.create_entity()
-p2_entity = factory.create_entity()
 
 # debug test objects
 
@@ -334,6 +337,12 @@ jani_text_comp = factory.create_component('text', entity_id=player_entity.entity
                                           loc=[0,220], style=dict())
 jani_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=jani_text_comp,
                                            get_value=lambda: '%s-%s-%s' % (jump_ani.active, jump_ani.current_index, len(jump_ani.frames)))
+player_debug_comp = factory.create_component('deb',
+                                             entity_id=player_entity.entity_id,
+                                             rect=g_comp.dest)
+ground_debug_comp = factory.create_component('deb',
+                                             entity_id=ground_entity.entity_id,
+                                             rect=ground_comp.box)
 
 # FPS output stuff
 fps = 0
