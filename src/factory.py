@@ -325,6 +325,7 @@ class ComponentFactory(object):
         elif type == 'physics':
             entity_id = props['entity_id']
             box = props['box']
+            body = props['body']
             active_type = props.get('active', False)
             if active_type:
                 event_type = ADDPHYSICSCOMPONENTACTIVE
@@ -332,7 +333,7 @@ class ComponentFactory(object):
                 event_type = ADDPHYSICSCOMPONENT
             component = physics2d.PhysicsComponent(entity_id=entity_id,
                                                    box=box,
-                                                   body=None)
+                                                   body=body)
             new_event = GameEvent(event_type, component=component)
             self.delegate(new_event)
 

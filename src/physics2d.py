@@ -47,7 +47,7 @@ class PhysicsSystem(System):
         elif event.type == REMOVEPHYSICSCOMPONENTACTIVE:
             self._remove_active(event.component)
         elif event.type == COLLISION:
-            self.handle_collision(event.box1, event.box2, event.mtv)
+            self.handle_collision(event.comp1, event.comp2, event.mtv)
 
     def get_min_trans_vect(self, rect1, rect2):
         mtv = [0, 0]
@@ -65,7 +65,9 @@ class PhysicsSystem(System):
                mtv[1] if abs_y < abs_x else 0]
         return ret
 
-    def handle_collision(self, box1, box2, mtv):
+    def handle_collision(self, comp1, comp2, mtv):
+        box1 = comp1.box
+        box2 = comp2.box
         if box1.hitactive:
             if not box1.expired:
                 box1.expired = True 
@@ -73,16 +75,16 @@ class PhysicsSystem(System):
                     hit_event = GameEvent(HIT_HURT,
                                           hitter=box1.entity_id,
                                           hittee=box2.entity_id,
-                                          damage=box1.damage,
-                                          stun=box1.stun,
-                                          hitstun=box1.hitstun,
-                                          push=box1.push)
+                                          hitterbox=box1,
+                                          hitteebox=box2
+                                          )
                 elif box2.blockactive:
                     hit_event = GameEvent(HIT_BLOCK,
                                           hitter=box1.entity_id,
                                           hittee=box2.entity_id,
-                                          blockstun=box1.blockstun,
-                                          push=box1.push)
+                                          hitterbox=box1,
+                                          hitteebox=box2
+                                          )
                 self.delegate(hit_event)
         elif box1.solid and box2.solid:
             create_comp = self.factory.create_component
@@ -92,20 +94,48 @@ class PhysicsSystem(System):
                     split_mtv = [int(ceil(float(mtv[0])/2)), 
                                  int(ceil(float(mtv[1])/2))]
                     box2_mtv = [0-split_mtv[0], 0-split_mtv[1]]
+                    # first apply the displacement
                     create_comp('incmovement',
                                 entity_id=box1.entity_id,
                                 body=box1.rect,
                                 velocity=split_mtv)
+                    # then change the body's velocity to keep it from
+                    # colliding again
+                    velocity_negate = [
+                        0 if not split_mtv[0] else 0-comp1.body[0],
+                        0 if not split_mtv[1] else 0-comp1.body[1]
+                    ]
+                    create_comp('incmovement',
+                                entity_id=box1.entity_id,
+                                body=comp1.body,
+                                velocity=velocity_negate)
+                    # now repeat the same process for the other box
                     create_comp('incmovement',
                                 entity_id=box2.entity_id,
                                 body=box2.rect,
                                 velocity=box2_mtv)
+                    velocity_negate = [
+                        0 if not split_mtv[0] else 0-comp2.body[0],
+                        0 if not split_mtv[1] else 0-comp2.body[1]
+                    ]
+                    create_comp('incmovement',
+                                entity_id=box2.entity_id,
+                                body=comp2.body,
+                                velocity=velocity_negate)
                 else:
                     # move box1 the entire mtv
                     create_comp('incmovement',
                                 entity_id=box1.entity_id,
                                 body=box1.rect,
                                 velocity=mtv)
+                    velocity_negate = [
+                        0 if not mtv[0] else 0-comp1.body[0],
+                        0 if not mtv[1] else 0-comp1.body[1]
+                    ]
+                    create_comp('incmovement',
+                                entity_id=box1.entity_id,
+                                body=comp1.body,
+                                velocity=velocity_negate)
             elif box2.moveable:
                 # move box2 the entire mtv
                 box2_mtv = [0-mtv[0], 0-mtv[1]]
@@ -113,6 +143,14 @@ class PhysicsSystem(System):
                             entity_id=box2.entity_id,
                             body=box2.rect,
                             velocity=box2_mtv)
+                velocity_negate = [
+                    0 if not box2_mtv[0] else 0-comp2.body[0],
+                    0 if not box2_mtv[1] else 0-comp2.body[1]
+                ]
+                create_comp('incmovement',
+                            entity_id=box2.entity_id,
+                            body=comp2.body,
+                            velocity=velocity_negate)
 
     def update(self, time, events=None):
         for comp in self.active_components:
@@ -121,21 +159,21 @@ class PhysicsSystem(System):
             # determine the list of collideable components
             box = comp.box
             if box.hitactive:
-                coll_boxes = [x.box for x in self.components if
+                coll_comps = [x for x in self.components if
                                 (x.box.blockactive or x.box.hurtactive) and 
                                 not x.box.expired]
             elif box.solid:
-                coll_boxes = [x.box for x in self.components if
+                coll_comps = [x for x in self.components if
                                 x.box.solid]
             
             # find the indices of collisions
             collisions = comp_rect.collidelistall(
-                [x.rect for x in coll_boxes])
+                [x.box.rect for x in coll_comps])
             # process each collision
             for coll_ind in collisions:
-                coll_rect = coll_boxes[coll_ind].rect
+                coll_rect = coll_comps[coll_ind].box.rect
                 mtv = self.get_min_trans_vect(comp_rect, coll_rect)
-                c_event = GameEvent(COLLISION, box1=comp.box,
-                                    box2=coll_boxes[coll_ind], 
+                c_event = GameEvent(COLLISION, comp1=comp,
+                                    comp2=coll_comps[coll_ind], 
                                     mtv=mtv)
                 self.delegate(c_event)

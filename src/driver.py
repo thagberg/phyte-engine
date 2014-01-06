@@ -250,8 +250,7 @@ standing_move_rule = factory.create_component('rule',
 standing_move_rule_value = lambda: move_one.active
 standing_state = factory.create_component('state',
                                           entity_id=player_entity.entity_id,
-                                          rules=[standing_rule,
-                                                 standing_move_rule],
+                                          rules=[standing_rule],
                                           activation_event_type=ACTIVATEEXECUTIONCOMPONENT,
                                           deactivation_event_type=DEACTIVATEEXECUTIONCOMPONENT,
                                           activation_component=standing_exe,
@@ -284,8 +283,9 @@ moveable_state = factory.create_component('state', entity_id=player_entity.entit
                                           deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                           activation_component=g_movement_comp,
                                           rule_values={'moveable': moveable_rule_value})
-gravity_rule = factory.create_component('rule', name='gravity', operator='ne', value=0)
-gravity_rule_value = lambda: g_movement_comp.velocity[1]
+gravity_rule = factory.create_component('rule', name='gravity', operator='eq', value=True)
+#gravity_rule_value = lambda: g_movement_comp.velocity[1]
+gravity_rule_value = True
 gravity_state = factory.create_component('state', entity_id=player_entity.entity_id,
                                          rules=[gravity_rule],
                                          activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
@@ -314,11 +314,13 @@ player_box = factory.create_component('hit',
                                       moveable=True)
 ground_comp = factory.create_component('physics',
                                        entity_id=ground_entity.entity_id,
-                                       box=ground_box)
+                                       box=ground_box,
+                                       body=ground_box.rect)
 player_physics_comp = factory.create_component('physics',
                                                entity_id=player_entity.entity_id,
                                                box=player_box,
-                                               active=True)
+                                               active=True,
+                                               body=g_movement_comp.velocity)
 
 
 # debug test objects
