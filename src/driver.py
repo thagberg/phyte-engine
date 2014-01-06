@@ -178,6 +178,20 @@ jf_one = factory.create_component('fra', entity_id=player_entity.entity_id,
 jump_ani = factory.create_component('ani', entity_id=player_entity.entity_id,
                                     frames=[jf_one], loop=True, graphic=g_comp)
 
+# fall animation
+fall_one = factory.create_component('fra',
+                                    entity_id=player_entity.entity_id,
+                                    hitboxes=None,
+                                    force=[0,0],
+                                    crop=[66,259,64,128],
+                                    repeat=0,
+                                    push_box=None)
+fall_ani = factory.create_component('ani',
+                                    entity_id=player_entity.entity_id,
+                                    frames=[fall_one],
+                                    loop=True,
+                                    graphic=g_comp)
+
 # move test objects
 m_inputs = ['right']
 move_one = factory.create_component('move', entity_id=player_entity.entity_id,
@@ -193,6 +207,12 @@ jump_move_inputs = ['up']
 jump_move = factory.create_component('move', entity_id=player_entity.entity_id,
                                      name='jump', animation=jump_ani,
                                      inputs=jump_move_inputs)
+fall_move_inputs = []
+fall_move = factory.create_component('move',
+                                     entity_id=player_entity.entity_id,
+                                     name='fall',
+                                     animation=fall_ani,
+                                     inputs=fall_move_inputs)
 
 # movement test objects
 g_movement_comp = factory.create_component('movement', 
@@ -211,7 +231,7 @@ jump_movement_comp = factory.create_component('movement',
 gravity_movement_comp = factory.create_component('movement', 
                                                  entity_id=player_entity.entity_id,
                                                  body=g_movement_comp.velocity, 
-                                                 velocity=[0,3])
+                                                 velocity=[0,1])
 def friction_movement_vel():
     friction = [0,0]
     x = g_movement_comp.velocity[0]
@@ -235,6 +255,10 @@ standing_exe = factory.create_component('exe',
                                         entity_id=player_entity.entity_id,
                                         executables=[jump_move, move_one, move_two],
                                         inputs=player_inp_component)
+fall_exe = factory.create_component('exe',
+                                    entity_id=player_entity.entity_id,
+                                    executables=[fall_move],
+                                    inputs=player_inp_component)
 
 # state test objects
 
@@ -266,14 +290,28 @@ movement_state = factory.create_component('state', entity_id=player_entity.entit
                                           rule_values={'move':lambda: move_one.active})
 jump_rule = factory.create_component('rule', name='jump', operator='eq',
                                      value=True)
+jump_rule2 = factory.create_component('rule', name='y_velocity', operator='lt',
+                                      value=0)
 #jump_rule_value = lambda: jump_move.active and jump_movement_comp.velocity[1] > 0
 jump_rule_value = lambda: jump_move.active
+jump_rule2_value = lambda: g_movement_comp.velocity[1]
 jump_state = factory.create_component('state', entity_id=player_entity.entity_id,
                                       rules=[jump_rule],
                                       activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
                                       deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                       activation_component=jump_movement_comp,
-                                      rule_values={'jump': jump_rule_value})
+                                      rule_values={'jump': jump_rule_value,
+                                                   'y_velocity': jump_rule2_value})
+fall_rule = factory.create_component('rule', name='fall', operator='gt',
+                                     value=0)
+fall_rule_value = lambda: g_movement_comp.velocity[1]
+fall_state = factory.create_component('state',
+                                      entity_id=player_entity.entity_id,
+                                      rules=[fall_rule],
+                                      activation_event_type=ACTIVATEEXECUTIONCOMPONENT,
+                                      deactivation_event_type=DEACTIVATEEXECUTIONCOMPONENT,
+                                      activation_component=fall_exe,
+                                      rule_values={'fall': fall_rule_value})
 moveable_rule = factory.create_component('rule', name='moveable', operator='eq',
                                          value=True)
 moveable_rule_value = lambda: True
@@ -369,6 +407,17 @@ player_debug_comp = factory.create_component('deb',
 ground_debug_comp = factory.create_component('deb',
                                              entity_id=ground_entity.entity_id,
                                              rect=ground_comp.box)
+vel_get_value = lambda: 'Player Velocity: [%d, %d]' % (g_movement_comp.velocity[0], g_movement_comp.velocity[1])
+vel_text_comp = factory.create_component('text',
+                                         entity_id=player_entity.entity_id,
+                                         text=vel_get_value(),
+                                         loc=[200,100],
+                                         style=dict())
+vel_debug_comp = factory.create_component('deb',
+                                          entity_id=player_entity.entity_id,
+                                          text=vel_text_comp,
+                                          loc=[200, 100],
+                                          get_value=vel_get_value)
 
 # FPS output stuff
 fps = 0
