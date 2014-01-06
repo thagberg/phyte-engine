@@ -4,18 +4,20 @@ from events import *
 
 
 class MovementComponent(object):
-    def __init__(self, entity_id, body, velocity=None):
+    def __init__(self, entity_id, body, velocity=None, pulse_velocity=None):
         self.entity_id = entity_id
         self.body = body 
         self.velocity = velocity
+        self.pulse_velocity = pulse_velocity
         self.active = False
 
 
 class VaryingMovementComponent(object):
-    def __init__(self, entity_id, body, velocity_func):
+    def __init__(self, entity_id, body, velocity_func, pulse_velocity=None):
         self.entity_id = entity_id
         self.body = body
         self.velocity_func = velocity_func
+        self.pulse_velocity = pulse_velocity
         self.active = False
 
     @property
@@ -40,6 +42,11 @@ class MovementSystem(System):
 
     def _activate(self, component):
         comp = component
+        # if this component was not already active, apply
+        # pulse velocity
+        if not comp.active and comp.pulse_velocity:
+            comp.body[0] += comp.pulse_velocity[0]
+            comp.body[1] += comp.pulse_velocity[1]
         comp.active = True
 
     def _deactivate(self, component):

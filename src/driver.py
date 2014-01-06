@@ -88,7 +88,8 @@ eng.install_system(mov, (MOVEEVENT, MOVECHANGE, MOVERESET, MOVEACTIVATE,
 
 movm = movement.MovementSystem(factory)
 eng.install_system(movm, (ADDMOVEMENTCOMPONENT, REMOVEMOVEMENTCOMPONENT,
-                          ACTIVATEMOVEMENTCOMPONENT, DEACTIVATEMOVEMENTCOMPONENT))
+                          ACTIVATEMOVEMENTCOMPONENT, DEACTIVATEMOVEMENTCOMPONENT,
+                          ADDINCIDENTALMOVEMENTCOMPONENT))
 
 exe = execute.ExecutionSystem(factory)
 eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
@@ -132,8 +133,9 @@ t_tex_comp = factory.create_component('text', entity_id=t_entity.entity_id,
 # graphic test objects
 player_surface = pygame.image.load('../content/sticksheet.png')
 g_comp = factory.create_component('graphics', entity_id=player_entity.entity_id,
-                                  surface=player_surface, dest=[200,200,64,128],
-                                  area=[200,200,100,100])
+                                  surface=player_surface, 
+                                  dest=pygame.Rect([200,200,64,128]),
+                                  area=pygame.Rect([200,200,100,100]))
 
 # animation test objects
 f_one = factory.create_component('fra', entity_id=player_entity.entity_id,
@@ -205,7 +207,7 @@ jump_movement_comp = factory.create_component('movement',
                                               entity_id=player_entity.entity_id,
                                               body=g_movement_comp.velocity, 
                                               velocity=[0,0],
-                                              inc_velocity=[0,-20])
+                                              pulse_velocity=[0,-20])
 gravity_movement_comp = factory.create_component('movement', 
                                                  entity_id=player_entity.entity_id,
                                                  body=g_movement_comp.velocity, 
@@ -229,20 +231,32 @@ friction_movement_comp = factory.create_component('varmovement',
 
 # execution test objects
 
-exe_one = factory.create_component('exe', entity_id=player_entity.entity_id,
-                                    executables=[jump_move, move_one, move_two], 
-                                    inputs=player_inp_component)
+standing_exe = factory.create_component('exe',
+                                        entity_id=player_entity.entity_id,
+                                        executables=[jump_move, move_one, move_two],
+                                        inputs=player_inp_component)
 
 # state test objects
 
-rule_one = factory.create_component('rule', name='test', operator='eq',
-                                    value=True)
-state_one = factory.create_component('state', entity_id=player_entity.entity_id,
-                                     rules=[rule_one],
-                                     activation_event_type=ACTIVATEEXECUTIONCOMPONENT,
-                                     deactivation_event_type=DEACTIVATEEXECUTIONCOMPONENT,
-                                     activation_component=exe_one,
-                                     rule_values={'test':True})
+standing_rule = factory.create_component('rule',
+                                         name='y_velocity',
+                                         operator='eq',
+                                         value=0)
+standing_rule_value = g_movement_comp.velocity[1]
+standing_move_rule = factory.create_component('rule',
+                                              name='moves',
+                                              operator='eq',
+                                              value=True)
+standing_move_rule_value = lambda: move_one.active
+standing_state = factory.create_component('state',
+                                          entity_id=player_entity.entity_id,
+                                          rules=[standing_rule,
+                                                 standing_move_rule],
+                                          activation_event_type=ACTIVATEEXECUTIONCOMPONENT,
+                                          deactivation_event_type=DEACTIVATEEXECUTIONCOMPONENT,
+                                          activation_component=standing_exe,
+                                          rule_values={'y_velocity': standing_rule_value,
+                                                       'moves': standing_move_rule_value})
 movement_rule = factory.create_component('rule', name='move', operator='eq',
                                          value=True)
 movement_state = factory.create_component('state', entity_id=player_entity.entity_id,
@@ -289,12 +303,22 @@ friction_state = factory.create_component('state', entity_id=player_entity.entit
 
 # physics test objects
 ground_entity = factory.create_entity()
+ground_box = factory.create_component('hit',
+                                      entity_id=ground_entity.entity_id,
+                                      rect=pygame.Rect(0,500,600,50),
+                                      solid=True)
+player_box = factory.create_component('hit',
+                                      entity_id=player_entity.entity_id,
+                                      rect=g_comp.dest,
+                                      solid=True,
+                                      moveable=True)
 ground_comp = factory.create_component('physics',
                                        entity_id=ground_entity.entity_id,
-                                       box=[0,500,600,50])
+                                       box=ground_box)
 player_physics_comp = factory.create_component('physics',
                                                entity_id=player_entity.entity_id,
-                                               box=g_comp.dest)
+                                               box=player_box,
+                                               active=True)
 
 
 # debug test objects
@@ -391,7 +415,11 @@ while not(done):
     fps = 1000 / time_since_last_update
     screen.fill(common.WHITE)
     events = pygame.event.get()
-
+    '''for event in events:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_t:
+                eng.update(time_since_last_update, events)
+                pygame.display.flip()'''
 
     eng.update(time_since_last_update, events)
 

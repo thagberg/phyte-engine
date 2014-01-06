@@ -21,11 +21,11 @@ class VelocityComponent(object):
 
 
 class BoxComponent(object):
-    def __init__(self, entity_id, loc, dim=[0,0], hitactive=False, hurtactive=False,
-                 expired=False, solid=False, blockactive=False, damage=0, 
-                 stun=0, hitstun=0, push=[0,0], moveable=False):
+    def __init__(self, entity_id, rect, hitactive=False, 
+                 hurtactive=False, expired=False, solid=False, blockactive=False, 
+                 damage=0, stun=0, hitstun=0, push=[0,0], moveable=False):
         self.entity_id = entity_id
-        self.rect = Rect((loc.x, loc.y), (dim[0], dim[1]))
+        self.rect = rect
         self.hitactive = hitactive
         self.hurtactive = hurtactive
         self.expired = expired

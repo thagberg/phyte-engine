@@ -128,24 +128,29 @@ class ComponentFactory(object):
         elif type == 'hit':
             entity_id = props['entity_id']
             rect = props['rect']
-            hit_active = props['hit_active'] if 'hit_active' in props else False
-            hurt_active = props['hurt_active'] if 'hurt_active' in props else False
-            solid = props['solid'] if 'solid' in props else False
-            expired = props['expired'] if 'expired' in props else False
-            damage = props['damage'] if 'damage' in props else 0
-            stun = props['stun'] if 'stun' in props else 0
-            hitstun = props['hitstun'] if 'hitstun' in props else 0
+            hit_active = props.get('hit_active', False)
+            hurt_active = props.get('hurt_active', False)
+            solid = props.get('solid', False)
+            expired = props.get('expired', False)
+            damage = props.get('damage', 0)
+            stun = props.get('stun', 0)
+            hitstun = props.get('hitstun', 0)
             if 'push' in props:
                 push = props['push']
             else:
-                push = self.create_component('vel', (0,0))
-            moveable = props.get('moveable')
-            component = common.BoxComponent(entity_id=entity_id, rect=rect,
-                                            hit_active=hit_active,
-                                            hurt_active=hurt_active,
+                push = self.create_component('vel', 
+                                             entity_id=entity_id,
+                                             vel=(0,0))
+            moveable = props.get('moveable', False)
+            component = common.BoxComponent(entity_id=entity_id, 
+                                            rect=rect,
+                                            hitactive=hit_active,
+                                            hurtactive=hurt_active,
                                             solid=solid,
-                                            expired=expired, damage=damage,
-                                            stun=stun, hitstun=hitstun,
+                                            expired=expired, 
+                                            damage=damage,
+                                            stun=stun, 
+                                            hitstun=hitstun,
                                             push=push,
                                             moveable=moveable)
 
@@ -285,9 +290,11 @@ class ComponentFactory(object):
             entity_id = props['entity_id']
             body = props['body']
             velocity = props.get('velocity')
+            pulse_velocity = props.get('pulse_velocity')
             component = movement.MovementComponent(entity_id=entity_id,
                                                    body=body,
-                                                   velocity=velocity)
+                                                   velocity=velocity,
+                                                   pulse_velocity=pulse_velocity)
             new_event = GameEvent(ADDMOVEMENTCOMPONENT, component=component)
             self.delegate(new_event)
 
@@ -318,9 +325,15 @@ class ComponentFactory(object):
         elif type == 'physics':
             entity_id = props['entity_id']
             box = props['box']
+            active_type = props.get('active', False)
+            if active_type:
+                event_type = ADDPHYSICSCOMPONENTACTIVE
+            else:
+                event_type = ADDPHYSICSCOMPONENT
             component = physics2d.PhysicsComponent(entity_id=entity_id,
-                                                   box=box)
-            new_event = GameEvent(ADDPHYSICSCOMPONENT, component=component)
+                                                   box=box,
+                                                   body=None)
+            new_event = GameEvent(event_type, component=component)
             self.delegate(new_event)
 
         return component
