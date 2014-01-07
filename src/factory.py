@@ -317,7 +317,7 @@ class ComponentFactory(object):
             component = movement.MovementComponent(entity_id=entity_id,
                                                    body=body,
                                                    velocity=velocity)
-            new_event = GameEvent(ADDINCIDENTALMOVEMENTCOMPONENT,
+            new_event = GameEvent(APPLYINCIDENTALMOVEMENTCOMPONENT,
                                   component=component)
             self.delegate(new_event)
 

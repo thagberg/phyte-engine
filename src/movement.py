@@ -52,7 +52,7 @@ class MovementSystem(System):
     def _deactivate(self, component):
         component.active = False
 
-    def _add_incidental(self, component):
+    def _apply_incidental(self, component):
         component.body[0] += component.velocity[0]
         component.body[1] += component.velocity[1]
 
@@ -65,8 +65,8 @@ class MovementSystem(System):
             self._activate(event.component)
         elif event.type == DEACTIVATEMOVEMENTCOMPONENT:
             self._deactivate(event.component)
-        elif event.type == ADDINCIDENTALMOVEMENTCOMPONENT:
-            self._add_incidental(event.component)
+        elif event.type == APPLYINCIDENTALMOVEMENTCOMPONENT:
+            self._apply_incidental(event.component)
 
     def update(self, time):
         self.delta = time

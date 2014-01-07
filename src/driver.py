@@ -86,23 +86,23 @@ eng.install_system(mov, (MOVEEVENT, MOVECHANGE, MOVERESET, MOVEACTIVATE,
                          MOVEDEACTIVATE, ADDMOVECOMPONENT,
                          REMOVEMOVECOMPONENT))
 
+sta = state.StateSystem(factory)
+eng.install_system(sta, (ADDSTATECOMPONENT, REMOVESTATECOMPONENT))
+
 movm = movement.MovementSystem(factory)
 eng.install_system(movm, (ADDMOVEMENTCOMPONENT, REMOVEMOVEMENTCOMPONENT,
                           ACTIVATEMOVEMENTCOMPONENT, DEACTIVATEMOVEMENTCOMPONENT,
-                          ADDINCIDENTALMOVEMENTCOMPONENT))
-
-exe = execute.ExecutionSystem(factory)
-eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
-                         ACTIVATEEXECUTIONCOMPONENT,
-                         DEACTIVATEEXECUTIONCOMPONENT))
-
-sta = state.StateSystem(factory)
-eng.install_system(sta, (ADDSTATECOMPONENT, REMOVESTATECOMPONENT))
+                          APPLYINCIDENTALMOVEMENTCOMPONENT))
 
 phy = physics2d.PhysicsSystem(factory)
 eng.install_system(phy, (PHYSICSEVENT, ADDFORCE, ADDPHYSICSCOMPONENT,
                          REMOVEPHYSICSCOMPONENT, ADDPHYSICSCOMPONENTACTIVE,
                          REMOVEPHYSICSCOMPONENTACTIVE, COLLISION))
+
+exe = execute.ExecutionSystem(factory)
+eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
+                         ACTIVATEEXECUTIONCOMPONENT,
+                         DEACTIVATEEXECUTIONCOMPONENT))
 
 deb = debug.DebugSystem(screen, factory)
 eng.install_system(deb, (ADDDEBUGCOMPONENT, REMOVEDEBUGCOMPONENT,
@@ -219,6 +219,10 @@ g_movement_comp = factory.create_component('movement',
                                            entity_id=player_entity.entity_id,
                                            body=g_comp.dest, 
                                            velocity=[0,0])
+gravity_movement_comp = factory.create_component('movement', 
+                                                 entity_id=player_entity.entity_id,
+                                                 body=g_movement_comp.velocity, 
+                                                 velocity=[0,1])
 movm_comp = factory.create_component('movement', 
                                      entity_id=player_entity.entity_id,
                                      body=g_movement_comp.velocity, 
@@ -228,10 +232,6 @@ jump_movement_comp = factory.create_component('movement',
                                               body=g_movement_comp.velocity, 
                                               velocity=[0,0],
                                               pulse_velocity=[0,-20])
-gravity_movement_comp = factory.create_component('movement', 
-                                                 entity_id=player_entity.entity_id,
-                                                 body=g_movement_comp.velocity, 
-                                                 velocity=[0,1])
 def friction_movement_vel():
     friction = [0,0]
     x = g_movement_comp.velocity[0]
@@ -261,12 +261,20 @@ fall_exe = factory.create_component('exe',
                                     inputs=player_inp_component)
 
 # state test objects
-
+gravity_rule = factory.create_component('rule', name='gravity', operator='eq', value=True)
+#gravity_rule_value = lambda: g_movement_comp.velocity[1]
+gravity_rule_value = True
+gravity_state = factory.create_component('state', entity_id=player_entity.entity_id,
+                                         rules=[gravity_rule],
+                                         activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
+                                         deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
+                                         activation_component=gravity_movement_comp,
+                                         rule_values={'gravity': gravity_rule_value})
 standing_rule = factory.create_component('rule',
                                          name='y_velocity',
                                          operator='eq',
                                          value=0)
-standing_rule_value = g_movement_comp.velocity[1]
+standing_rule_value = lambda: g_movement_comp.velocity[1]
 standing_move_rule = factory.create_component('rule',
                                               name='moves',
                                               operator='eq',
@@ -321,15 +329,6 @@ moveable_state = factory.create_component('state', entity_id=player_entity.entit
                                           deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                           activation_component=g_movement_comp,
                                           rule_values={'moveable': moveable_rule_value})
-gravity_rule = factory.create_component('rule', name='gravity', operator='eq', value=True)
-#gravity_rule_value = lambda: g_movement_comp.velocity[1]
-gravity_rule_value = True
-gravity_state = factory.create_component('state', entity_id=player_entity.entity_id,
-                                         rules=[gravity_rule],
-                                         activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
-                                         deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
-                                         activation_component=gravity_movement_comp,
-                                         rule_values={'gravity': gravity_rule_value})
 friction_rule = factory.create_component('rule', name='friction', operator='gt', value=0)
 friction_rule_value = lambda: abs(g_movement_comp.velocity[0])
 friction_state = factory.create_component('state', entity_id=player_entity.entity_id,
@@ -418,6 +417,28 @@ vel_debug_comp = factory.create_component('deb',
                                           text=vel_text_comp,
                                           loc=[200, 100],
                                           get_value=vel_get_value)
+fall_exe_get_value = lambda: 'Fall Exec Comp: %s' % (fall_exe.active)
+fall_exe_text_comp = factory.create_component('text',
+                                              entity_id=player_entity.entity_id,
+                                              text=fall_exe_get_value(),
+                                              loc=[360,100],
+                                              style=dict())
+fall_exe_debug_comp = factory.create_component('deb',
+                                               entity_id=player_entity.entity_id,
+                                               text=fall_exe_text_comp,
+                                               loc=[360, 100],
+                                               get_value=fall_exe_get_value)
+stand_exe_get_value = lambda: 'Stand Exe Comp: %s' % (standing_exe.active)
+stand_exe_text_comp = factory.create_component('text',
+                                               entity_id=player_entity.entity_id,
+                                               text=stand_exe_get_value(),
+                                               loc=[520, 100],
+                                               style=dict())
+stand_exe_debug_comp = factory.create_component('deb',
+                                                entity_id=player_entity.entity_id,
+                                                text=stand_exe_text_comp,
+                                                loc=[520, 100],
+                                                get_value=stand_exe_get_value)
 
 # FPS output stuff
 fps = 0
