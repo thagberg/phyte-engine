@@ -291,10 +291,12 @@ class ComponentFactory(object):
             body = props['body']
             velocity = props.get('velocity')
             pulse_velocity = props.get('pulse_velocity')
+            parent = props.get('parent')
             component = movement.MovementComponent(entity_id=entity_id,
                                                    body=body,
                                                    velocity=velocity,
-                                                   pulse_velocity=pulse_velocity)
+                                                   pulse_velocity=pulse_velocity,
+                                                   parent=parent)
             new_event = GameEvent(ADDMOVEMENTCOMPONENT, component=component)
             self.delegate(new_event)
 
@@ -303,9 +305,11 @@ class ComponentFactory(object):
             entity_id = props['entity_id']
             body = props['body']
             velocity_func = props.get('velocity_func')
+            parent = props.get('parent')
             component = movement.VaryingMovementComponent(entity_id=entity_id,
                                                           body=body,
-                                                          velocity_func=velocity_func)
+                                                          velocity_func=velocity_func,
+                                                          parent=parent)
             new_event = GameEvent(ADDMOVEMENTCOMPONENT, component=component)
             self.delegate(new_event)
 
