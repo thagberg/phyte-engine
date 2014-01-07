@@ -330,13 +330,16 @@ moveable_state = factory.create_component('state', entity_id=player_entity.entit
                                           activation_component=g_movement_comp,
                                           rule_values={'moveable': moveable_rule_value})
 friction_rule = factory.create_component('rule', name='friction', operator='gt', value=0)
+friction_rule2 = factory.create_component('rule', name='y_velocity', operator='eq', value=0)
 friction_rule_value = lambda: abs(g_movement_comp.velocity[0])
+friction_rule2_value = lambda: g_movement_comp.velocity[1]
 friction_state = factory.create_component('state', entity_id=player_entity.entity_id,
-                                          rules=[friction_rule],
+                                          rules=[friction_rule, friction_rule2],
                                           activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
                                           deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                           activation_component=friction_movement_comp,
-                                          rule_values={'friction': friction_rule_value})
+                                          rule_values={'friction': friction_rule_value,
+                                                       'y_velocity': friction_rule2_value})
 
 # physics test objects
 ground_entity = factory.create_entity()
