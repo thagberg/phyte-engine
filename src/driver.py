@@ -442,6 +442,19 @@ stand_exe_debug_comp = factory.create_component('deb',
                                                 text=stand_exe_text_comp,
                                                 loc=[520, 100],
                                                 get_value=stand_exe_get_value)
+grav_movm_get_value = lambda: 'Gravity Movement: %s: %s' % (
+    gravity_movement_comp.active,
+    gravity_movement_comp.velocity)
+grav_movm_text_comp = factory.create_component('text',
+                                               entity_id=player_entity.entity_id,
+                                               text=grav_movm_get_value(),
+                                               loc=[360,120],
+                                               style=dict())
+grav_movm_debug_comp = factory.create_component('deb',
+                                                entity_id=player_entity.entity_id,
+                                                text=grav_movm_text_comp,
+                                                loc=[360,120],
+                                                get_value=grav_movm_get_value)
 
 # FPS output stuff
 fps = 0

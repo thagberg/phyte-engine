@@ -62,7 +62,7 @@ class PhysicsSystem(System):
         abs_x = abs(mtv[0])
         abs_y = abs(mtv[1])
         ret = [mtv[0] if abs_x < abs_y else 0,
-               mtv[1] if abs_y < abs_x else 0]
+               mtv[1] if abs_y <= abs_x else 0]
         return ret
 
     def handle_collision(self, comp1, comp2, mtv):
