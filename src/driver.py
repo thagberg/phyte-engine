@@ -119,7 +119,8 @@ player_bindings = {
     'up': pygame.K_UP,
     'down': pygame.K_DOWN,
     'left': pygame.K_LEFT,
-    'right': pygame.K_RIGHT
+    'right': pygame.K_RIGHT,
+    'lp': pygame.K_a
 }
 player_inp_component = factory.create_component('input', device=-1,
                                            entity_id=player_entity.entity_id,
@@ -192,6 +193,41 @@ fall_ani = factory.create_component('ani',
                                     loop=True,
                                     graphic=g_comp)
 
+# light punch animation
+lp_one = factory.create_component('fra',
+                                  entity_id=player_entity.entity_id,
+                                  hitboxes=None,
+                                  force=[0,0],
+                                  crop=[0,0,64,128],
+                                  repeat=0,
+                                  push_box=None)
+lp_two = factory.create_component('fra',
+                                  entity_id=player_entity.entity_id,
+                                  hitboxes=None,
+                                  force=[0,0],
+                                  crop=[66,390,64,128],
+                                  repeat=4,
+                                  push_box=None)
+lp_three = factory.create_component('fra',
+                                    entity_id=player_entity.entity_id,
+                                    hitboxes=None,
+                                    force=[0,0],
+                                    crop=[131,390,64,128],
+                                    repeat=12,
+                                    push_box=None)
+lp_four = factory.create_component('fra',
+                                   entity_id=player_entity.entity_id,
+                                   hitboxes=None,
+                                   force=[0,0],
+                                   crop=[66,390,64,128],
+                                   repeat=4,
+                                   push_box=None)
+lp_ani = factory.create_component('ani',
+                                  entity_id=player_entity.entity_id,
+                                  frames=[lp_one,lp_two,lp_three,lp_four],
+                                  loop=False,
+                                  graphic=g_comp)
+
 # move test objects
 m_inputs = ['right']
 move_one = factory.create_component('move', entity_id=player_entity.entity_id,
@@ -213,6 +249,12 @@ fall_move = factory.create_component('move',
                                      name='fall',
                                      animation=fall_ani,
                                      inputs=fall_move_inputs)
+lp_move_inputs = ['lp']
+lp_move = factory.create_component('move',
+                                   entity_id=player_entity.entity_id,
+                                   name='lp',
+                                   animation=lp_ani,
+                                   inputs=lp_move_inputs)
 
 # movement test objects
 g_movement_comp = factory.create_component('movement', 
@@ -257,7 +299,8 @@ friction_movement_comp = factory.create_component('varmovement',
 
 standing_exe = factory.create_component('exe',
                                         entity_id=player_entity.entity_id,
-                                        executables=[jump_move, move_one, move_two],
+                                        executables=[lp_move, jump_move, 
+                                                     move_one, move_two],
                                         inputs=player_inp_component)
 fall_exe = factory.create_component('exe',
                                     entity_id=player_entity.entity_id,
