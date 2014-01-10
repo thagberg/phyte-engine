@@ -250,7 +250,8 @@ def friction_movement_vel():
 friction_movement_comp = factory.create_component('varmovement',
                                                   entity_id=player_entity.entity_id,
                                                   body=g_movement_comp.velocity,
-                                                  velocity_func=friction_movement_vel)
+                                                  velocity_func=friction_movement_vel,
+                                                  parent=g_movement_comp)
 
 # execution test objects
 
@@ -458,6 +459,17 @@ grav_movm_debug_comp = factory.create_component('deb',
                                                 text=grav_movm_text_comp,
                                                 loc=[360,120],
                                                 get_value=grav_movm_get_value)
+player_loc_get_value = lambda: 'Player Location: %s' % [g_comp.dest[0], g_comp.dest[1]]
+player_loc_text_comp = factory.create_component('text',
+                                                entity_id=player_entity.entity_id,
+                                                text=player_loc_get_value(),
+                                                loc=[360,145],
+                                                style=dict())
+player_loc_debug_comp = factory.create_component('deb',
+                                                 entity_id=player_entity.entity_id,
+                                                 text=player_loc_text_comp,
+                                                 loc=[360,145],
+                                                 get_value=player_loc_get_value)
 
 # FPS output stuff
 fps = 0

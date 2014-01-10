@@ -78,10 +78,12 @@ class MovementSystem(System):
 
     def update(self, time):
         self.delta = time
-        for parent, children in self.components.iteritems():
+        for parent, children in [(x,y) for x,y in self.components.iteritems() if x is not None]:
             for child in [x for x in children if x.active]:
                 child.body[0] += child.velocity[0]
                 child.body[1] += child.velocity[1]
-            if parent is not None:                
+
+        for parent in [x for x in self.components.keys() if x is not None]:
+            if parent.active:
                 parent.body[0] += parent.velocity[0]
                 parent.body[1] += parent.velocity[1]
