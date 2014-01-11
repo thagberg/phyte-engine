@@ -285,6 +285,13 @@ class ComponentFactory(object):
             new_event = GameEvent(ADDSTATECOMPONENT, component=component)
             self.delegate(new_event)
 
+        # StateValueComponent
+        elif type == 'stateval':
+            entity_id = props['entity_id']
+            active = props['active']
+            component = state.StateValueComponent(entity_id=entity_id,
+                                                  active=active)    
+
         # MovementComponent
         elif type == 'movement':
             entity_id = props['entity_id']

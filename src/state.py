@@ -38,6 +38,12 @@ class StateComponent(object):
         self.rule_values = rule_values
 
 
+class StateValueComponent(object):
+    def __init__(self, entity_id, active=False):
+        self.entity_id = entity_id
+        self.active = active
+
+
 class StateSystem(System):
     def __init__(self, factory, components=None): 
         super(StateSystem, self).__init__()
