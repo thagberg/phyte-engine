@@ -199,28 +199,28 @@ lp_one = factory.create_component('fra',
                                   hitboxes=None,
                                   force=[0,0],
                                   crop=[0,0,64,128],
-                                  repeat=0,
+                                  repeat=20,
                                   push_box=None)
 lp_two = factory.create_component('fra',
                                   entity_id=player_entity.entity_id,
                                   hitboxes=None,
                                   force=[0,0],
                                   crop=[66,390,64,128],
-                                  repeat=4,
+                                  repeat=20,
                                   push_box=None)
 lp_three = factory.create_component('fra',
                                     entity_id=player_entity.entity_id,
                                     hitboxes=None,
                                     force=[0,0],
                                     crop=[131,390,64,128],
-                                    repeat=12,
+                                    repeat=40,
                                     push_box=None)
 lp_four = factory.create_component('fra',
                                    entity_id=player_entity.entity_id,
                                    hitboxes=None,
                                    force=[0,0],
                                    crop=[66,390,64,128],
-                                   repeat=4,
+                                   repeat=20,
                                    push_box=None)
 lp_ani = factory.create_component('ani',
                                   entity_id=player_entity.entity_id,
@@ -306,8 +306,26 @@ fall_exe = factory.create_component('exe',
                                     entity_id=player_entity.entity_id,
                                     executables=[fall_move],
                                     inputs=player_inp_component)
+standing_atack_exe = factory.create_component('exe',
+                                              entity_id=player_entity.entity_id,
+                                              executables=[lp_move],
+                                              inputs=player_inp_component)
 
 # state test objects
+attacking_value_state = factory.create_component('stateval',
+                                                 entity_id=player_entity.entity_id,
+                                                 active=False)
+lp_attacking_rule = factory.create_component('rule', name='stand_lp',
+                                             operator='eq', value=True)
+lp_attacking_rule_value = lambda: lp_move.active
+attacking_state = factory.create_component('state',
+                                           entity_id=player_entity.entity_id,
+                                           rules=[lp_attacking_rule],
+                                           activation_event_type=ACTIVATESTATEVALUE,
+                                           deactivation_event_type=DEACTIVATESTATEVALUE,
+                                           activation_component=attacking_value_state,
+                                           rule_values={'stand_lp': lp_attacking_rule_value})
+
 gravity_rule = factory.create_component('rule', name='gravity', operator='eq', value=True)
 #gravity_rule_value = lambda: g_movement_comp.velocity[1]
 gravity_rule_value = True
@@ -323,18 +341,18 @@ standing_rule = factory.create_component('rule',
                                          value=0)
 standing_rule_value = lambda: g_movement_comp.velocity[1]
 standing_move_rule = factory.create_component('rule',
-                                              name='moves',
+                                              name='attacking',
                                               operator='eq',
-                                              value=True)
-standing_move_rule_value = lambda: move_one.active
+                                              value=False)
+standing_move_rule_value = lambda: attacking_value_state.active
 standing_state = factory.create_component('state',
                                           entity_id=player_entity.entity_id,
-                                          rules=[standing_rule],
+                                          rules=[standing_rule, standing_move_rule],
                                           activation_event_type=ACTIVATEEXECUTIONCOMPONENT,
                                           deactivation_event_type=DEACTIVATEEXECUTIONCOMPONENT,
                                           activation_component=standing_exe,
                                           rule_values={'y_velocity': standing_rule_value,
-                                                       'moves': standing_move_rule_value})
+                                                       'attacking': standing_move_rule_value})
 movement_rule = factory.create_component('rule', name='move', operator='eq',
                                          value=True)
 movement_state = factory.create_component('state', entity_id=player_entity.entity_id,
@@ -412,24 +430,6 @@ player_physics_comp = factory.create_component('physics',
 
 # debug test objects
 
-d_entity = factory.create_entity()
-d_rect = pygame.Rect(200, 350, 100, 100)
-d_comp = factory.create_component('deb', entity_id=d_entity.entity_id,
-                                  rect=d_rect)
-d_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
-                                       text=str(g_comp.area), loc=[0, 100], style=dict())
-d2_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=d_text_comp,
-                                   get_value=lambda: g_comp.area)
-d3_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
-                                         text='%s:%s' % (move_one.name, str(move_one.active)), 
-                                         loc=[0, 120], style=dict())
-d3_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=d3_text_comp,
-                                   get_value=lambda: '%s:%s' % (move_one.name, str(move_one.active)))
-d4_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
-                                         text='%s:%s' % (move_two.name, str(move_two.active)), 
-                                         loc=[0, 140], style=dict())
-d4_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=d4_text_comp,
-                                   get_value=lambda: '%s:%s' % (move_two.name, str(move_two.active)))
 jump_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
                                           text='%s:%s' % (jump_move.name, jump_move.active),
                                           loc=[0,160], style=dict())
@@ -513,7 +513,17 @@ player_loc_debug_comp = factory.create_component('deb',
                                                  text=player_loc_text_comp,
                                                  loc=[360,145],
                                                  get_value=player_loc_get_value)
-
+lp_get_value = lambda: 'Low Punch: %s' % lp_move.active
+lp_text_comp = factory.create_component('text',
+                                        entity_id=player_entity.entity_id,
+                                        text=lp_get_value(),
+                                        loc=[700, 100],
+                                        style=dict())
+lp_debug_comp = factory.create_component('deb',
+                                         entity_id=player_entity.entity_id,
+                                         text=lp_text_comp,
+                                         get_value=lp_get_value,
+                                         loc=[700, 100])
 # FPS output stuff
 fps = 0
 fps_entity = factory.create_entity()
