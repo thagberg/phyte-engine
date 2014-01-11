@@ -69,6 +69,10 @@ class StateSystem(System):
         elif event.type == REMOVESTATECOMPONENT:
             self._remove(event.component)
             print "Removed StateComponent: %s" % event.component
+        elif event.type == ACTIVATESTATEVALUE:
+            event.component.active = True
+        elif event.type == DEACTIVATESTATEVALUE:
+            event.component.active = False
 
     def _check_rule(self, rule, rule_values):
         retval = OP_MAP[rule.operator](rule_values, rule.value)

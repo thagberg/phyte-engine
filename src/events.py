@@ -8,7 +8,7 @@ class GameEvent(object):
 
 
 # use this to keep track of the highest event value
-__HIGHEVENT = 81 
+__HIGHEVENT = 83 
 
 # system events
 UPDATEDIRTY = 0
@@ -110,6 +110,8 @@ DEACTIVATEBUFFEREDEXECUTIONCOMPONENT = 71
 # state events
 ADDSTATECOMPONENT = 66
 REMOVESTATECOMPONENT = 67
+ACTIVATESTATEVALUE = 82
+DEACTIVATESTATEVALUE = 83
 
 # movement events
 ADDMOVEMENTCOMPONENT = 75
