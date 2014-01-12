@@ -140,6 +140,7 @@ g_comp = factory.create_component('graphics', entity_id=player_entity.entity_id,
                                   area=pygame.Rect([200,200,100,100]))
 
 # animation test objects
+# forward walking animation
 f_one = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[0,128,64,128],
                                  repeat=20, push_box=None)
@@ -153,7 +154,27 @@ frames = [f_one, f_two, f_tre]
 ani_one = factory.create_component('ani', entity_id=player_entity.entity_id,
                                    frames=frames, loop=True,
                                    graphic=g_comp)
-# animation 2
+
+# backward walking animation
+back_ani_one = factory.create_component('fra',
+                                        entity_id=player_entity.entity_id,
+                                        crop=[131,128,64,128],
+                                        repeat=20)
+back_ani_two = factory.create_component('fra',
+                                        entity_id=player_entity.entity_id,
+                                        crop=[66,128,64,128],
+                                        repeat=20)
+back_ani_three = factory.create_component('fra',
+                                          entity_id=player_entity.entity_id,
+                                          crop=[0,128,64,128],
+                                          repeat=20)
+back_ani = factory.create_component('ani',
+                                    entity_id=player_entity.entity_id,
+                                    frames=[back_ani_one, back_ani_two, back_ani_three],
+                                    loop=True,
+                                    graphic=g_comp)
+
+# neutral animation
 f2_one = factory.create_component('fra', entity_id=player_entity.entity_id,
                                  hitboxes=None, force=[0,0], crop=[0,0,64,128],
                                  repeat=20, push_box=None)
@@ -235,6 +256,12 @@ walk_move = factory.create_component('move', entity_id=player_entity.entity_id,
                                      name='walk',
                                      animation=ani_one,
                                      inputs=forward_inputs)
+back_inputs = ['left']
+back_move = factory.create_component('move',
+                                     entity_id=player_entity.entity_id,
+                                     name='back',
+                                     animation=back_ani,
+                                     inputs=back_inputs)
 m2_inputs = []
 move_two = factory.create_component('move', entity_id=player_entity.entity_id,
                                      name='neutral',
@@ -272,6 +299,11 @@ movm_comp = factory.create_component('movement',
                                      body=g_movement_comp.velocity, 
                                      velocity=[2, 0],
                                      parent=g_movement_comp)
+back_movement_comp = factory.create_component('movement',
+                                              entity_id=player_entity.entity_id,
+                                              body=g_movement_comp.velocity,
+                                              velocity=[-1, 0],
+                                              parent=g_movement_comp)
 jump_movement_comp = factory.create_component('movement', 
                                               entity_id=player_entity.entity_id,
                                               body=g_movement_comp.velocity, 
@@ -301,7 +333,8 @@ friction_movement_comp = factory.create_component('varmovement',
 standing_exe = factory.create_component('exe',
                                         entity_id=player_entity.entity_id,
                                         executables=[lp_move, jump_move, 
-                                                     walk_move, move_two],
+                                                     walk_move, back_move,
+                                                     move_two],
                                         inputs=player_inp_component)
 fall_exe = factory.create_component('exe',
                                     entity_id=player_entity.entity_id,
@@ -366,6 +399,16 @@ movement_state = factory.create_component('state', entity_id=player_entity.entit
                                           deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                           activation_component=movm_comp,
                                           rule_values={'move':lambda: walk_move.active})
+# back movement state
+back_rule = factory.create_component('rule', name='back', operator='eq',
+                                     value=True)
+back_state = factory.create_component('state',
+                                      entity_id=player_entity.entity_id,
+                                      rules=[back_rule],
+                                      activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
+                                      deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
+                                      activation_component=back_movement_comp,
+                                      rule_values={'back':lambda: back_move.active})
 # jumping state
 jump_rule = factory.create_component('rule', name='jump', operator='eq',
                                      value=True)
