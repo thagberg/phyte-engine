@@ -157,11 +157,11 @@ class ComponentFactory(object):
         # FrameComponent
         elif type == 'fra':
             entity_id = props['entity_id']
-            hitboxes = props['hitboxes']
-            force = props['force']
             crop = props['crop']
             repeat = props['repeat']
-            push_box = props['push_box']
+            hitboxes = props.get('hitboxes')
+            force = props.get('force')
+            push_box = props.get('push_box')
             component = animation.FrameComponent(entity_id=entity_id,
                                                  hitboxes=hitboxes, force=force,
                                                  crop=crop, repeat=repeat,
