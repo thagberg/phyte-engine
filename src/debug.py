@@ -7,7 +7,7 @@ from pygame import draw
 class DebugComponent(object):
     def __init__(self, entity_id, text=None, get_value=None, 
                  rect=None, line=None, ellipse=None, circle=None, 
-                 arc=None, **style):
+                 active=False, arc=None, **style):
         self.entity_id = entity_id
         self.text = text
         self.get_value = get_value
@@ -16,6 +16,7 @@ class DebugComponent(object):
         self.ellipse = ellipse
         self.circle = circle
         self.arc = arc
+        self.active = active
         self.style = style
         self.last_value = None
 
@@ -44,6 +45,24 @@ class DebugSystem(System):
     def _update_debug(self, component):
         if component.text:
             t_event = GameEvent(UPDATETEXT, component.text)
+            self.delegate(t_event)
+
+    def _activate(self, component):
+        comp = component
+        comp.active = True
+        # if this debug component has a rendered text object,
+        # we need to activate that too
+        if comp.text:
+            new_event = GameEvent(ACTIVATETEXTCOMPONENT, component=comp.text)
+            self.delegate(new_event)
+
+    def _deactivate(self, component):
+        comp = component
+        comp.active = False
+        # deactivate any rendered text objects as well
+        if comp.text:
+            new_event = GameEvent(DEACTIVATETEXTCOMPONENT, component=comp.text)
+            self.delegate(new_event)
 
     def handle_event(self, event):
         if event.type == ADDDEBUGCOMPONENT:
@@ -55,6 +74,10 @@ class DebugSystem(System):
         elif event.type == UPDATEDEBUGCOMPONENT:
             print "Updating debug component"
             self._update_debug(event.component)
+        elif event.type == ACTIVATEDEBUGCOMPONENT:
+            self._activate(event.component)
+        elif event.type == DEACTIVATEDEBUGCOMPONENT:
+            self._deactivate(event.component)
 
     def update(self, time):
         self.delta = time

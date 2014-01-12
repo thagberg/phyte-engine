@@ -94,8 +94,13 @@ class ComponentFactory(object):
             dest = props.get('dest')
             area = props.get('area')
             flgs = props.get('flags')
-            component = graphics2d.GraphicsComponent(entity_id, surface, dest,
-                                                   area, flgs)
+            active = props.get('active', False)
+            component = graphics2d.GraphicsComponent(entity_id=entity_id, 
+                                                     surface=surface, 
+                                                     dest=dest,
+                                                     area=area, 
+                                                     flags=flgs, 
+                                                     active=active)
             new_event = GameEvent(ADDGRAPHICSCOMPONENT, component=component)
             self.delegate(new_event)
 
@@ -106,9 +111,11 @@ class ComponentFactory(object):
             style = props['style']
             graphic = props['graphic'] if 'graphic' in props else None
             loc = props['loc'] if 'loc' in props else [0,0]
+            active = props.get('active', False)
             component = text.TextComponent(entity_id=entity_id, text=c_text, 
                                            loc=loc, graphic=graphic, 
-                                           style=style)
+                                           style=style,
+                                           active=active)
             new_event = GameEvent(ADDTEXTCOMPONENT, component=component)
             self.delegate(new_event)
 
@@ -190,10 +197,12 @@ class ComponentFactory(object):
             arc = props.get('arc')
             style = props.get('style')
             get_value = props.get('get_value')
+            active = props.get('active', False)
             component = debug.DebugComponent(entity_id=entity_id, text=c_text,
                                              get_value=get_value, rect=rect, 
                                              line=line, ellipse=ellipse, 
-                                             circle=circle, arc=arc, style=style)
+                                             circle=circle, arc=arc, style=style,
+                                             active=active)
             new_event = GameEvent(ADDDEBUGCOMPONENT, component=component)
             self.delegate(new_event)
 

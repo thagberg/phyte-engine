@@ -69,7 +69,9 @@ eng.install_system(inpb, (ADDINPUTBUFFERCOMPONENT, REMOVEINPUTBUFFERCOMPONENT,
 gra = graphics2d.GraphicsSystem(screen, factory)
 eng.install_system(gra, (ADDGRAPHICSCOMPONENT, REMOVEGRAPHICSCOMPONENT,
                          CHANGECROP, CHANGEDEST, CHANGESURFACE,
-                         CHANGEDISPLAY, CHANGEZLEVEL), stage=2)
+                         CHANGEDISPLAY, CHANGEZLEVEL,
+                         ACTIVATEGRAPHICSCOMPONENT, DEACTIVATEGRAPHICSCOMPONENT), 
+                   stage=2)
 
 tex = text.TextSystem(factory)
 eng.install_system(tex, (ADDTEXTCOMPONENT, REMOVETEXTCOMPONENT,
@@ -107,7 +109,8 @@ eng.install_system(exe, (ADDEXECUTIONCOMPONENT, REMOVEEXECUTIONCOMPONENT,
 
 deb = debug.DebugSystem(screen, factory)
 eng.install_system(deb, (ADDDEBUGCOMPONENT, REMOVEDEBUGCOMPONENT,
-                         UPDATEDEBUGCOMPONENT))
+                         UPDATEDEBUGCOMPONENT, ACTIVATEDEBUGCOMPONENT,
+                         DEACTIVATEDEBUGCOMPONENT))
 
 pla = player.PlayerSystem(factory)
 eng.install_system(pla, (ADDPLAYERCOMPONENT, REMOVEPLAYERCOMPONENT,
@@ -137,7 +140,8 @@ player_surface = pygame.image.load('../content/sticksheet.png')
 g_comp = factory.create_component('graphics', entity_id=player_entity.entity_id,
                                   surface=player_surface, 
                                   dest=pygame.Rect([200,200,64,128]),
-                                  area=pygame.Rect([200,200,100,100]))
+                                  area=pygame.Rect([200,200,100,100]),
+                                  active=True)
 
 # animation test objects
 # forward walking animation
@@ -480,33 +484,10 @@ player_physics_comp = factory.create_component('physics',
 
 
 # debug test objects
-
-jump_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
-                                          text='%s:%s' % (jump_move.name, jump_move.active),
-                                          loc=[0,160], style=dict())
-jump_deb_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=jump_text_comp,
-                                         get_value=lambda: '%s:%s' %(jump_move.name, jump_move.active))
-ani1_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
-                                          text='%s-%s-%s' % (ani_one.active, ani_one.current_index, len(ani_one.frames)), 
-                                          loc=[0,180], style=dict())
-ani1_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=ani1_text_comp,
-                                           get_value=lambda: '%s-%s-%s' % (ani_one.active, ani_one.current_index, len(ani_one.frames)))
-ani2_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
-                                          text='%s-%s-%s' % (ani_two.active, ani_two.current_index, len(ani_two.frames)),
-                                          loc=[0,200], style=dict())
-ani2_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=ani2_text_comp,
-                                           get_value=lambda: '%s-%s-%s' % (ani_two.active, ani_two.current_index, len(ani_two.frames)))
-jani_text_comp = factory.create_component('text', entity_id=player_entity.entity_id,
-                                          text='%s-%s-%s' % (jump_ani.active, jump_ani.current_index, len(jump_ani.frames)),
-                                          loc=[0,220], style=dict())
-jani_debug_comp = factory.create_component('deb', entity_id=player_entity.entity_id, text=jani_text_comp,
-                                           get_value=lambda: '%s-%s-%s' % (jump_ani.active, jump_ani.current_index, len(jump_ani.frames)))
-player_debug_comp = factory.create_component('deb',
-                                             entity_id=player_entity.entity_id,
-                                             rect=g_comp.dest)
 ground_debug_comp = factory.create_component('deb',
                                              entity_id=ground_entity.entity_id,
-                                             rect=ground_comp.box)
+                                             rect=ground_box.rect,
+                                             active=True)
 vel_get_value = lambda: 'Player Velocity: [%d, %d]' % (g_movement_comp.velocity[0], g_movement_comp.velocity[1])
 vel_text_comp = factory.create_component('text',
                                          entity_id=player_entity.entity_id,
@@ -517,7 +498,8 @@ vel_debug_comp = factory.create_component('deb',
                                           entity_id=player_entity.entity_id,
                                           text=vel_text_comp,
                                           loc=[200, 100],
-                                          get_value=vel_get_value)
+                                          get_value=vel_get_value,
+                                          active=True)
 fall_exe_get_value = lambda: 'Fall Exec Comp: %s' % (fall_exe.active)
 fall_exe_text_comp = factory.create_component('text',
                                               entity_id=player_entity.entity_id,
@@ -528,7 +510,8 @@ fall_exe_debug_comp = factory.create_component('deb',
                                                entity_id=player_entity.entity_id,
                                                text=fall_exe_text_comp,
                                                loc=[360, 100],
-                                               get_value=fall_exe_get_value)
+                                               get_value=fall_exe_get_value,
+                                               active=True)
 stand_exe_get_value = lambda: 'Stand Exe Comp: %s' % (standing_exe.active)
 stand_exe_text_comp = factory.create_component('text',
                                                entity_id=player_entity.entity_id,
@@ -539,7 +522,8 @@ stand_exe_debug_comp = factory.create_component('deb',
                                                 entity_id=player_entity.entity_id,
                                                 text=stand_exe_text_comp,
                                                 loc=[520, 100],
-                                                get_value=stand_exe_get_value)
+                                                get_value=stand_exe_get_value,
+                                                active=True)
 grav_movm_get_value = lambda: 'Gravity Movement: %s: %s' % (
     gravity_movement_comp.active,
     gravity_movement_comp.velocity)
@@ -552,7 +536,8 @@ grav_movm_debug_comp = factory.create_component('deb',
                                                 entity_id=player_entity.entity_id,
                                                 text=grav_movm_text_comp,
                                                 loc=[360,120],
-                                                get_value=grav_movm_get_value)
+                                                get_value=grav_movm_get_value,
+                                                active=True)
 player_loc_get_value = lambda: 'Player Location: %s' % [g_comp.dest[0], g_comp.dest[1]]
 player_loc_text_comp = factory.create_component('text',
                                                 entity_id=player_entity.entity_id,
@@ -563,7 +548,8 @@ player_loc_debug_comp = factory.create_component('deb',
                                                  entity_id=player_entity.entity_id,
                                                  text=player_loc_text_comp,
                                                  loc=[360,145],
-                                                 get_value=player_loc_get_value)
+                                                 get_value=player_loc_get_value,
+                                                 active=True)
 lp_get_value = lambda: 'Low Punch: %s' % lp_move.active
 lp_text_comp = factory.create_component('text',
                                         entity_id=player_entity.entity_id,
@@ -574,7 +560,8 @@ lp_debug_comp = factory.create_component('deb',
                                          entity_id=player_entity.entity_id,
                                          text=lp_text_comp,
                                          get_value=lp_get_value,
-                                         loc=[700, 100])
+                                         loc=[700, 100],
+                                         active=True)
 # FPS output stuff
 fps = 0
 fps_entity = factory.create_entity()
