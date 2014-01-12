@@ -3,13 +3,22 @@ from events import *
 from collections import defaultdict
 
 
+NORMAL_INPUT_MAPPING = {
+    'forward': 'right',
+    'backward': 'left'
+}
+MIRROR_INPUT_MAPPING = {
+    'forward': 'left',
+    'backward': 'right'
+}
+
 class ExecutionComponent(object):
     def __init__(self, entity_id, executables, inputs, 
                  mirror=False, active=False):
         self.entity_id = entity_id
         # NOTE: executables should be ordered based on priority
         self.executables = list() if executables is None else executables
-        self.input = inputs
+        self.inputs = inputs
         self.mirror = mirror
         self.active = active
 
@@ -57,15 +66,11 @@ class ExecutionSystem(System):
     def _clean_input(self, dirty_input, mirror):
         clean_input = dirty_input
         if mirror:
-            if clean_input == 'forward':
-                clean_input = 'left'
-            elif clean_input == 'backward':
-                clean_input = 'right'
+            if clean_input in MIRROR_INPUT_MAPPING:
+                clean_input = MIRROR_INPUT_MAPPING[clean_input]
         else:
-            if clean_input == 'forward':
-                clean_input = 'right'
-            elif clean_input == 'backward':
-                clean_input = 'left'
+            if clean_input in NORMAL_INPUT_MAPPING:
+                clean_input = NORMAL_INPUT_MAPPING[clean_input]
         return clean_input 
 
     def _check_for_move(self, executables, inputs, mirror):
@@ -106,7 +111,7 @@ class ExecutionSystem(System):
         # iterate only over the active components
         for comp in [x for x in self.components if x.active]:
             execute = self._check_for_move(comp.executables,
-                                           comp.input, comp.mirror)
+                                           comp.inputs, comp.mirror)
             if execute:
                 ma_event = GameEvent(MOVEACTIVATE, component=execute)
                 self.delegate(ma_event)

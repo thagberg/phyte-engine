@@ -306,10 +306,10 @@ fall_exe = factory.create_component('exe',
                                     entity_id=player_entity.entity_id,
                                     executables=[fall_move],
                                     inputs=player_inp_component)
-standing_atack_exe = factory.create_component('exe',
-                                              entity_id=player_entity.entity_id,
-                                              executables=[lp_move],
-                                              inputs=player_inp_component)
+standing_attack_exe = factory.create_component('exe',
+                                               entity_id=player_entity.entity_id,
+                                               executables=[lp_move],
+                                               inputs=player_inp_component)
 
 # state test objects
 
