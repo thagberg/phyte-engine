@@ -312,6 +312,8 @@ standing_atack_exe = factory.create_component('exe',
                                               inputs=player_inp_component)
 
 # state test objects
+
+# attacking state value
 attacking_value_state = factory.create_component('stateval',
                                                  entity_id=player_entity.entity_id,
                                                  active=False)
@@ -326,8 +328,8 @@ attacking_state = factory.create_component('state',
                                            activation_component=attacking_value_state,
                                            rule_values={'stand_lp': lp_attacking_rule_value})
 
+# gravity state
 gravity_rule = factory.create_component('rule', name='gravity', operator='eq', value=True)
-#gravity_rule_value = lambda: g_movement_comp.velocity[1]
 gravity_rule_value = True
 gravity_state = factory.create_component('state', entity_id=player_entity.entity_id,
                                          rules=[gravity_rule],
@@ -335,6 +337,7 @@ gravity_state = factory.create_component('state', entity_id=player_entity.entity
                                          deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                          activation_component=gravity_movement_comp,
                                          rule_values={'gravity': gravity_rule_value})
+# standing state
 standing_rule = factory.create_component('rule',
                                          name='y_velocity',
                                          operator='eq',
@@ -353,6 +356,7 @@ standing_state = factory.create_component('state',
                                           activation_component=standing_exe,
                                           rule_values={'y_velocity': standing_rule_value,
                                                        'attacking': standing_move_rule_value})
+# movement state
 movement_rule = factory.create_component('rule', name='move', operator='eq',
                                          value=True)
 movement_state = factory.create_component('state', entity_id=player_entity.entity_id,
@@ -361,11 +365,11 @@ movement_state = factory.create_component('state', entity_id=player_entity.entit
                                           deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                           activation_component=movm_comp,
                                           rule_values={'move':lambda: move_one.active})
+# jumping state
 jump_rule = factory.create_component('rule', name='jump', operator='eq',
                                      value=True)
 jump_rule2 = factory.create_component('rule', name='y_velocity', operator='lt',
                                       value=0)
-#jump_rule_value = lambda: jump_move.active and jump_movement_comp.velocity[1] > 0
 jump_rule_value = lambda: jump_move.active
 jump_rule2_value = lambda: g_movement_comp.velocity[1]
 jump_state = factory.create_component('state', entity_id=player_entity.entity_id,
@@ -375,6 +379,7 @@ jump_state = factory.create_component('state', entity_id=player_entity.entity_id
                                       activation_component=jump_movement_comp,
                                       rule_values={'jump': jump_rule_value,
                                                    'y_velocity': jump_rule2_value})
+# falling state
 fall_rule = factory.create_component('rule', name='fall', operator='gt',
                                      value=0)
 fall_rule_value = lambda: g_movement_comp.velocity[1]
@@ -385,6 +390,7 @@ fall_state = factory.create_component('state',
                                       deactivation_event_type=DEACTIVATEEXECUTIONCOMPONENT,
                                       activation_component=fall_exe,
                                       rule_values={'fall': fall_rule_value})
+# moveable state
 moveable_rule = factory.create_component('rule', name='moveable', operator='eq',
                                          value=True)
 moveable_rule_value = lambda: True
@@ -394,6 +400,7 @@ moveable_state = factory.create_component('state', entity_id=player_entity.entit
                                           deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                           activation_component=g_movement_comp,
                                           rule_values={'moveable': moveable_rule_value})
+# friction state
 friction_rule = factory.create_component('rule', name='friction', operator='gt', value=0)
 friction_rule2 = factory.create_component('rule', name='y_velocity', operator='eq', value=0)
 friction_rule_value = lambda: abs(g_movement_comp.velocity[0])
