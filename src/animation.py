@@ -97,10 +97,9 @@ class AnimationSystem(System):
             # if this is a looping animation, start over
             if c.loop:
                 c.current_index = 0
-            # if not a looping animation, we must now reset the animation
-            # object and deactivate it
+            # if not a looping animation, this animation is complete
             else:
-                de_event = GameEvent(ANIMATIONDEACTIVATE, component=c)
+                de_event = GameEvent(ANIMATIONCOMPLETE, component=c)
                 self.delegate(de_event)
                 return
         c.current_frame = c.frames[c.current_index]

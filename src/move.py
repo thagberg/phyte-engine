@@ -20,10 +20,13 @@ class MoveSystem(System):
         self.factory = factory
         self.components = list() if components is None else components
         self.entity_mapping = defaultdict(list)
+        self.animation_mapping = dict()
 
     def _add(self, component):
         self.components.append(component)
         self.entity_mapping[component.entity_id].append(component)
+        if component.animation:
+            self.animation_mapping[component.animation] = component
 
     def _remove(self, component):
         # clear animation
@@ -56,6 +59,12 @@ class MoveSystem(System):
                              component=component.animation)
         self.delegate(da_event)
 
+    def _deactivate_from_animation(self, component):
+        move_comp = self.animation_mapping.get(component)
+        if move_comp is not None:
+            new_event = GameEvent(MOVEDEACTIVATE, component=move_comp)
+            self.delegate(new_event)
+
     def handle_event(self, event):
         if event.type == ADDMOVECOMPONENT:
             self._add(event.component)
@@ -67,6 +76,8 @@ class MoveSystem(System):
             self._activate(event.component)
         elif event.type == MOVEDEACTIVATE:
             self._deactivate(event.component)
+        elif event.type == ANIMATIONCOMPLETE:
+            self._deactivate_from_animation(event.component)
 
     def update(self, time):
         self.delta = time

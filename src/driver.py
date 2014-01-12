@@ -84,10 +84,11 @@ eng.install_system(ani, (ANIMATIONCOMPLETE, ANIMATIONACTIVATE,
 mov = move.MoveSystem(factory)
 eng.install_system(mov, (MOVEEVENT, MOVECHANGE, MOVERESET, MOVEACTIVATE,
                          MOVEDEACTIVATE, ADDMOVECOMPONENT,
-                         REMOVEMOVECOMPONENT))
+                         REMOVEMOVECOMPONENT, ANIMATIONCOMPLETE))
 
 sta = state.StateSystem(factory)
-eng.install_system(sta, (ADDSTATECOMPONENT, REMOVESTATECOMPONENT))
+eng.install_system(sta, (ADDSTATECOMPONENT, REMOVESTATECOMPONENT,
+                         ACTIVATESTATEVALUE, DEACTIVATESTATEVALUE))
 
 movm = movement.MovementSystem(factory)
 eng.install_system(movm, (ADDMOVEMENTCOMPONENT, REMOVEMOVEMENTCOMPONENT,
@@ -229,11 +230,11 @@ lp_ani = factory.create_component('ani',
                                   graphic=g_comp)
 
 # move test objects
-m_inputs = ['right']
-move_one = factory.create_component('move', entity_id=player_entity.entity_id,
-                                    name='testmove',
-                                    animation=ani_one,
-                                    inputs=m_inputs)
+forward_inputs = ['right']
+walk_move = factory.create_component('move', entity_id=player_entity.entity_id,
+                                     name='walk',
+                                     animation=ani_one,
+                                     inputs=forward_inputs)
 m2_inputs = []
 move_two = factory.create_component('move', entity_id=player_entity.entity_id,
                                      name='neutral',
@@ -269,7 +270,7 @@ gravity_movement_comp = factory.create_component('movement',
 movm_comp = factory.create_component('movement', 
                                      entity_id=player_entity.entity_id,
                                      body=g_movement_comp.velocity, 
-                                     velocity=[5, 0],
+                                     velocity=[2, 0],
                                      parent=g_movement_comp)
 jump_movement_comp = factory.create_component('movement', 
                                               entity_id=player_entity.entity_id,
@@ -300,7 +301,7 @@ friction_movement_comp = factory.create_component('varmovement',
 standing_exe = factory.create_component('exe',
                                         entity_id=player_entity.entity_id,
                                         executables=[lp_move, jump_move, 
-                                                     move_one, move_two],
+                                                     walk_move, move_two],
                                         inputs=player_inp_component)
 fall_exe = factory.create_component('exe',
                                     entity_id=player_entity.entity_id,
@@ -364,7 +365,7 @@ movement_state = factory.create_component('state', entity_id=player_entity.entit
                                           activation_event_type=ACTIVATEMOVEMENTCOMPONENT,
                                           deactivation_event_type=DEACTIVATEMOVEMENTCOMPONENT,
                                           activation_component=movm_comp,
-                                          rule_values={'move':lambda: move_one.active})
+                                          rule_values={'move':lambda: walk_move.active})
 # jumping state
 jump_rule = factory.create_component('rule', name='jump', operator='eq',
                                      value=True)

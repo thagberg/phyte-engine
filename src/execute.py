@@ -112,7 +112,7 @@ class ExecutionSystem(System):
         for comp in [x for x in self.components if x.active]:
             execute = self._check_for_move(comp.executables,
                                            comp.inputs, comp.mirror)
-            if execute:
+            if execute and not execute.active:
                 ma_event = GameEvent(MOVEACTIVATE, component=execute)
                 self.delegate(ma_event)
                 break
@@ -128,7 +128,7 @@ class BufferedExecutionSystem(ExecutionSystem):
             input_index = 0
             # if input is forward/backward, translate it to proper 
             # directional input
-            clean = this.clean_input(ex.inputs[input_index], mirror)
+            clean = self._clean_input(ex.inputs[input_index], mirror)
             for inp in buf: 
                 # check if this buffered input matches the next
                 # input value for this executable
