@@ -54,6 +54,7 @@ image = pygame.image.load('../content/sticksheet.png')
 crop = [0,0,64,128]
 click_down = False
 click_down_pos = []
+boxes = []
 running = True
 while(running):
     screen.fill(WHITE)
@@ -68,6 +69,12 @@ while(running):
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == MOUSE_LEFT:
                 click_down = False
+                end_pos = event.pos
+                box_width = end_pos[0] - click_down_pos[0]
+                box_height = end_pos[1] - click_down_pos[1]
+                box = pygame.Rect(click_down_pos[0], click_down_pos[1], box_width, box_height)
+                hitbox = HitBox(box, hitactive=True)
+                boxes.append(hitbox)
 
     draw_frame(screen, image, crop)
     if click_down:
@@ -77,5 +84,8 @@ while(running):
         box = pygame.Rect(click_down_pos[0], click_down_pos[1], box_width, box_height)
         hitbox = HitBox(box, hitactive=True)
         draw_box(screen, hitbox)
+
+    for box in boxes:
+        draw_box(screen, box)
 
     pygame.display.flip()
