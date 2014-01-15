@@ -65,6 +65,7 @@ crop = [0,0,64,128]
 click_down = False
 click_down_pos = []
 boxes = []
+current_box = None
 frame_pos = (SCREEN_SIZE[0]-FRAME_SIZE[0]-10,
              SCREEN_SIZE[1]-FRAME_SIZE[1]-10)
 frame_rect = frame_surface.get_rect(center=(frame_pos[0]+frame_surface.get_width()/2,
@@ -133,19 +134,20 @@ while(running):
             if event.button == MOUSE_RIGHT:
                 if frame_rect.collidepoint(event.pos):
                     click_down = True
-                    click_down_pos = event.pos
+                    translated_pos = (event.pos[0] - frame_pos[0],
+                                      event.pos[1] - frame_pos[1])
+                    current_box = pygame.Rect(translated_pos, (0,0))
+                    box_x.text = str(current_box.x)
+                    box_y.text = str(current_box.y)
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == MOUSE_RIGHT:
-                click_down = False
-                end_pos = event.pos
-                box_width = end_pos[0] - click_down_pos[0]
-                box_height = end_pos[1] - click_down_pos[1]
-                box = pygame.Rect(click_down_pos[0], 
-                                  click_down_pos[1], 
-                                  box_width, 
-                                  box_height)
-                hitbox = HitBox(box, hitactive=True)
-                boxes.append(hitbox)
+                if frame_rect.collidepoint(event.pos):
+                    click_down = False
+                    end_pos = event.pos
+                    translated_pos = (event.pos[0] - frame_pos[0],
+                                      event.pos[1] - frame_pos[1])
+                    current_box.width = translated_pos[0] - current_box.x
+                    current_box.height = translated_pos[1] - current_box.y
 
     # pass events to ocempgui renderer
     re.distribute_events(*events)
@@ -153,21 +155,22 @@ while(running):
     # draw the animation frame
     draw_frame(frame_surface, image, crop)
 
-    # if currently clicking down, draw temporary box
+    # draw temporary click-and-drag box
     if click_down:
         current_pos = pygame.mouse.get_pos()
-        box_width = current_pos[0] - click_down_pos[0]
-        box_height = current_pos[1] - click_down_pos[1]
-        box = pygame.Rect(click_down_pos[0], 
-                          click_down_pos[1], 
-                          box_width, 
-                          box_height)
-        hitbox = HitBox(box, hitactive=True)
-        draw_box(frame_surface, hitbox)
+        translated_pos = (current_pos[0] - frame_pos[0],
+                          current_pos[1] - frame_pos[1])
+        temp_box = pygame.Rect(current_box.x,
+                               current_box.y,
+                               translated_pos[0] - current_box.x, 
+                               translated_pos[1] - current_box.y) 
+        hb = HitBox(temp_box, hitactive=True)
+        draw_box(frame_surface, hb)
 
-    # draw the existant boxes
-    for box in boxes:
-        draw_box(screen, box)
+    # draw the current box
+    if current_box:
+        hb = HitBox(current_box, hitactive=True)
+        draw_box(frame_surface, hb)
 
     # draw the frame plane to the screen
     screen.blit(frame_surface, frame_pos)
