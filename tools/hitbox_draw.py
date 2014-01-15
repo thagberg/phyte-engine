@@ -1,4 +1,5 @@
 import pygame
+from ocempgui.widgets import *
 
 SCREEN_SIZE = (800, 600)
 WHITE = (255,255,255,255)
@@ -8,15 +9,18 @@ BLUE = (0, 0, 255, 255)
 PURPLE = (255, 0, 255, 255)
 YELLOW = (255, 255, 0, 255)
 BLACK = (0, 0, 0, 255)
+GRAY = (220, 220, 220, 255)
 
 MOUSE_LEFT = 1
+MOUSE_RIGHT = 3
 
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
-screen.set_alpha(None)
-screen.set_colorkey((0,255,255))
-pygame.display.set_caption('Hitbox Definition')
 
+re = Renderer()
+re.screen = screen
+re.title = 'Hitbox Definition'
+re.color = GRAY
 
 class HitBox(object):
     def __init__(self, rect, hitactive=False, hurtactive=False,
@@ -57,24 +61,30 @@ click_down_pos = []
 boxes = []
 running = True
 while(running):
-    screen.fill(WHITE)
+    screen.fill(re.color)
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == MOUSE_LEFT:
+            if event.button == MOUSE_RIGHT:
                 click_down = True
                 click_down_pos = event.pos
         elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == MOUSE_LEFT:
+            if event.button == MOUSE_RIGHT:
                 click_down = False
                 end_pos = event.pos
                 box_width = end_pos[0] - click_down_pos[0]
                 box_height = end_pos[1] - click_down_pos[1]
-                box = pygame.Rect(click_down_pos[0], click_down_pos[1], box_width, box_height)
+                box = pygame.Rect(click_down_pos[0], 
+                                  click_down_pos[1], 
+                                  box_width, 
+                                  box_height)
                 hitbox = HitBox(box, hitactive=True)
                 boxes.append(hitbox)
+
+    # pass events to ocempgui renderer
+    re.distribute_events(*events)
 
     draw_frame(screen, image, crop)
     if click_down:
