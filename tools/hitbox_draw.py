@@ -1,7 +1,11 @@
 import pygame
 from ocempgui.widgets import *
+from ocempgui.widgets.Constants import ALIGN_TOP, ALIGN_BOTTOM, ALIGN_LEFT, \
+    ALIGN_RIGHT, ALIGN_NONE
 
-SCREEN_SIZE = (800, 600)
+SCREEN_SIZE = (1000, 700)
+FRAME_SIZE = (SCREEN_SIZE[0]/2, SCREEN_SIZE[1]*0.8)
+
 WHITE = (255,255,255,255)
 RED = (255, 0, 0, 255)
 GREEN = (0, 255, 0, 255)
@@ -16,11 +20,13 @@ MOUSE_RIGHT = 3
 
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
+frame_surface = pygame.Surface(FRAME_SIZE)
 
 re = Renderer()
 re.screen = screen
 re.title = 'Hitbox Definition'
 re.color = GRAY
+
 
 class HitBox(object):
     def __init__(self, rect, hitactive=False, hurtactive=False,
@@ -59,17 +65,75 @@ crop = [0,0,64,128]
 click_down = False
 click_down_pos = []
 boxes = []
+frame_pos = (SCREEN_SIZE[0]-FRAME_SIZE[0]-10,
+             SCREEN_SIZE[1]-FRAME_SIZE[1]-10)
+frame_rect = frame_surface.get_rect(center=(frame_pos[0]+frame_surface.get_width()/2,
+                                            frame_pos[1]+frame_surface.get_height()/2))
+
+# set up GUI stuff
+hitactive_check = CheckButton("Hit Active")
+hurtactive_check = CheckButton("Hurt Active")
+blockactive_check = CheckButton("Block Active")
+solid_check = CheckButton("Solid")
+box_x_label = Label('Box X')
+box_x = Entry()
+box_y_label = Label('Box Y')
+box_y = Entry()
+box_width_label = Label('Box Width')
+box_width = Entry()
+box_height_label = Label('Box Height')
+box_height = Entry()
+add_button = Button('Add Box')
+box_list = ScrolledList(200, 200, boxes)
+
+re.add_widget(hitactive_check)
+re.add_widget(hurtactive_check)
+re.add_widget(blockactive_check)
+re.add_widget(solid_check)
+re.add_widget(box_x_label)
+re.add_widget(box_x)
+re.add_widget(box_y_label)
+re.add_widget(box_y)
+re.add_widget(box_width_label)
+re.add_widget(box_width)
+re.add_widget(box_height_label)
+re.add_widget(box_height)
+re.add_widget(add_button)
+re.add_widget(box_list)
+
+box_x_label.align = ALIGN_LEFT
+box_y_label.align = ALIGN_LEFT
+box_width_label.align = ALIGN_LEFT
+box_height_label.align = ALIGN_LEFT
+
+hitactive_check.topleft = (10, 25)
+hurtactive_check.topleft = (10, 50)
+blockactive_check.topleft = (10, 75)
+solid_check.topleft = (10, 100)
+box_x_label.topleft = (150, 25)
+box_x.topleft = (225, 25)
+box_y_label.topleft = (150, 50)
+box_y.topleft = (225, 50)
+box_width_label.topleft = (150, 75)
+box_width.topleft = (225, 75)
+box_height_label.topleft = (150, 100)
+box_height.topleft = (225, 100)
+add_button.topleft = (220, 145)
+box_list.topleft = (10, 140)
+
 running = True
 while(running):
-    screen.fill(re.color)
+    #screen.fill(re.color)
+    frame_surface.fill(WHITE)
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == MOUSE_RIGHT:
-                click_down = True
-                click_down_pos = event.pos
+                if frame_rect.collidepoint(event.pos):
+                    click_down = True
+                    click_down_pos = event.pos
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == MOUSE_RIGHT:
                 click_down = False
@@ -86,16 +150,26 @@ while(running):
     # pass events to ocempgui renderer
     re.distribute_events(*events)
 
-    draw_frame(screen, image, crop)
+    # draw the animation frame
+    draw_frame(frame_surface, image, crop)
+
+    # if currently clicking down, draw temporary box
     if click_down:
         current_pos = pygame.mouse.get_pos()
         box_width = current_pos[0] - click_down_pos[0]
         box_height = current_pos[1] - click_down_pos[1]
-        box = pygame.Rect(click_down_pos[0], click_down_pos[1], box_width, box_height)
+        box = pygame.Rect(click_down_pos[0], 
+                          click_down_pos[1], 
+                          box_width, 
+                          box_height)
         hitbox = HitBox(box, hitactive=True)
-        draw_box(screen, hitbox)
+        draw_box(frame_surface, hitbox)
 
+    # draw the existant boxes
     for box in boxes:
         draw_box(screen, box)
+
+    # draw the frame plane to the screen
+    screen.blit(frame_surface, frame_pos)
 
     pygame.display.flip()
