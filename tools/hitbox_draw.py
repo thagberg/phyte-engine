@@ -98,7 +98,19 @@ def cleanup_box(rect):
     box_height.text = str(rect.height)
 
 def set_current_box(selection):
-    pass
+    selection = box_list.get_selected()[0]
+    current_box.x = selection.rect.x
+    current_box.y = selection.rect.y
+    current_box.width = selection.rect.width
+    current_box.height = selection.rect.height
+    box_x.text = str(selection.rect.x)
+    box_y.text = str(selection.rect.y)
+    box_width.text = str(selection.rect.width)
+    box_height.text = str(selection.rect.height)
+    hitactive_check.active = selection.hitactive
+    hurtactive_check.active = selection.hurtactive
+    blockactive_check.active = selection.blockactive
+    solid_check.active = selection.solid
 
 image = pygame.image.load('../content/sticksheet.png')
 crop = [0,0,64,128]
@@ -166,6 +178,9 @@ box_list.selectionmode = SELECTION_SINGLE
 
 # wire up GUI events
 add_button.connect_signal(SIG_CLICKED, add_box)
+box_list.connect_signal(SIG_SELECTCHANGED, 
+                        set_current_box, 
+                        box_list.get_selected())
 
 running = True
 while(running):
@@ -210,12 +225,20 @@ while(running):
                                current_box.y,
                                translated_pos[0] - current_box.x, 
                                translated_pos[1] - current_box.y) 
-        hb = HitBox(temp_box, hitactive=True)
+        hb = HitBox(temp_box, 
+                    hitactive=hitactive_check.active,
+                    hurtactive=hurtactive_check.active,
+                    blockactive=blockactive_check.active,
+                    solid=solid_check.active)
         draw_box(frame_surface, hb)
 
     # draw the current box
     if current_box:
-        hb = HitBox(current_box, hitactive=True)
+        hb = HitBox(current_box, 
+                    hitactive=hitactive_check.active,
+                    hurtactive=hurtactive_check.active,
+                    blockactive=blockactive_check.active,
+                    solid=solid_check.active)
         draw_box(frame_surface, hb)
 
     # draw the frame plane to the screen
