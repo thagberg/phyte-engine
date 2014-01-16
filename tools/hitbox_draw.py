@@ -1,7 +1,7 @@
 import pygame
 from ocempgui.widgets import *
-from ocempgui.widgets.Constants import ALIGN_TOP, ALIGN_BOTTOM, ALIGN_LEFT, \
-    ALIGN_RIGHT, ALIGN_NONE
+from ocempgui.widgets.components import *
+from ocempgui.widgets.Constants import *
 
 SCREEN_SIZE = (1000, 700)
 FRAME_SIZE = (SCREEN_SIZE[0]/2, SCREEN_SIZE[1]*0.8)
@@ -22,20 +22,34 @@ pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
 frame_surface = pygame.Surface(FRAME_SIZE)
 
+# set up GUI renderer
 re = Renderer()
 re.screen = screen
 re.title = 'Hitbox Definition'
 re.color = GRAY
 
 
-class HitBox(object):
+class HitBox(TextListItem):
     def __init__(self, rect, hitactive=False, hurtactive=False,
-                 blockactive=False):
+                 blockactive=False, solid=False):
+        super(HitBox, self).__init__()
         self.rect = rect
         self.hitactive = hitactive
         self.hurtactive = hurtactive
         self.blockactive = blockactive
+        self.solid = solid
+        self.text = '%s:%s:%s:%s / (%d,%d) - (%d, %d)' % (self.hitactive,
+                                                          self.hurtactive,
+                                                          self.blockactive,
+                                                          self.solid,
+                                                          self.rect.x,
+                                                          self.rect.y,
+                                                          self.rect.width,
+                                                          self.rect.height)
 
+
+    def __str__(self):
+        return 
 
 def draw_frame(screen, image, crop):
     dest_x = screen.get_width()/2 - crop[2]/2
@@ -58,13 +72,39 @@ def draw_box(screen, box, offset=(0,0)):
         color = GREEN
     pygame.draw.rect(screen, color, rect, 1)
 
+def add_box():
+    rect = pygame.Rect(int(box_x.text),
+                       int(box_y.text),
+                       int(box_width.text),
+                       int(box_height.text))
+    hitactive = hitactive_check.active
+    hurtactive = hurtactive_check.active
+    blockactive = blockactive_check.active
+    solid = solid_check.active
+    hitbox = HitBox(rect, hitactive, hurtactive, blockactive, solid)
+    box_list.items.append(hitbox)
 
+def cleanup_box(rect):
+    # flip the origin corner to the top left if necessary
+    if rect.width < 0:
+        rect.x = rect.x + rect.width
+        rect.width = 0 - rect.width
+    if rect.height < 0:
+        rect.y = rect.y + rect.height
+        rect.height = 0 - rect.height
+    box_x.text = str(rect.x)
+    box_y.text = str(rect.y)
+    box_width.text = str(rect.width)
+    box_height.text = str(rect.height)
+
+def set_current_box(selection):
+    pass
 
 image = pygame.image.load('../content/sticksheet.png')
 crop = [0,0,64,128]
 click_down = False
 click_down_pos = []
-boxes = []
+boxes = ListItemCollection()
 current_box = None
 frame_pos = (SCREEN_SIZE[0]-FRAME_SIZE[0]-10,
              SCREEN_SIZE[1]-FRAME_SIZE[1]-10)
@@ -72,6 +112,7 @@ frame_rect = frame_surface.get_rect(center=(frame_pos[0]+frame_surface.get_width
                                             frame_pos[1]+frame_surface.get_height()/2))
 
 # set up GUI stuff
+# define GUI elements
 hitactive_check = CheckButton("Hit Active")
 hurtactive_check = CheckButton("Hurt Active")
 blockactive_check = CheckButton("Block Active")
@@ -85,7 +126,7 @@ box_width = Entry()
 box_height_label = Label('Box Height')
 box_height = Entry()
 add_button = Button('Add Box')
-box_list = ScrolledList(200, 200, boxes)
+box_list = ScrolledList(300, 300, boxes)
 
 re.add_widget(hitactive_check)
 re.add_widget(hurtactive_check)
@@ -119,8 +160,12 @@ box_width_label.topleft = (150, 75)
 box_width.topleft = (225, 75)
 box_height_label.topleft = (150, 100)
 box_height.topleft = (225, 100)
-add_button.topleft = (220, 145)
+add_button.topleft = (320, 145)
 box_list.topleft = (10, 140)
+box_list.selectionmode = SELECTION_SINGLE
+
+# wire up GUI events
+add_button.connect_signal(SIG_CLICKED, add_box)
 
 running = True
 while(running):
@@ -148,6 +193,7 @@ while(running):
                                       event.pos[1] - frame_pos[1])
                     current_box.width = translated_pos[0] - current_box.x
                     current_box.height = translated_pos[1] - current_box.y
+                    cleanup_box(current_box)
 
     # pass events to ocempgui renderer
     re.distribute_events(*events)
