@@ -38,6 +38,10 @@ class HitBox(TextListItem):
         self.hurtactive = hurtactive
         self.blockactive = blockactive
         self.solid = solid
+        self.text = ''
+        self.refresh_text()
+
+    def refresh_text(self):
         self.text = '%s:%s:%s:%s / (%d,%d) - (%d, %d)' % (self.hitactive,
                                                           self.hurtactive,
                                                           self.blockactive,
@@ -46,11 +50,6 @@ class HitBox(TextListItem):
                                                           self.rect.y,
                                                           self.rect.width,
                                                           self.rect.height)
-
-
-    def __str__(self):
-        return 
-
 def draw_frame(screen, image, crop):
     dest_x = screen.get_width()/2 - crop[2]/2
     dest_y = screen.get_height()/2 - crop[3]/2
@@ -84,6 +83,24 @@ def add_box():
     hitbox = HitBox(rect, hitactive, hurtactive, blockactive, solid)
     box_list.items.append(hitbox)
 
+def update_box():
+    selected = box_list.get_selected()[0]
+    rect = selected.rect
+    rect.x = int(box_x.text)
+    rect.y = int(box_y.text)
+    rect.width = int(box_width.text)
+    rect.height = int(box_height.text)
+    selected.hitactive = hitactive_check.active
+    selected.hurtactive = hurtactive_check.active
+    selected.blockactive = blockactive_check.active
+    selected.solid = solid_check.active
+    selected.refresh_text()
+
+def remove_box():
+    selected = box_list.get_selected()[0]
+    box_list.items.remove(selected)
+    activate_controls()
+
 def cleanup_box(rect):
     # flip the origin corner to the top left if necessary
     if rect.width < 0:
@@ -112,6 +129,15 @@ def set_current_box(selection):
     blockactive_check.active = selection.blockactive
     solid_check.active = selection.solid
 
+def activate_controls():
+    selection = box_list.get_selected()
+    if len(selection) > 0:
+        update_button.sensitive = True
+        remove_button.sensitive = True
+    else:
+        update_button.sensitive = False
+        remove_button.sensitive = False
+
 image = pygame.image.load('../content/sticksheet.png')
 crop = [0,0,64,128]
 click_down = False
@@ -139,6 +165,8 @@ box_height_label = Label('Box Height')
 box_height = Entry()
 add_button = Button('Add Box')
 box_list = ScrolledList(300, 300, boxes)
+update_button = Button('Update Box')
+remove_button = Button('Remove Box')
 
 re.add_widget(hitactive_check)
 re.add_widget(hurtactive_check)
@@ -154,6 +182,8 @@ re.add_widget(box_height_label)
 re.add_widget(box_height)
 re.add_widget(add_button)
 re.add_widget(box_list)
+re.add_widget(update_button)
+re.add_widget(remove_button)
 
 box_x_label.align = ALIGN_LEFT
 box_y_label.align = ALIGN_LEFT
@@ -175,12 +205,20 @@ box_height.topleft = (225, 100)
 add_button.topleft = (320, 145)
 box_list.topleft = (10, 140)
 box_list.selectionmode = SELECTION_SINGLE
+update_button.topleft = (320, 175)
+remove_button.topleft = (320, 205)
+
+update_button.sensitive = False
+remove_button.sensitive = False
 
 # wire up GUI events
 add_button.connect_signal(SIG_CLICKED, add_box)
 box_list.connect_signal(SIG_SELECTCHANGED, 
                         set_current_box, 
                         box_list.get_selected())
+box_list.connect_signal(SIG_SELECTCHANGED, activate_controls)
+update_button.connect_signal(SIG_CLICKED, update_box)
+remove_button.connect_signal(SIG_CLICKED, remove_box)
 
 running = True
 while(running):
