@@ -40,11 +40,13 @@ def draw_editor(surface):
 
 def activate_tab():
     global current_tab
+    re.color = GRAY
+    editor_surface.fill(TRANS)
     tab = tab_list.get_selected()[0]
     if current_tab is not None:
         current_tab.deactivate()
-    current_tab = tab
     tab.activate()
+    current_tab = tab
 
 # GUI elements
 tab_list = ScrolledList(175, int(SCREEN_SIZE[1]*0.9))
@@ -68,10 +70,10 @@ while(running):
     if current_tab is not None:
         current_tab.update(events)
 
-    # draw the editor pane
-    draw_editor(editor_surface)
-
     # pass events to ocempgui renderer
     re.distribute_events(*events)
+
+    # draw the editor pane
+    draw_editor(editor_surface)
 
     pygame.display.flip()

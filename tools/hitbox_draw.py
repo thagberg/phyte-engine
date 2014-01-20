@@ -37,6 +37,7 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.image = image
         self.canvas = pygame.Surface((800, 800))
         self.canvas_rect = self.canvas.get_rect()
+        self.canvas_offset = (380,0)
         self.boxes = self.context['boxes']
         self.frames = self.context['frames']
         self.click_down = False
@@ -57,7 +58,7 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.box_height_label = Label('Box Height')
         self.box_height = Entry()
         self.add_button = Button('Add Box')
-        self.box_list = ScrolledList(300, 300, self.boxes)
+        self.box_list = ScrolledList(240, 300, self.boxes)
         self.update_button = Button('Update Box')
         self.remove_button = Button('Remove Box')
         self.frame_list = ScrolledList(175, 100, self.frames)
@@ -80,6 +81,7 @@ class HitBoxDefinitionFrame(EditorFrame):
         append(self.add_button)
         append(self.update_button)
         append(self.remove_button)
+        append(self.box_list)
         append(self.frame_list)
         append(self.frame_label)
 
@@ -91,24 +93,27 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.box_height_label.align = ALIGN_LEFT
         self.frame_label.align = ALIGN_NONE
         # positions
-        self.set_pos(self.hitactive_check, (10, 25))
-        self.set_pos(self.hurtactive_check, (10, 50))
-        self.set_pos(self.blockactive_check, (10, 75))
-        self.set_pos(self.solid_check, (10, 100))
-        self.set_pos(self.box_x_label, (150, 25))
-        self.set_pos(self.box_x, (225, 25))
-        self.set_pos(self.box_y_label, (150, 50))
-        self.set_pos(self.box_y, (225, 50))
-        self.set_pos(self.box_width_label, (150, 75))
-        self.set_pos(self.box_width, (225, 75))
-        self.set_pos(self.box_height_label, (150, 100))
-        self.set_pos(self.box_height, (225, 100))
-        self.set_pos(self.add_button, (320, 145))
-        self.set_pos(self.box_list, (10, 140))
-        self.set_pos(self.update_button, (320, 175))
-        self.set_pos(self.remove_button, (320, 205))
+        self.set_pos(self.frame_label, (10, 0))
+        self.set_pos(self.frame_list, (10, 20))
+        self.set_pos(self.hitactive_check, (10, 200))
+        self.set_pos(self.hurtactive_check, (10, 225))
+        self.set_pos(self.blockactive_check, (10, 250))
+        self.set_pos(self.solid_check, (10, 275))
+        self.set_pos(self.box_x_label, (150, 200))
+        self.set_pos(self.box_x, (225, 200))
+        self.set_pos(self.box_y_label, (150, 225))
+        self.set_pos(self.box_y, (225, 225))
+        self.set_pos(self.box_width_label, (150, 250))
+        self.set_pos(self.box_width, (225, 250))
+        self.set_pos(self.box_height_label, (150, 275))
+        self.set_pos(self.box_height, (225, 275))
+        self.set_pos(self.add_button, (250, 310))
+        self.set_pos(self.box_list, (10, 310))
+        self.set_pos(self.update_button, (250, 340))
+        self.set_pos(self.remove_button, (250, 370))
         # miscelaneous 
         self.box_list.selectionmode = SELECTION_SINGLE
+        self.add_button.sensitive = False
         self.update_button.sensitive = False
         self.remove_button.sensitive = False
 
@@ -121,25 +126,6 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.update_button.connect_signal(SIG_CLICKED, self.update_box)
         self.remove_button.connect_signal(SIG_CLICKED, self.remove_box)
 
-        # add widgets to widgets list
-        append = self.widgets.append
-        append(self.hitactive_check)
-        append(self.hurtactive_check)
-        append(self.blockactive_check)
-        append(self.solid_check)
-        append(self.box_x_label)
-        append(self.box_y_label)
-        append(self.box_x)
-        append(self.box_y)
-        append(self.box_width_label)
-        append(self.box_width)
-        append(self.box_height_label)
-        append(self.box_height)
-        append(self.add_button)
-        append(self.box_list)
-        append(self.update_button)
-        append(self.remove_button)
-
     def update(self, events):
         # clear the canvas
         self.canvas.fill(WHITE)
@@ -150,8 +136,10 @@ class HitBoxDefinitionFrame(EditorFrame):
                     if self.canvas_rect.collidepoint(event.pos):
                         current_box = self.current_box
                         self.click_down = True
-                        translated_pos = (event.pos[0] - frame_pos[0],
-                                          event.pos[1] - frame_pos[1])
+                        offset_x = self.offset[0] + self.canvas_offset[0]
+                        offset_y = self.offset[1] + self.canvas_offset[1]
+                        translated_pos = (event.pos[0] - offset_x,
+                                          event.pos[1] - offset_y)
                         current_box = pygame.Rect(translated_pos, (0,0))
                         self.box_x.text = str(current_box.x)
                         self.box_y.text = str(current_box.y)
@@ -160,36 +148,43 @@ class HitBoxDefinitionFrame(EditorFrame):
                     if self.canvas_rect.collidepoint(event.pos):
                         current_box = self.current_box
                         self.click_down = False
-                        end_pos = event.pos
-                        translated_pos = (event.pos[0] - frame_pos[0],
-                                          event.pos[1] - frame_pos[1])
-                        current_box.width = translated_pos[0] - current_box.x
-                        current_box.height = translated_pos[1] - current_box.y
-                        self.cleanup_box(current_box)
+                        if current_box is not None:
+                            end_pos = event.pos
+                            offset_x = self.offset[0] + self.canvas_offset[0]
+                            offset_y = self.offset[1] + self.canvas_offset[1]
+                            translated_pos = (event.pos[0] - offset_x,
+                                              event.pos[1] - offset_y)
+                            current_box.width = translated_pos[0] - current_box.x
+                            current_box.height = translated_pos[1] - current_box.y
+                            self.cleanup_box(current_box)
 
         # draw the animation frame
-        self.draw_frame(self.canvas, self.image, self.current_frame)
+        if self.current_frame is not None:
+            self.draw_frame(self.canvas, self.image, self.current_frame)
 
         # draw temporary click-and-drag box
         if self.click_down:
             current_pos = pygame.mouse.get_pos()
             current_box = self.current_box
-            translated_pos = (current_pos[0] - frame_pos[0],
-                              current_pos[1] - frame_pos[1])
-            temp_box = pygame.Rect(current_box.x,
-                                   current_box.y,
-                                   translated_pos[0] - current_box.x, 
-                                   translated_pos[1] - current_box.y) 
-            hb = HitBox(temp_box, 
-                        hitactive=self.hitactive_check.active,
-                        hurtactive=self.hurtactive_check.active,
-                        blockactive=self.blockactive_check.active,
-                        solid=self.solid_check.active)
-            self.draw_box(self.canvas, hb)
+            offset_x = self.offset[0] + self.canvas_offset[0]
+            offset_y = self.offset[1] + self.canvas_offset[1]
+            translated_pos = (current_pos[0] - offset_x,
+                              current_pos[1] - offset_y)
+            if current_box is not None:
+                temp_box = pygame.Rect(current_box.x,
+                                       current_box.y,
+                                       translated_pos[0] - current_box.x, 
+                                       translated_pos[1] - current_box.y) 
+                hb = HitBox(temp_box, 
+                            hitactive=self.hitactive_check.active,
+                            hurtactive=self.hurtactive_check.active,
+                            blockactive=self.blockactive_check.active,
+                            solid=self.solid_check.active)
+                self.draw_box(self.canvas, hb)
 
         # draw the current box
-        if current_box:
-            hb = HitBox(current_box, 
+        if self.current_box:
+            hb = HitBox(self.current_box, 
                         hitactive=self.hitactive_check.active,
                         hurtactive=self.hurtactive_check.active,
                         blockactive=self.blockactive_check.active,
@@ -197,14 +192,14 @@ class HitBoxDefinitionFrame(EditorFrame):
             self.draw_box(self.canvas, hb)
 
         # draw canvas to editor pane
-        pass
+        self.draw_to.blit(self.canvas, self.canvas_offset)
 
     def draw_frame(self, canvas, image, crop):
         dest_x = canvas.get_width()/2 - crop[2]/2
         dest_y = canvas.get_height()/2 - crop[3]/2
         canvas.blit(image, (dest_x, dest_y), crop)
 
-    def draw_box(canvas, box, offset=(0,0)):
+    def draw_box(self, canvas, box, offset=(0,0)):
         rect = box.rect.copy()
         rect[0] = rect[0] + offset[0]
         rect[1] = rect[1] + offset[1]
@@ -220,7 +215,7 @@ class HitBoxDefinitionFrame(EditorFrame):
             color = GREEN
         pygame.draw.rect(canvas, color, rect, 1)
 
-    def add_box():
+    def add_box(self):
         rect = pygame.Rect(int(box_x.text),
                            int(box_y.text),
                            int(box_width.text),
@@ -231,8 +226,9 @@ class HitBoxDefinitionFrame(EditorFrame):
         solid = self.solid_check.active
         hitbox = HitBox(rect, hitactive, hurtactive, blockactive, solid)
         self.box_list.items.append(hitbox)
+        self.context['boxes'].append(hitbox)
 
-    def update_box():
+    def update_box(self):
         selected = box_list.get_selected()[0]
         rect = selected.rect
         rect.x = int(box_x.text)
@@ -245,12 +241,13 @@ class HitBoxDefinitionFrame(EditorFrame):
         selected.solid = solid_check.active
         selected.refresh_text()
 
-    def remove_box():
+    def remove_box(self):
         selected = self.box_list.get_selected()[0]
         self.box_list.items.remove(selected)
+        self.context['boxes'].remove(selected)
         self.activate_controls()
 
-    def cleanup_box(rect):
+    def cleanup_box(self, rect):
         # flip the origin corner to the top left if necessary
         if rect.width < 0:
             rect.x = rect.x + rect.width
@@ -263,7 +260,7 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.box_width.text = str(rect.width)
         self.box_height.text = str(rect.height)
 
-    def set_current_box(selection):
+    def set_current_box(self, selection):
         selection = self.box_list.get_selected()[0]
         self.current_box.x = selection.rect.x
         self.current_box.y = selection.rect.y
@@ -278,11 +275,20 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.blockactive_check.active = selection.blockactive
         self.solid_check.active = selection.solid
 
-    def activate_controls():
+    def activate_controls(self):
         selection = self.box_list.get_selected()
+        if self.current_frame is None:
+            self.add_button.sensitive = False
+        else:
+            self.add_button.sensitive = True
         if len(selection) > 0:
             self.update_button.sensitive = True
             self.remove_button.sensitive = True
         else:
             self.update_button.sensitive = False
             self.remove_button.sensitive = False
+
+    def activate(self):
+        super(HitBoxDefinitionFrame, self).activate()
+        self.frame_list.items = self.context['frames']
+        self.frame_list.child.update_items()

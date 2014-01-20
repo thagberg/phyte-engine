@@ -113,6 +113,7 @@ class FrameDefinitionFrame(EditorFrame):
         repeat = int(self.repeat.text)
         new_frame = Frame(crop, repeat)
         self.frame_list.items.append(new_frame)
+        self.context['frames'].append(new_frame)
 
     def set_current_frame(self):
         selection = self.frame_list.get_selected()[0]
@@ -185,14 +186,15 @@ class FrameDefinitionFrame(EditorFrame):
                     if self.canvas_rect.collidepoint(event.pos):
                         current_box = self.current_box
                         self.click_down = False
-                        end_pos = event.pos
-                        offset_x = self.offset[0] + self.canvas_offset[0]
-                        offset_y = self.offset[1] + self.canvas_offset[1]
-                        translated_pos = (event.pos[0] - offset_x,
-                                          event.pos[1] - offset_y)
-                        current_box.width = translated_pos[0] - current_box.x
-                        current_box.height = translated_pos[1] - current_box.y
-                        self.cleanup_box()
+                        if current_box is not None:
+                            end_pos = event.pos
+                            offset_x = self.offset[0] + self.canvas_offset[0]
+                            offset_y = self.offset[1] + self.canvas_offset[1]
+                            translated_pos = (event.pos[0] - offset_x,
+                                              event.pos[1] - offset_y)
+                            current_box.width = translated_pos[0] - current_box.x
+                            current_box.height = translated_pos[1] - current_box.y
+                            self.cleanup_box()
 
         # draw image
         draw_image(self.canvas, self.image)
@@ -205,11 +207,12 @@ class FrameDefinitionFrame(EditorFrame):
             offset_y = self.offset[1] + self.canvas_offset[1]
             translated_pos = (current_pos[0] - offset_x,
                               current_pos[1] - offset_y)
-            temp_box = pygame.Rect(current_box.x,
-                                   current_box.y,
-                                   translated_pos[0] - current_box.x, 
-                                   translated_pos[1] - current_box.y) 
-            draw_box(self.canvas, temp_box)
+            if current_box is not None:
+                temp_box = pygame.Rect(current_box.x,
+                                       current_box.y,
+                                       translated_pos[0] - current_box.x, 
+                                       translated_pos[1] - current_box.y) 
+                draw_box(self.canvas, temp_box)
 
         # draw the current box
         if self.current_box:
