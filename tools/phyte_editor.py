@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import pygame
 from ocempgui.widgets import *
 from ocempgui.widgets.components import *
@@ -10,7 +12,7 @@ from common import *
 
 SCREEN_SIZE = (1000, 700)
 EDITOR_SIZE = (SCREEN_SIZE[0] - 330, SCREEN_SIZE[1] * 0.9)
-EDITOR_OFFSET = (320, int(SCREEN_SIZE[1]*0.1/2))
+EDITOR_OFFSET = (200, int(SCREEN_SIZE[1]*0.1/2))
 
 MOUSE_LEFT = 1
 MOUSE_RIGHT = 3
@@ -30,6 +32,7 @@ re.color = GRAY
 
 # shtuff
 current_tab = None
+context = defaultdict(ListItemCollection)
 
 def draw_editor(surface):
     screen.blit(surface, EDITOR_OFFSET)
@@ -42,10 +45,10 @@ def activate_tab(tab):
     tab.activate()
 
 # GUI elements
-tab_list = ScrolledList(300, int(SCREEN_SIZE[1]*0.9))
+tab_list = ScrolledList(175, int(SCREEN_SIZE[1]*0.9))
 re.add_widget(tab_list)
 tab_list.topleft = (10, int(SCREEN_SIZE[1]*0.1/2))
-frame_tab = FrameDefinitionFrame(re, editor_surface, image, EDITOR_OFFSET)
+frame_tab = FrameDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSET)
 tab_list.items.append(frame_tab)
 tab_list.connect_signal(SIG_SELECTCHANGED, activate_tab, frame_tab)
 

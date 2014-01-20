@@ -2,10 +2,11 @@ from ocempgui.widgets import *
 from ocempgui.widgets.components import TextListItem
 
 class EditorFrame(TextListItem):
-    def __init__(self, renderer, draw_to, offset=(0,0), widgets=None):
+    def __init__(self, renderer, draw_to, context, offset=(0,0), widgets=None):
         super(EditorFrame, self).__init__()
         self.renderer = renderer
         self.draw_to = draw_to
+        self.context = context
         self.offset = offset
         self.widgets = widgets if widgets is not None else list()
         self.text = 'Base Frame'

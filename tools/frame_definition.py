@@ -8,33 +8,38 @@ from common import *
 
 
 class Frame(TextListItem):
-    def __init__(self, crop, hitboxes=lambda:list(), repeat=0):
+    def __init__(self, crop, repeat=0, hitboxes=None):
         super(Frame, self).__init__()
         self.crop = crop
         self.repeat = repeat
+        self.hitboxes = list() if hitboxes is None else hitboxes
         self.text = ''
         self.refresh_text()
 
     def refresh_text(self):
         t = '({crop.x},{crop.y},{crop.width},{crop.height}) - {repeat}'
-        return t.format(crop=self.crop, repeat=self.repeat)
+        self.text = t.format(crop=self.crop, repeat=self.repeat)
         
 
 class FrameDefinitionFrame(EditorFrame):
-    def __init__(self, renderer, draw_to, image, offset=(0,0), widgets=None):
-        super(FrameDefinitionFrame, self).__init__(renderer, draw_to, offset, widgets)
+    def __init__(self, renderer, draw_to, context, image, 
+                 offset=(0,0), widgets=None):
+        super(FrameDefinitionFrame, self).__init__(renderer, draw_to, 
+                                                   context, offset, widgets)
         self.text = 'Frame Definition'
         self.canvas = pygame.Surface((800, 800))
         self.canvas_rect = self.canvas.get_rect()
-        self.canvas_offset = (350, 0)
+        self.canvas_offset = (250, 0)
+        self.canvas_rect.x += self.canvas_offset[0]
+        self.canvas_rect.y += self.canvas_offset[1]
         self.image = image
-        self.frames = ListItemCollection()
+        self.frames = self.context['frames']
         self.current_frame = None
         self.current_box = None
         self.click_down = False
 
         # define widgets
-        self.frame_list = ScrolledList(300, 300, self.frames)
+        self.frame_list = ScrolledList(170, 300, self.frames)
         self.frame_x_label = Label('Frame X')
         self.frame_x = Entry()
         self.frame_y_label = Label('Frame Y')
@@ -81,7 +86,12 @@ class FrameDefinitionFrame(EditorFrame):
         self.set_pos(self.frame_width, (85, 75))
         self.set_pos(self.frame_height_label, (10, 100))
         self.set_pos(self.frame_height, (85, 100))
-        self.set_pos(self.frame_list, (10, 125))
+        self.set_pos(self.repeat_label, (10, 125))
+        self.set_pos(self.repeat, (85, 125))
+        self.set_pos(self.add_button, (10, 160))
+        self.set_pos(self.update_button, (85, 160))
+        self.set_pos(self.remove_button, (10, 190))
+        self.set_pos(self.frame_list, (10, 220))
 
         # miscelaneous
         self.frame_list.selectionmode = SELECTION_SINGLE
@@ -106,6 +116,8 @@ class FrameDefinitionFrame(EditorFrame):
 
     def set_current_frame(self):
         selection = self.frame_list.get_selected()[0]
+        if self.current_box is None:
+            self.current_box = pygame.Rect(0,0,0,0)
         self.current_box.x = selection.crop.x
         self.current_box.y = selection.crop.y
         self.current_box.width = selection.crop.width
@@ -160,8 +172,10 @@ class FrameDefinitionFrame(EditorFrame):
                 if event.button == MOUSE_RIGHT:
                     if self.canvas_rect.collidepoint(event.pos):
                         self.click_down = True
-                        translated_pos = (event.pos[0] - self.offset[0],
-                                          event.pos[1] - self.offset[1])
+                        offset_x = self.offset[0] + self.canvas_offset[0]
+                        offset_y = self.offset[1] + self.canvas_offset[1]
+                        translated_pos = (event.pos[0] - offset_x,
+                                          event.pos[1] - offset_y)
                         current_box = pygame.Rect(translated_pos, (0,0))
                         self.frame_x.text = str(current_box.x)
                         self.frame_y.text = str(current_box.y)
@@ -172,8 +186,10 @@ class FrameDefinitionFrame(EditorFrame):
                         current_box = self.current_box
                         self.click_down = False
                         end_pos = event.pos
-                        translated_pos = (event.pos[0] - self.offset[0],
-                                          event.pos[1] - self.offset[1])
+                        offset_x = self.offset[0] + self.canvas_offset[0]
+                        offset_y = self.offset[1] + self.canvas_offset[1]
+                        translated_pos = (event.pos[0] - offset_x,
+                                          event.pos[1] - offset_y)
                         current_box.width = translated_pos[0] - current_box.x
                         current_box.height = translated_pos[1] - current_box.y
                         self.cleanup_box()
@@ -185,8 +201,10 @@ class FrameDefinitionFrame(EditorFrame):
         if self.click_down:
             current_pos = pygame.mouse.get_pos()
             current_box = self.current_box
-            translated_pos = (current_pos[0] - self.offset[0],
-                              current_pos[1] - self.offset[1])
+            offset_x = self.offset[0] + self.canvas_offset[0]
+            offset_y = self.offset[1] + self.canvas_offset[1]
+            translated_pos = (current_pos[0] - offset_x,
+                              current_pos[1] - offset_y)
             temp_box = pygame.Rect(current_box.x,
                                    current_box.y,
                                    translated_pos[0] - current_box.x, 
@@ -198,9 +216,7 @@ class FrameDefinitionFrame(EditorFrame):
             draw_box(self.canvas, self.current_box)
 
         # draw to the parent surface
-        self.draw_to.blit(self.canvas, (
-                          self.offset[0],
-                          self.offset[1]))
+        self.draw_to.blit(self.canvas, self.canvas_offset)
 
 
 def draw_image(canvas, image):
