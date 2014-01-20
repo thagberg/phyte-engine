@@ -7,6 +7,7 @@ from ocempgui.widgets.Constants import *
 
 import hitbox_draw
 from frame_definition import FrameDefinitionFrame
+from hitbox_draw import HitBoxDefinitionFrame
 from common import *
 
 
@@ -37,8 +38,9 @@ context = defaultdict(ListItemCollection)
 def draw_editor(surface):
     screen.blit(surface, EDITOR_OFFSET)
 
-def activate_tab(tab):
+def activate_tab():
     global current_tab
+    tab = tab_list.get_selected()[0]
     if current_tab is not None:
         current_tab.deactivate()
     current_tab = tab
@@ -50,7 +52,9 @@ re.add_widget(tab_list)
 tab_list.topleft = (10, int(SCREEN_SIZE[1]*0.1/2))
 frame_tab = FrameDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSET)
 tab_list.items.append(frame_tab)
-tab_list.connect_signal(SIG_SELECTCHANGED, activate_tab, frame_tab)
+box_tab = HitBoxDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSET)
+tab_list.items.append(box_tab)
+tab_list.connect_signal(SIG_SELECTCHANGED, activate_tab)
 
 
 running = True
