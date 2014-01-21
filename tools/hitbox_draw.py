@@ -4,6 +4,7 @@ from ocempgui.widgets.Constants import *
 from ocempgui.widgets.components import *
 
 from frame import EditorFrame
+from frame_definition import Frame
 from common import *
 
 class HitBox(TextListItem):
@@ -125,6 +126,7 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.box_list.connect_signal(SIG_SELECTCHANGED, self.activate_controls)
         self.update_button.connect_signal(SIG_CLICKED, self.update_box)
         self.remove_button.connect_signal(SIG_CLICKED, self.remove_box)
+        self.frame_list.connect_signal(SIG_SELECTCHANGED, self.activate_controls)
 
     def update(self, events):
         # clear the canvas
@@ -160,7 +162,7 @@ class HitBoxDefinitionFrame(EditorFrame):
 
         # draw the animation frame
         if self.current_frame is not None:
-            self.draw_frame(self.canvas, self.image, self.current_frame)
+            self.draw_frame(self.canvas, self.image, self.current_frame.crop)
 
         # draw temporary click-and-drag box
         if self.click_down:
@@ -276,7 +278,13 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.solid_check.active = selection.solid
 
     def activate_controls(self):
+        frame_selection = self.frame_list.get_selected()[0]
         selection = self.box_list.get_selected()
+        # first process frame selection stuff
+        if frame_selection is not None:
+            self.current_frame = frame_selection
+
+        # then process box control stuff
         if self.current_frame is None:
             self.add_button.sensitive = False
         else:
@@ -290,5 +298,19 @@ class HitBoxDefinitionFrame(EditorFrame):
 
     def activate(self):
         super(HitBoxDefinitionFrame, self).activate()
-        self.frame_list.items = self.context['frames']
+        items = ListItemCollection()
+        # can't directly copy items over from one ScrolledLIst's
+        # ListItemCollection to another, because of some hacky stuff
+        # in the ocempgui library.  Can't properly mark each item as
+        # dirty, so when the new ScrolledList's ListPortView tries to
+        # update itself, it tries to redraw the ListItem's image, which
+        # hasn't been defined for that ListPortView yet
+        # Creating copies of each Frame is not the cleanest solution,
+        # but it works
+        for item in self.context['frames']:
+            copy_frame = Frame(item.crop,
+                               item.repeat,
+                               item.hitboxes)
+            items.append(copy_frame)
+        self.frame_list.items = items
         self.frame_list.child.update_items()
