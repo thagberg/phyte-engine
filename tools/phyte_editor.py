@@ -8,11 +8,12 @@ from ocempgui.widgets.Constants import *
 import hitbox_draw
 from frame_definition import FrameDefinitionFrame
 from hitbox_draw import HitBoxDefinitionFrame
+from animation_definition import AnimationDefinitionFrame
 from common import *
 
 
-SCREEN_SIZE = (1000, 700)
-EDITOR_SIZE = (SCREEN_SIZE[0] - 330, SCREEN_SIZE[1] * 0.9)
+SCREEN_SIZE = (1300, 700)
+EDITOR_SIZE = (SCREEN_SIZE[0] - 300, SCREEN_SIZE[1] * 0.9)
 EDITOR_OFFSET = (200, int(SCREEN_SIZE[1]*0.1/2))
 
 MOUSE_LEFT = 1
@@ -52,6 +53,8 @@ def activate_tab():
 tab_list = ScrolledList(175, int(SCREEN_SIZE[1]*0.9))
 re.add_widget(tab_list)
 tab_list.topleft = (10, int(SCREEN_SIZE[1]*0.1/2))
+animation_tab = AnimationDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
+tab_list.items.append(animation_tab)
 frame_tab = FrameDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSET)
 tab_list.items.append(frame_tab)
 box_tab = HitBoxDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSET)
