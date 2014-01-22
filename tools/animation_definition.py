@@ -32,6 +32,7 @@ class AnimationDefinitionFrame(EditorFrame):
         self.canvas_rect.x += self.canvas_offset[0] + self.offset[0]
         self.canvas_rect.y += self.canvas_offset[1] + self.offset[1]
         self.files = self.context['files']
+        self.image = None
 
         # define widgets
         self.file_list = ScrolledList(240, 300, self.files)
@@ -68,12 +69,13 @@ class AnimationDefinitionFrame(EditorFrame):
         self.file_button.connect_signal(SIG_CLICKED, 
                                         self._open_file_dialog,
                                         self.file_entry)
+        self.file_list.connect_signal(SIG_SELECTCHANGED, 
+                                      self._activate_controls)
 
     def _open_file_dialog(self, entry):
         file_dlg = FileDialog('Select Image File...',
                               [Button('OK'), Button('Cancel')],
                               [DLGRESULT_OK, DLGRESULT_CANCEL])
-        #self.widgets.append(file_dlg)
         file_dlg.filelist.selectionmode = SELECTION_SINGLE
         self.set_pos(file_dlg, (10, 0))
         file_dlg.connect_signal(SIG_DIALOGRESPONSE, 
@@ -86,11 +88,43 @@ class AnimationDefinitionFrame(EditorFrame):
         text = ''
         if result == DLGRESULT_OK:
             text = dialog.get_filenames()[0]
+            self._load_image(text)
         else:
             text = 'No file selected'
         dialog.destroy()
         entry.text = text
+        self._activate_controls()
+
+    def _load_image(self, file_name):
+        self.image = pygame.image.load(file_name)
+
+    def _activate_controls(self):
+        selection = self.file_list.get_selected()
+        if self.image is not None:
+            self.add_button.sensitive = True
+        else:
+            self.add_button.sensitive = False
+
+        if len(selection) > 0:
+            self.update_button.sensitive = True
+            self.remove_button.sensitive = True
+        else:
+            self.update_button.sensitive = False
+            self.remove_button.sensitive = False
+            
 
     def update(self, events):
+        self.canvas.fill(WHITE)
         for event in events:
             pass
+
+        # draw loaded image
+        if self.image is not None:
+            self.canvas.blit(self.image, (0,0))
+
+        self.draw_to.blit(self.canvas, self.canvas_offset)
+
+    def draw_frame(self, canvas, image, crop):
+        dest_x = canvas.get_width()/2 - crop[2]/2
+        dest_y = canvas.get_height()/2 - crop[3]/2
+        canvas.blit(image, (dest_x, dest_y), crop)
