@@ -8,10 +8,9 @@ from common import *
 
 
 class Animation(TextListItem):
-    def __init__(self, image_file, image, frames=None):
+    def __init__(self, image_file, frames=None):
         super(Animation, self).__init__()
         self.image_file = image_file
-        self.image = image
         self.frames = list() if frames is None else frames
         self.text = ''
         self.refresh_text()
@@ -31,11 +30,11 @@ class AnimationDefinitionFrame(EditorFrame):
         self.canvas_offset = (380, 0)
         self.canvas_rect.x += self.canvas_offset[0] + self.offset[0]
         self.canvas_rect.y += self.canvas_offset[1] + self.offset[1]
-        self.files = self.context['files']
+        self.anis = self.context['animations']
         self.image = None
 
         # define widgets
-        self.file_list = ScrolledList(240, 300, self.files)
+        self.ani_list = ScrolledList(240, 300, self.anis)
         self.add_button = Button('Add Animation')
         self.update_button = Button('Update Animation')
         self.remove_button = Button('Remove Animation')
@@ -44,7 +43,7 @@ class AnimationDefinitionFrame(EditorFrame):
 
         # build widget list
         append = self.widgets.append
-        append(self.file_list)
+        append(self.ani_list)
         append(self.add_button)
         append(self.update_button)
         append(self.remove_button)
@@ -54,7 +53,7 @@ class AnimationDefinitionFrame(EditorFrame):
         # set widget properties
         self.set_pos(self.file_button, (10,0))
         self.set_pos(self.file_entry, (80, 0))
-        self.set_pos(self.file_list, (10, 30))
+        self.set_pos(self.ani_list, (10, 30))
         self.set_pos(self.add_button, (255, 30))
         self.set_pos(self.update_button, (255, 60))
         self.set_pos(self.remove_button, (255, 90))
@@ -69,8 +68,15 @@ class AnimationDefinitionFrame(EditorFrame):
         self.file_button.connect_signal(SIG_CLICKED, 
                                         self._open_file_dialog,
                                         self.file_entry)
-        self.file_list.connect_signal(SIG_SELECTCHANGED, 
+        self.ani_list.connect_signal(SIG_SELECTCHANGED, 
                                       self._activate_controls)
+        self.add_button.connect_signal(SIG_CLICKED, self._add_animation)
+
+    def _add_animation(self):
+        image_file = self.file_entry.text
+        new_ani = Animation(image_file)
+        self.ani_list.items.append(new_ani)
+        self.context['animations'].append(new_ani)
 
     def _open_file_dialog(self, entry):
         file_dlg = FileDialog('Select Image File...',
@@ -99,7 +105,7 @@ class AnimationDefinitionFrame(EditorFrame):
         self.image = pygame.image.load(file_name)
 
     def _activate_controls(self):
-        selection = self.file_list.get_selected()
+        selection = self.ani_list.get_selected()
         if self.image is not None:
             self.add_button.sensitive = True
         else:
