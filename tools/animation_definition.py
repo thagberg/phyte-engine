@@ -69,8 +69,14 @@ class AnimationDefinitionFrame(EditorFrame):
                                         self._open_file_dialog,
                                         self.file_entry)
         self.ani_list.connect_signal(SIG_SELECTCHANGED, 
-                                      self._activate_controls)
+                                     self._activate_controls)
+        self.ani_list.connect_signal(SIG_SELECTCHANGED,
+                                     self._set_current_animation)
         self.add_button.connect_signal(SIG_CLICKED, self._add_animation)
+
+    def _set_current_animation(self):
+        selection = self.ani_list.get_selected()[0]
+        self._load_image(selection.image_file)
 
     def _add_animation(self):
         image_file = self.file_entry.text
