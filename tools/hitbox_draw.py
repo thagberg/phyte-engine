@@ -36,9 +36,11 @@ class HitBoxDefinitionFrame(EditorFrame):
                                                     offset, widgets)
         self.text = 'Hit Box Definition'
         self.image = image
-        self.canvas = pygame.Surface((800, 800))
+        self.canvas = pygame.Surface((600, 600))
         self.canvas_rect = self.canvas.get_rect()
         self.canvas_offset = (380,0)
+        self.canvas_rect.x += self.canvas_offset[0] + self.offset[0]
+        self.canvas_rect.y += self.canvas_offset[1] + self.offset[1]
         self.boxes = self.context['boxes']
         self.frames = self.context['frames']
         self.click_down = False
@@ -145,6 +147,7 @@ class HitBoxDefinitionFrame(EditorFrame):
                         current_box = pygame.Rect(translated_pos, (0,0))
                         self.box_x.text = str(current_box.x)
                         self.box_y.text = str(current_box.y)
+                        self.current_box = current_box
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == MOUSE_RIGHT:
                     if self.canvas_rect.collidepoint(event.pos):
@@ -218,10 +221,10 @@ class HitBoxDefinitionFrame(EditorFrame):
         pygame.draw.rect(canvas, color, rect, 1)
 
     def add_box(self):
-        rect = pygame.Rect(int(box_x.text),
-                           int(box_y.text),
-                           int(box_width.text),
-                           int(box_height.text))
+        rect = pygame.Rect(int(self.box_x.text),
+                           int(self.box_y.text),
+                           int(self.box_width.text),
+                           int(self.box_height.text))
         hitactive = self.hitactive_check.active
         hurtactive = self.hurtactive_check.active
         blockactive = self.blockactive_check.active
