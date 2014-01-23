@@ -233,7 +233,8 @@ class HitBoxDefinitionFrame(EditorFrame):
         solid = self.solid_check.active
         hitbox = HitBox(rect, hitactive, hurtactive, blockactive, solid)
         self.box_list.items.append(hitbox)
-        self.context['boxes'].append(hitbox)
+        #self.context['boxes'].append(hitbox)
+        self.context['chosen_frame'].hiboxes.append(hitbox)
 
     def update_box(self):
         selected = box_list.get_selected()[0]
@@ -251,7 +252,8 @@ class HitBoxDefinitionFrame(EditorFrame):
     def remove_box(self):
         selected = self.box_list.get_selected()[0]
         self.box_list.items.remove(selected)
-        self.context['boxes'].remove(selected)
+        #self.context['boxes'].remove(selected)
+        self.context['chosen_frame'].hitboxes.remove(selected)
         self.activate_controls()
 
     def cleanup_box(self, rect):
@@ -288,7 +290,7 @@ class HitBoxDefinitionFrame(EditorFrame):
         # first process frame selection stuff
         if frame_selection is not None:
             self.current_frame = frame_selection
-
+            self.context['chosen_frame'] = frame_selection
         # then process box control stuff
         if self.current_frame is None:
             self.add_button.sensitive = False

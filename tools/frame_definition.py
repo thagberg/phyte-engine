@@ -113,7 +113,7 @@ class FrameDefinitionFrame(EditorFrame):
         self.frame_list.connect_signal(SIG_SELECTCHANGED, self.activate_controls)
         self.update_button.connect_signal(SIG_CLICKED, self.update_frame)
         self.remove_button.connect_signal(SIG_CLICKED, self.remove_frame)
-        self.ani_list.connect_signal(SIG_SELECTCHANGED, self.activate_controls)
+        self.ani_list.connect_signal(SIG_SELECTCHANGED, self._select_animation)
 
     def add_frame(self):
         crop = pygame.Rect(int(self.frame_x.text), 
@@ -139,14 +139,19 @@ class FrameDefinitionFrame(EditorFrame):
         self.frame_width.text = str(selection.crop.width)
         self.frame_height.text = str(selection.crop.height)
         self.repeat.text = str(selection.repeat)
+        self.context['chosen_frame'] = selection
 
-    def activate_controls(self):
+    def _select_animation(self):
         ani_selection = self.ani_list.get_selected()[0]
-        selection = self.frame_list.get_selected()
         if ani_selection is not None:
             self.image = self._load_image(ani_selection.image_file)
             self.context['chosen_animation'] = ani_selection
             self.frames = ListItemCollection(ani_selection.frames)
+            self.frame_list.items = self.frames
+            self.frame_list.child.update_items()
+
+    def activate_controls(self):
+        selection = self.frame_list.get_selected()
         if len(selection) > 0:
             self.update_button.sensitive = True
             self.remove_button.sensitive = True
