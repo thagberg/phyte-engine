@@ -34,7 +34,9 @@ re.color = GRAY
 
 # shtuff
 current_tab = None
-context = defaultdict(ListItemCollection)
+#context = defaultdict(ListItemCollection)
+context = defaultdict(object)
+context['animations'] = ListItemCollection()
 
 def draw_editor(surface):
     screen.blit(surface, EDITOR_OFFSET)
@@ -55,7 +57,7 @@ re.add_widget(tab_list)
 tab_list.topleft = (10, int(SCREEN_SIZE[1]*0.1/2))
 animation_tab = AnimationDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
 tab_list.items.append(animation_tab)
-frame_tab = FrameDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSET)
+frame_tab = FrameDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
 tab_list.items.append(frame_tab)
 box_tab = HitBoxDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSET)
 tab_list.items.append(box_tab)

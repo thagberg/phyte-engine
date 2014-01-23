@@ -4,6 +4,7 @@ from ocempgui.widgets.Constants import *
 from ocempgui.widgets.components import *
 
 from frame import EditorFrame
+from animation_definition import Animation
 from common import *
 
 
@@ -22,8 +23,7 @@ class Frame(TextListItem):
         
 
 class FrameDefinitionFrame(EditorFrame):
-    def __init__(self, renderer, draw_to, context, image, 
-                 offset=(0,0), widgets=None):
+    def __init__(self, renderer, draw_to, context, offset=(0,0), widgets=None):
         super(FrameDefinitionFrame, self).__init__(renderer, draw_to, 
                                                    context, offset, widgets)
         self.text = 'Frame Definition'
@@ -32,14 +32,16 @@ class FrameDefinitionFrame(EditorFrame):
         self.canvas_offset = (250, 0)
         self.canvas_rect.x += self.canvas_offset[0]
         self.canvas_rect.y += self.canvas_offset[1]
-        self.image = image
-        self.frames = self.context['frames']
+        #self.frames = self.context['frames']
+        self.frames = ListItemCollection()
+        self.anis = self.context['animations']
         self.current_frame = None
         self.current_box = None
         self.click_down = False
+        self.image = None
 
         # define widgets
-        self.frame_list = ScrolledList(170, 300, self.frames)
+        self.frame_list = ScrolledList(170, 250, self.frames)
         self.frame_x_label = Label('Frame X')
         self.frame_x = Entry()
         self.frame_y_label = Label('Frame Y')
@@ -53,6 +55,8 @@ class FrameDefinitionFrame(EditorFrame):
         self.add_button = Button('Add Frame')
         self.update_button = Button('Update Frame')
         self.remove_button = Button('Remove')
+        self.ani_list = ScrolledList(200, 150, self.anis)
+        self.ani_label = Label('Choose Animation')
 
         # build widget list
         append = self.widgets.append
@@ -70,28 +74,33 @@ class FrameDefinitionFrame(EditorFrame):
         append(self.add_button)
         append(self.update_button)
         append(self.remove_button)
+        append(self.ani_list)
+        append(self.ani_label)
 
         # widget properties
         self.frame_x_label.align = ALIGN_LEFT
         self.frame_y_label.align = ALIGN_LEFT
         self.frame_width_label.align = ALIGN_LEFT
         self.frame_height_label.align = ALIGN_LEFT
+        self.ani_label.align = ALIGN_NONE
 
         # positions
-        self.set_pos(self.frame_x_label, (10, 25))
-        self.set_pos(self.frame_x, (85, 25))
-        self.set_pos(self.frame_y_label, (10, 50))
-        self.set_pos(self.frame_y, (85, 50))
-        self.set_pos(self.frame_width_label, (10, 75))
-        self.set_pos(self.frame_width, (85, 75))
-        self.set_pos(self.frame_height_label, (10, 100))
-        self.set_pos(self.frame_height, (85, 100))
-        self.set_pos(self.repeat_label, (10, 125))
-        self.set_pos(self.repeat, (85, 125))
-        self.set_pos(self.add_button, (10, 160))
-        self.set_pos(self.update_button, (85, 160))
-        self.set_pos(self.remove_button, (10, 190))
-        self.set_pos(self.frame_list, (10, 220))
+        self.set_pos(self.frame_x_label, (10, 200))
+        self.set_pos(self.frame_x, (85, 200))
+        self.set_pos(self.frame_y_label, (10, 225))
+        self.set_pos(self.frame_y, (85, 225))
+        self.set_pos(self.frame_width_label, (10, 250))
+        self.set_pos(self.frame_width, (85, 250))
+        self.set_pos(self.frame_height_label, (10, 275))
+        self.set_pos(self.frame_height, (85, 275))
+        self.set_pos(self.repeat_label, (10, 300))
+        self.set_pos(self.repeat, (85, 300))
+        self.set_pos(self.add_button, (10, 340))
+        self.set_pos(self.update_button, (85, 340))
+        self.set_pos(self.remove_button, (10, 370))
+        self.set_pos(self.frame_list, (10, 400))
+        self.set_pos(self.ani_label, (10, 0))
+        self.set_pos(self.ani_list, (10, 25))
 
         # miscelaneous
         self.frame_list.selectionmode = SELECTION_SINGLE
@@ -104,6 +113,7 @@ class FrameDefinitionFrame(EditorFrame):
         self.frame_list.connect_signal(SIG_SELECTCHANGED, self.activate_controls)
         self.update_button.connect_signal(SIG_CLICKED, self.update_frame)
         self.remove_button.connect_signal(SIG_CLICKED, self.remove_frame)
+        self.ani_list.connect_signal(SIG_SELECTCHANGED, self.activate_controls)
 
     def add_frame(self):
         crop = pygame.Rect(int(self.frame_x.text), 
@@ -113,7 +123,8 @@ class FrameDefinitionFrame(EditorFrame):
         repeat = int(self.repeat.text)
         new_frame = Frame(crop, repeat)
         self.frame_list.items.append(new_frame)
-        self.context['frames'].append(new_frame)
+        #self.context['frames'].append(new_frame)
+        self.context['chosen_animation'].frames.append(new_frame)
 
     def set_current_frame(self):
         selection = self.frame_list.get_selected()[0]
@@ -130,13 +141,21 @@ class FrameDefinitionFrame(EditorFrame):
         self.repeat.text = str(selection.repeat)
 
     def activate_controls(self):
+        ani_selection = self.ani_list.get_selected()[0]
         selection = self.frame_list.get_selected()
+        if ani_selection is not None:
+            self.image = self._load_image(ani_selection.image_file)
+            self.context['chosen_animation'] = ani_selection
+            self.frames = ListItemCollection(ani_selection.frames)
         if len(selection) > 0:
             self.update_button.sensitive = True
             self.remove_button.sensitive = True
         else:
             self.update_button.sensitive = False
             self.remove_button.sensitive = False
+
+    def _load_image(self, filename):
+        return pygame.image.load(filename)
 
     def update_frame(self):
         selected = self.frame_list.get_selected()[0]
@@ -150,6 +169,7 @@ class FrameDefinitionFrame(EditorFrame):
     def remove_frame(self):
         selected = self.frame_list.get_selected()[0]
         self.frame_list.items.remove(selected)
+        self.context['chosen_animation'].frames.remove(selected)
         self.activate_controls()
 
     def cleanup_box(self):
@@ -197,7 +217,8 @@ class FrameDefinitionFrame(EditorFrame):
                             self.cleanup_box()
 
         # draw image
-        draw_image(self.canvas, self.image)
+        if self.image is not None:
+            draw_image(self.canvas, self.image)
         
         # draw temporary click-and-drag box
         if self.click_down:
@@ -221,6 +242,22 @@ class FrameDefinitionFrame(EditorFrame):
         # draw to the parent surface
         self.draw_to.blit(self.canvas, self.canvas_offset)
 
+    def activate(self):
+        super(FrameDefinitionFrame, self).activate()
+        items = ListItemCollection()
+        # can't directly copy items over from one ScrolledLIst's
+        # ListItemCollection to another, because of some hacky stuff
+        # in the ocempgui library.  Can't properly mark each item as
+        # dirty, so when the new ScrolledList's ListPortView tries to
+        # update itself, it tries to redraw the ListItem's image, which
+        # hasn't been defined for that ListPortView yet
+        # Creating copies of each Frame is not the cleanest solution,
+        # but it works
+        for item in self.context['animations']:
+            copy_ani = Animation(item.image_file)
+            items.append(copy_ani)
+        self.ani_list.items = items
+        self.ani_list.child.update_items()
 
 def draw_image(canvas, image):
     canvas.blit(image, (0,0))
@@ -229,3 +266,4 @@ def draw_image(canvas, image):
 def draw_box(canvas, box):
     color = RED
     pygame.draw.rect(canvas, color, box, 1)
+    

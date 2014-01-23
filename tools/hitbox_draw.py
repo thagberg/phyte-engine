@@ -41,8 +41,10 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.canvas_offset = (380,0)
         self.canvas_rect.x += self.canvas_offset[0] + self.offset[0]
         self.canvas_rect.y += self.canvas_offset[1] + self.offset[1]
-        self.boxes = self.context['boxes']
-        self.frames = self.context['frames']
+        #self.boxes = self.context['boxes']
+        #self.frames = self.context['frames']
+        self.boxes = ListItemCollection()
+        self.frames = ListItemCollection()
         self.click_down = False
         self.current_box = None
         self.current_frame = None
@@ -310,7 +312,7 @@ class HitBoxDefinitionFrame(EditorFrame):
         # hasn't been defined for that ListPortView yet
         # Creating copies of each Frame is not the cleanest solution,
         # but it works
-        for item in self.context['frames']:
+        for item in self.context['chosen_animation'].frames:
             copy_frame = Frame(item.crop,
                                item.repeat,
                                item.hitboxes)
