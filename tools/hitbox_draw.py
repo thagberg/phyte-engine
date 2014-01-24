@@ -234,7 +234,7 @@ class HitBoxDefinitionFrame(EditorFrame):
         hitbox = HitBox(rect, hitactive, hurtactive, blockactive, solid)
         self.box_list.items.append(hitbox)
         #self.context['boxes'].append(hitbox)
-        self.context['chosen_frame'].hiboxes.append(hitbox)
+        self.context['chosen_frame'].hitboxes.append(hitbox)
 
     def update_box(self):
         selected = box_list.get_selected()[0]
