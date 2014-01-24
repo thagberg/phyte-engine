@@ -73,6 +73,7 @@ class AnimationDefinitionFrame(EditorFrame):
         self.ani_list.connect_signal(SIG_SELECTCHANGED,
                                      self._set_current_animation)
         self.add_button.connect_signal(SIG_CLICKED, self._add_animation)
+        self.remove_button.connect_signal(SIG_CLICKED, self._remove_animation)
 
     def _set_current_animation(self):
         selection = self.ani_list.get_selected()[0]
@@ -83,6 +84,11 @@ class AnimationDefinitionFrame(EditorFrame):
         new_ani = Animation(image_file)
         self.ani_list.items.append(new_ani)
         self.context['animations'].append(new_ani)
+
+    def _remove_animation(self):
+        selection = self.ani_list.get_selected()[0]
+        self.ani_list.items.remove(selection)
+        self.context['animations'].remove(selection)
 
     def _open_file_dialog(self, entry):
         file_dlg = FileDialog('Select Image File...',
