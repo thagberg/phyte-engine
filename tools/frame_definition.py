@@ -149,6 +149,7 @@ class FrameDefinitionFrame(EditorFrame):
             self.frames = ListItemCollection(ani_selection.frames)
             self.frame_list.items = self.frames
             self.frame_list.child.update_items()
+            self.activate_controls()
 
     def activate_controls(self):
         selection = self.frame_list.get_selected()
