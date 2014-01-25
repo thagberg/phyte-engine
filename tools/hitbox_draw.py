@@ -130,7 +130,17 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.box_list.connect_signal(SIG_SELECTCHANGED, self.activate_controls)
         self.update_button.connect_signal(SIG_CLICKED, self.update_box)
         self.remove_button.connect_signal(SIG_CLICKED, self.remove_box)
-        self.frame_list.connect_signal(SIG_SELECTCHANGED, self.activate_controls)
+        self.frame_list.connect_signal(SIG_SELECTCHANGED, self._select_frame)
+
+    def _select_frame(self):
+        frame_selection = self.frame_list.get_selected()[0]
+        if frame_selection is not None:
+            selected_ani = self.context['chosen_animation']
+            self.image = pygame.image.load(selected_ani.image_file)
+            self.boxes = ListItemCollection(frame_selection.hitboxes)
+            self.box_list.items = self.boxes
+            self.box_list.child.update_items()
+            self.activate_controls()
 
     def update(self, events):
         # clear the canvas

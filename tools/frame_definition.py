@@ -140,6 +140,7 @@ class FrameDefinitionFrame(EditorFrame):
         self.frame_height.text = str(selection.crop.height)
         self.repeat.text = str(selection.repeat)
         self.context['chosen_frame'] = selection
+        self.frame_list.child.update_items()
 
     def _select_animation(self):
         ani_selection = self.ani_list.get_selected()[0]
