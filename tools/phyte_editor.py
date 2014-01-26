@@ -10,6 +10,7 @@ from frame_definition import FrameDefinitionFrame
 from hitbox_draw import HitBoxDefinitionFrame
 from animation_definition import AnimationDefinitionFrame
 from input_definition import InputDefinitionFrame
+from move_definition import MoveDefinitionFrame
 from common import *
 
 
@@ -39,6 +40,7 @@ current_tab = None
 context = defaultdict(object)
 context['animations'] = ListItemCollection()
 context['inputs'] = ListItemCollection()
+context['moves'] = ListItemCollection()
 
 def draw_editor(surface):
     screen.blit(surface, EDITOR_OFFSET)
@@ -65,6 +67,8 @@ frame_tab = FrameDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
 tab_list.items.append(frame_tab)
 box_tab = HitBoxDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSET)
 tab_list.items.append(box_tab)
+move_tab = MoveDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
+tab_list.items.append(move_tab)
 tab_list.connect_signal(SIG_SELECTCHANGED, activate_tab)
 
 
