@@ -293,6 +293,7 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.hurtactive_check.active = selection.hurtactive
         self.blockactive_check.active = selection.blockactive
         self.solid_check.active = selection.solid
+        self.box_list.child.update_items()
 
     def activate_controls(self):
         frame_selection = self.frame_list.get_selected()[0]
