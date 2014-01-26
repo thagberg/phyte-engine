@@ -35,6 +35,7 @@ class FrameDefinitionFrame(EditorFrame):
         #self.frames = self.context['frames']
         self.frames = ListItemCollection()
         self.anis = self.context['animations']
+        self.current_ani = None
         self.current_frame = None
         self.current_box = None
         self.click_down = False
@@ -143,6 +144,10 @@ class FrameDefinitionFrame(EditorFrame):
         self.frame_list.child.update_items()
 
     def _select_animation(self):
+        if self.current_ani is not None:
+            self.current_ani.frames = list()
+            for frame in self.frame_list.items:
+                self.current_ani.frames.append(frame)
         ani_selection = self.ani_list.get_selected()[0]
         if ani_selection is not None:
             self.image = self._load_image(ani_selection.image_file)
@@ -151,6 +156,7 @@ class FrameDefinitionFrame(EditorFrame):
             self.frame_list.items = self.frames
             self.frame_list.child.update_items()
             self.activate_controls()
+            self.current_ani = ani_selection
 
     def activate_controls(self):
         selection = self.frame_list.get_selected()
@@ -261,7 +267,7 @@ class FrameDefinitionFrame(EditorFrame):
         # Creating copies of each Frame is not the cleanest solution,
         # but it works
         for item in self.context['animations']:
-            copy_ani = Animation(item.image_file)
+            copy_ani = Animation(item.image_file, item.frames)
             items.append(copy_ani)
         self.ani_list.items = items
         self.ani_list.child.update_items()

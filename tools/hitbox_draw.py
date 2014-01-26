@@ -331,3 +331,13 @@ class HitBoxDefinitionFrame(EditorFrame):
             items.append(copy_frame)
         self.frame_list.items = items
         self.frame_list.child.update_items()
+
+    def deactivate(self):
+        frame_selection = self.frame_list.get_selected()
+        if len(frame_selection) > 0:
+            frame_selection = frame_selection[0]
+            frame_selection.hitboxes = list()
+            for box in self.boxes:
+                frame_selection.hitboxes.append(box) 
+        super(HitBoxDefinitionFrame, self).deactivate()
+
