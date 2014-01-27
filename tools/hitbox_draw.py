@@ -5,6 +5,7 @@ from ocempgui.widgets.components import *
 
 from frame import EditorFrame
 from frame_definition import Frame
+from animation_definition import Animation
 from common import *
 
 class HitBox(TextListItem):
@@ -325,13 +326,15 @@ class HitBoxDefinitionFrame(EditorFrame):
         # hasn't been defined for that ListPortView yet
         # Creating copies of each Frame is not the cleanest solution,
         # but it works
-        for item in self.context['chosen_animation'].frames:
-            copy_frame = Frame(item.crop,
-                               item.repeat,
-                               item.hitboxes)
-            items.append(copy_frame)
-        self.frame_list.items = items
-        self.frame_list.child.update_items()
+        ani = self.context['chosen_animation']
+        if isinstance(ani, Animation):
+            for item in ani.frames:
+                copy_frame = Frame(item.crop,
+                                   item.repeat,
+                                   item.hitboxes)
+                items.append(copy_frame)
+            self.frame_list.items = items
+            self.frame_list.child.update_items()
 
     def deactivate(self):
         frame_selection = self.frame_list.get_selected()
