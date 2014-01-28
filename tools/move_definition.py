@@ -107,12 +107,14 @@ class MoveDefinitionFrame(EditorFrame):
         new_move = Move(inputs, selected_ani)
         self.move_list.items.append(new_move)
         self.context['moves'].append(new_move)
+        self.context['components'].append(new_move)
         self.move_list.child.update_items()
 
     def _remove_move(self):
         selected_move = self.move_list.get_selected()[0]
         self.move_list.items.remove(selected_move)
         self.context['moves'].remove(selected_move)
+        self.context['components'].remove(selected_move)
         self.move_list.child.update_items()
 
     def _activate_input_controls(self):

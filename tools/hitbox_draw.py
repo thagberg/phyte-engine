@@ -246,6 +246,7 @@ class HitBoxDefinitionFrame(EditorFrame):
         self.box_list.items.append(hitbox)
         #self.context['boxes'].append(hitbox)
         self.context['chosen_frame'].hitboxes.append(hitbox)
+        self.context['components'].append(hitbox)
 
     def update_box(self):
         selected = box_list.get_selected()[0]
@@ -263,8 +264,8 @@ class HitBoxDefinitionFrame(EditorFrame):
     def remove_box(self):
         selected = self.box_list.get_selected()[0]
         self.box_list.items.remove(selected)
-        #self.context['boxes'].remove(selected)
         self.context['chosen_frame'].hitboxes.remove(selected)
+        self.context['components'].remove(selected)
         self.activate_controls()
 
     def cleanup_box(self, rect):

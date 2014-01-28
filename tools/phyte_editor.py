@@ -41,6 +41,7 @@ context = defaultdict(object)
 context['animations'] = ListItemCollection()
 context['inputs'] = ListItemCollection()
 context['moves'] = ListItemCollection()
+context['components'] = ListItemCollection()
 
 def draw_editor(surface):
     screen.blit(surface, EDITOR_OFFSET)
