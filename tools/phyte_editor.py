@@ -11,6 +11,7 @@ from hitbox_draw import HitBoxDefinitionFrame
 from animation_definition import AnimationDefinitionFrame
 from input_definition import InputDefinitionFrame
 from move_definition import MoveDefinitionFrame
+from rule_definition import RuleDefinitionFrame
 from common import *
 
 
@@ -41,6 +42,7 @@ context = defaultdict(object)
 context['animations'] = ListItemCollection()
 context['inputs'] = ListItemCollection()
 context['moves'] = ListItemCollection()
+context['rules'] = ListItemCollection()
 context['components'] = ListItemCollection()
 
 def draw_editor(surface):
@@ -70,6 +72,8 @@ box_tab = HitBoxDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSE
 tab_list.items.append(box_tab)
 move_tab = MoveDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
 tab_list.items.append(move_tab)
+rule_tab = RuleDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
+tab_list.items.append(rule_tab)
 tab_list.connect_signal(SIG_SELECTCHANGED, activate_tab)
 
 
