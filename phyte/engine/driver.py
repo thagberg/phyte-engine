@@ -136,7 +136,7 @@ t_tex_comp = factory.create_component('text', entity_id=t_entity.entity_id,
                                       text='Test Text', loc=[0,0], style=dict())
 
 # graphic test objects
-player_surface = pygame.image.load('../content/sticksheet.png')
+player_surface = pygame.image.load('../../content/sticksheet.png')
 g_comp = factory.create_component('graphics', entity_id=player_entity.entity_id,
                                   surface=player_surface, 
                                   dest=pygame.Rect([200,200,64,128]),

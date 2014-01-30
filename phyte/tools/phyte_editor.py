@@ -27,7 +27,7 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 editor_surface = pygame.Surface(EDITOR_SIZE)
 editor_surface = editor_surface.convert_alpha()
 editor_surface.fill(TRANS)
-image = pygame.image.load('../content/sticksheet.png')
+image = pygame.image.load('content/sticksheet.png')
 
 # set up GUI renderer
 re = Renderer()
