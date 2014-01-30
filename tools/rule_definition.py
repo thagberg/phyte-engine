@@ -107,16 +107,20 @@ class RuleDefinitionFrame(EditorFrame):
         selected_rule.value = self.operator_entry.text
         selected_rule.refresh_text()
         self.rule_list.update_items()
+        self._activate_controls()
 
     def _remove_rule(self):
         selected_rule = self.rule_list.get_selected()[0]
         self.rule_list.items.remove(selected_rule)
         self.context['rules'].remove(selected_rule)
-        self.context['components'].remove(selectd_rule)
+        self.context['components'].remove(selected_rule)
         self.rule_list.child.update_items()
+        self._activate_controls()
 
     def _set_current_rule(self):
-        pass
+        selected_rule = self.rule_list.get_selected()[0]
+        self.name_entry.text = selected_rule.name
+        self.value_entry.text = selected_rule.value
 
     def _activate_controls(self):
         selected_rule = self.rule_list.get_selected()
