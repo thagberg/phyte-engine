@@ -6,7 +6,6 @@ from ocempgui.widgets.components import *
 from frame import EditorFrame
 from input_definition import Input
 from common import *
-from ..engine import events
 
 
 class Rule(TextListItem):
