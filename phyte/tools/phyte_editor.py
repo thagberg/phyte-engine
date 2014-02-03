@@ -12,6 +12,7 @@ from animation_definition import AnimationDefinitionFrame
 from input_definition import InputDefinitionFrame
 from move_definition import MoveDefinitionFrame
 from rule_definition import RuleDefinitionFrame
+from state_definition import StateDefinitionFrame
 from common import *
 
 
@@ -44,6 +45,7 @@ context['inputs'] = ListItemCollection()
 context['moves'] = ListItemCollection()
 context['rules'] = ListItemCollection()
 context['components'] = ListItemCollection()
+context['states'] = ListItemCollection()
 
 def draw_editor(surface):
     screen.blit(surface, EDITOR_OFFSET)
@@ -63,17 +65,19 @@ tab_list = ScrolledList(175, int(SCREEN_SIZE[1]*0.9))
 re.add_widget(tab_list)
 tab_list.topleft = (10, int(SCREEN_SIZE[1]*0.1/2))
 input_tab = InputDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
-tab_list.items.append(input_tab)
 animation_tab = AnimationDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
-tab_list.items.append(animation_tab)
 frame_tab = FrameDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
-tab_list.items.append(frame_tab)
 box_tab = HitBoxDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSET)
-tab_list.items.append(box_tab)
 move_tab = MoveDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
-tab_list.items.append(move_tab)
 rule_tab = RuleDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
+state_tab = StateDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
+tab_list.items.append(input_tab)
+tab_list.items.append(animation_tab)
+tab_list.items.append(frame_tab)
+tab_list.items.append(box_tab)
+tab_list.items.append(move_tab)
 tab_list.items.append(rule_tab)
+tab_list.items.append(state_tab)
 tab_list.connect_signal(SIG_SELECTCHANGED, activate_tab)
 
 

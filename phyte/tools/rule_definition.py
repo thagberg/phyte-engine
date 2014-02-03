@@ -75,7 +75,7 @@ class RuleDefinitionFrame(EditorFrame):
         self.set_pos(self.update_button, (230, 215))
         self.set_pos(self.remove_button, (230, 255))
 
-        # miscelaneous
+        # miscellaneous
         self.add_button.sensitive = False
         self.update_button.sensitive = False
         self.remove_button.sensitive = False
@@ -138,12 +138,13 @@ class RuleDefinitionFrame(EditorFrame):
 
     def activate(self):
         super(RuleDefinitionFrame, self).activate()
-        append = self.operator_list.items.append
-        append(Operator('lt'))
-        append(Operator('le'))
-        append(Operator('eq'))
-        append(Operator('ne'))
-        append(Operator('ge'))
-        append(Operator('gt'))
-        append(Operator('in'))
-        self.operator_list.child.update_items()
+        if len(self.operator_list.items) == 0:
+            append = self.operator_list.items.append
+            append(Operator('lt'))
+            append(Operator('le'))
+            append(Operator('eq'))
+            append(Operator('ne'))
+            append(Operator('ge'))
+            append(Operator('gt'))
+            append(Operator('in'))
+            self.operator_list.child.update_items()
