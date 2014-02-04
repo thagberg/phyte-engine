@@ -225,5 +225,7 @@ class StateDefinitionFrame(EditorFrame):
                 self.available_rules_list.items.append(copy_rule)
             self.available_rules_list.child.update_items()
         if len(self.available_components_list.items) == 0:
-            for comp in self.contest['components']:
-               pass 
+            for comp in self.context['components']:
+                copy_comp = Component(comp)
+                self.available_components_list.items.append(copy_comp)
+            self.available_components_list.child.update_items()

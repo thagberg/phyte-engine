@@ -1,3 +1,6 @@
+from ocempgui.widgets.components import TextListItem
+
+
 WHITE = (255, 255, 255, 255)
 RED = (255, 0, 0, 255)
 GREEN = (0, 255, 0, 255)
@@ -10,3 +13,16 @@ GRAY = (225, 225, 225, 255)
 
 MOUSE_LEFT = 1
 MOUSE_RIGHT = 3
+
+
+class Component(TextListItem):
+    def __init__(self, component):
+        super(Component, self).__init__()
+        self.component = component
+        self.type_name = self.component.__class__.__name__
+        self.text = ''
+        self.refresh_text()
+
+    def refresh_text(self):
+        t = '{self.type_name} component: {self.component.text}'
+        self.text = t.format(self=self)
