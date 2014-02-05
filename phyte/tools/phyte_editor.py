@@ -40,12 +40,12 @@ re.color = GRAY
 current_tab = None
 #context = defaultdict(ListItemCollection)
 context = defaultdict(object)
-context['animations'] = ListItemCollection()
-context['inputs'] = ListItemCollection()
-context['moves'] = ListItemCollection()
-context['rules'] = ListItemCollection()
-context['components'] = ListItemCollection()
-context['states'] = ListItemCollection()
+context['animations'] = list()
+context['inputs'] = list()
+context['moves'] = list()
+context['rules'] = list()
+context['components'] = list()
+context['states'] = list()
 
 def draw_editor(surface):
     screen.blit(surface, EDITOR_OFFSET)

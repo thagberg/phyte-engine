@@ -131,6 +131,8 @@ class StateDefinitionFrame(EditorFrame):
         self.deactivation_events_list.selectionmode = SELECTION_SINGLE
         self.available_rules_list.selectionmode = SELECTION_SINGLE
         self.chosen_rules_list.selectionmode = SELECTION_SINGLE
+        self.available_components_list.selectionmode = SELECTION_SINGLE
+        self.component_properties_list.selectionmode = SELECTION_SINGLE
         self.update_button.sensitive = False
         self.remove_button.sensitive = False
         self.add_rule_button.sensitive = False
@@ -145,11 +147,23 @@ class StateDefinitionFrame(EditorFrame):
                                        self._activate_controls)
         self.states_list.connect_signal(SIG_SELECTCHANGED,
                                        self._select_current_state)
+        self.available_components_list.connect_signal(SIG_SELECTCHANGED,
+                                                      self._select_component)
         self.add_button.connect_signal(SIG_CLICKED, self._add_state)
         self.update_button.connect_signal(SIG_CLICKED, self._update_state)
         self.remove_button.connect_signal(SIG_CLICKED, self._remove_state)
         self.add_rule_button.connect_signal(SIG_CLICKED, self._add_rule)
         self.remove_rule_button.connect_signal(SIG_CLICKED, self._remove_rule)
+
+    def _select_component(self):
+        comp_selection = self.available_components_list.get_selected()[0]
+        self.component_properties_list.items = ListItemCollection()
+        items = self.component_properties_list.items
+        for name in [x for x in dir(comp_selection) if not x.startswith('_')]:
+            new_text = TextListItem()
+            new_text.text = name
+            items.append(new_text)
+        self.component_properties_list.child.update_items()
 
     def _add_rule(self):
         rule_selection = self.available_rules_list.get_selected()[0]
