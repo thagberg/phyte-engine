@@ -32,7 +32,6 @@ class FrameDefinitionFrame(EditorFrame):
         self.canvas_offset = (250, 0)
         self.canvas_rect.x += self.canvas_offset[0]
         self.canvas_rect.y += self.canvas_offset[1]
-        #self.frames = self.context['frames']
         self.frames = ListItemCollection()
         self.anis = self.context['animations']
         self.current_ani = None
@@ -126,6 +125,7 @@ class FrameDefinitionFrame(EditorFrame):
         self.frame_list.items.append(new_frame)
         #self.context['frames'].append(new_frame)
         self.context['chosen_animation'].frames.append(new_frame)
+        self.context['components'].append(new_frame)
 
     def set_current_frame(self):
         selection = self.frame_list.get_selected()[0]

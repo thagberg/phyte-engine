@@ -5,6 +5,7 @@ from ocempgui.widgets.components import *
 
 from frame import EditorFrame
 from common import *
+from ..engine import inputs
 
 
 class Input(TextListItem):
@@ -66,6 +67,7 @@ class InputDefinitionFrame(EditorFrame):
         new_input = Input(self.name_entry.text)
         self.input_list.items.append(new_input)
         self.context['inputs'].append(new_input)
+        self.context['components'].append(new_input)
 
     def _remove_input(self):
         selected = self.input_list.get_selected()[0]

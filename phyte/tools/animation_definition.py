@@ -5,6 +5,7 @@ from ocempgui.widgets.components import *
 
 from frame import EditorFrame
 from common import *
+from ..engine import animation, graphics2d
 
 
 class Animation(TextListItem):
@@ -18,6 +19,15 @@ class Animation(TextListItem):
     def refresh_text(self):
         t = '{image} - {length} frames'
         self.text = t.format(image=self.image_file, length=len(self.frames))
+
+def animation_get_text(component):
+    t = '{comp.entity_id}: Animation - {len(comp.frames)} frames'
+    return t.format(comp=component)
+
+
+def graphic_get_text(component):
+    t = '{comp.entity_id}: Graphic - {comp.surface}'
+    return t.format(comp=component)
 
 
 class AnimationDefinitionFrame(EditorFrame):
@@ -84,6 +94,7 @@ class AnimationDefinitionFrame(EditorFrame):
         new_ani = Animation(image_file)
         self.ani_list.items.append(new_ani)
         self.context['animations'].append(new_ani)
+        self.context['components'].append(new_ani)
 
     def _remove_animation(self):
         selection = self.ani_list.get_selected()[0]

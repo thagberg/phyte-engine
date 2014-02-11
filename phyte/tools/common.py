@@ -14,15 +14,17 @@ GRAY = (225, 225, 225, 255)
 MOUSE_LEFT = 1
 MOUSE_RIGHT = 3
 
+ENTITY_ID = -1
+
 
 class Component(TextListItem):
-    def __init__(self, component):
+    def __init__(self, component, get_text):
         super(Component, self).__init__()
         self.component = component
         self.type_name = self.component.__class__.__name__
+        self.get_text = get_text
         self.text = ''
         self.refresh_text()
 
     def refresh_text(self):
-        t = '{self.type_name} component: {self.component.text}'
-        self.text = t.format(self=self)
+        self.text = self.get_text()

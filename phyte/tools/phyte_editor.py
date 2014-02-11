@@ -5,7 +5,7 @@ from ocempgui.widgets import *
 from ocempgui.widgets.components import *
 from ocempgui.widgets.Constants import *
 
-import hitbox_draw
+from entity_definition import EntityDefinitionFrame
 from frame_definition import FrameDefinitionFrame
 from hitbox_draw import HitBoxDefinitionFrame
 from animation_definition import AnimationDefinitionFrame
@@ -40,6 +40,7 @@ re.color = GRAY
 current_tab = None
 #context = defaultdict(ListItemCollection)
 context = defaultdict(object)
+context['entities'] = list()
 context['animations'] = list()
 context['inputs'] = list()
 context['moves'] = list()
@@ -64,6 +65,7 @@ def activate_tab():
 tab_list = ScrolledList(175, int(SCREEN_SIZE[1]*0.9))
 re.add_widget(tab_list)
 tab_list.topleft = (10, int(SCREEN_SIZE[1]*0.1/2))
+entity_tab = EntityDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
 input_tab = InputDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
 animation_tab = AnimationDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
 frame_tab = FrameDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
@@ -71,6 +73,7 @@ box_tab = HitBoxDefinitionFrame(re, editor_surface, context, image, EDITOR_OFFSE
 move_tab = MoveDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
 rule_tab = RuleDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
 state_tab = StateDefinitionFrame(re, editor_surface, context, EDITOR_OFFSET)
+tab_list.items.append(entity_tab)
 tab_list.items.append(input_tab)
 tab_list.items.append(animation_tab)
 tab_list.items.append(frame_tab)
