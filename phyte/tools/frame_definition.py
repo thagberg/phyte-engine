@@ -33,7 +33,7 @@ class FrameDefinitionFrame(EditorFrame):
         self.canvas_rect.x += self.canvas_offset[0]
         self.canvas_rect.y += self.canvas_offset[1]
         self.frames = ListItemCollection()
-        self.anis = self.context['animations']
+        self.anis = self.context['animations'][self.context['chosen_entity']]
         self.current_ani = None
         self.current_frame = None
         self.current_box = None

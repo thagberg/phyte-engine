@@ -5,7 +5,7 @@ from ocempgui.widgets import *
 from ocempgui.widgets.components import *
 from ocempgui.widgets.Constants import *
 
-from entity_definition import EntityDefinitionFrame
+from entity_definition import EntityDefinitionFrame, Entity
 from frame_definition import FrameDefinitionFrame
 from hitbox_draw import HitBoxDefinitionFrame
 from animation_definition import AnimationDefinitionFrame
@@ -41,12 +41,13 @@ current_tab = None
 #context = defaultdict(ListItemCollection)
 context = defaultdict(object)
 context['entities'] = list()
-context['animations'] = list()
+context['animations'] = defaultdict(list)
 context['inputs'] = list()
 context['moves'] = list()
 context['rules'] = list()
 context['components'] = list()
 context['states'] = list()
+context['graphics'] = list()
 
 def draw_editor(surface):
     screen.blit(surface, EDITOR_OFFSET)

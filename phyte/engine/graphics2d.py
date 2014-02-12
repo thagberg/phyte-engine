@@ -3,10 +3,11 @@ from events import *
 
 
 class GraphicsComponent(object):
-    def __init__(self, entity_id, surface, dest=None, area=None, flags=None,
-                 active=False, z_level=0):
+    def __init__(self, entity_id, surface, file_name=None, dest=None, area=None, 
+                 flags=None, active=False, z_level=0):
         self.entity_id = entity_id
         self.surface = surface
+        self.file_name = file_name
         self.dest = dest
         self.area = area
         self.flags = flags

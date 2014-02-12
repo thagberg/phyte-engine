@@ -20,15 +20,6 @@ class Animation(TextListItem):
         t = '{image} - {length} frames'
         self.text = t.format(image=self.image_file, length=len(self.frames))
 
-def animation_get_text(component):
-    t = '{comp.entity_id}: Animation - {len(comp.frames)} frames'
-    return t.format(comp=component)
-
-
-def graphic_get_text(component):
-    t = '{comp.entity_id}: Graphic - {comp.surface}'
-    return t.format(comp=component)
-
 
 class AnimationDefinitionFrame(EditorFrame):
     def __init__(self, renderer, draw_to, context, offset=(0,0), widgets=None):
@@ -40,20 +31,21 @@ class AnimationDefinitionFrame(EditorFrame):
         self.canvas_offset = (380, 0)
         self.canvas_rect.x += self.canvas_offset[0] + self.offset[0]
         self.canvas_rect.y += self.canvas_offset[1] + self.offset[1]
-        self.anis = self.context['animations']
+        self.anis = self.context['animations'][self.context['chosen_entity']]
+        self.graphics = self.context['graphics']
         self.image = None
 
         # define widgets
-        self.ani_list = ScrolledList(240, 300, self.anis)
-        self.add_button = Button('Add Animation')
-        self.update_button = Button('Update Animation')
-        self.remove_button = Button('Remove Animation')
+        self.graphic_list = ScrolledList(240, 300, self.graphics)
+        self.add_button = Button('Add Graphic')
+        self.update_button = Button('Update Graphic')
+        self.remove_button = Button('Remove Graphic')
         self.file_button = Button('Browse')
         self.file_entry = Entry()
 
         # build widget list
         append = self.widgets.append
-        append(self.ani_list)
+        append(self.graphic_list)
         append(self.add_button)
         append(self.update_button)
         append(self.remove_button)
@@ -63,7 +55,7 @@ class AnimationDefinitionFrame(EditorFrame):
         # set widget properties
         self.set_pos(self.file_button, (10,0))
         self.set_pos(self.file_entry, (80, 0))
-        self.set_pos(self.ani_list, (10, 30))
+        self.set_pos(self.graphic_list, (10, 30))
         self.set_pos(self.add_button, (255, 30))
         self.set_pos(self.update_button, (255, 60))
         self.set_pos(self.remove_button, (255, 90))
@@ -78,28 +70,32 @@ class AnimationDefinitionFrame(EditorFrame):
         self.file_button.connect_signal(SIG_CLICKED, 
                                         self._open_file_dialog,
                                         self.file_entry)
-        self.ani_list.connect_signal(SIG_SELECTCHANGED, 
-                                     self._activate_controls)
-        self.ani_list.connect_signal(SIG_SELECTCHANGED,
-                                     self._set_current_animation)
-        self.add_button.connect_signal(SIG_CLICKED, self._add_animation)
-        self.remove_button.connect_signal(SIG_CLICKED, self._remove_animation)
+        self.graphic_list.connect_signal(SIG_SELECTCHANGED, 
+                                         self._activate_controls)
+        self.graphic_list.connect_signal(SIG_SELECTCHANGED,
+                                         self._set_current_graphic)
+        self.add_button.connect_signal(SIG_CLICKED, self._add_graphic)
+        self.remove_button.connect_signal(SIG_CLICKED, self._remove_graphic)
 
-    def _set_current_animation(self):
-        selection = self.ani_list.get_selected()[0]
-        self._load_image(selection.image_file)
+    def _set_current_graphic(self):
+        selection = self.graphic_list.get_selected()[0]
+        self._load_image(selection.component.file_name)
 
-    def _add_animation(self):
+    def _add_graphic(self):
         image_file = self.file_entry.text
-        new_ani = Animation(image_file)
-        self.ani_list.items.append(new_ani)
-        self.context['animations'].append(new_ani)
-        self.context['components'].append(new_ani)
+        image = self._load_image(image_file)
+        new_graphic = graphics2d.GraphicsComponent(self.context['chosen_entity'].name,
+                                                   image, image_file)
+        get_text = lambda: '{file}'.format(file=new_graphic.file_name)
+        graphic_wrapper = Component(new_graphic, get_text)
+        self.graphic_list.items.append(graphic_wrapper)
+        self.graphics.append(new_graphic)
+        self.context['components'].append(new_graphic)
 
-    def _remove_animation(self):
-        selection = self.ani_list.get_selected()[0]
-        self.ani_list.items.remove(selection)
-        self.context['animations'].remove(selection)
+    def _remove_graphic(self):
+        selection = self.graphic_list.get_selected()[0]
+        self.graphic_list.items.remove(selection)
+        self.graphics.remove(selection.component)
 
     def _open_file_dialog(self, entry):
         file_dlg = FileDialog('Select Image File...',
@@ -126,9 +122,10 @@ class AnimationDefinitionFrame(EditorFrame):
 
     def _load_image(self, file_name):
         self.image = pygame.image.load(file_name)
+        return self.image
 
     def _activate_controls(self):
-        selection = self.ani_list.get_selected()
+        selection = self.graphic_list.get_selected()
         if self.image is not None:
             self.add_button.sensitive = True
         else:
@@ -157,3 +154,4 @@ class AnimationDefinitionFrame(EditorFrame):
         dest_x = canvas.get_width()/2 - crop[2]/2
         dest_y = canvas.get_height()/2 - crop[3]/2
         canvas.blit(image, (dest_x, dest_y), crop)
+

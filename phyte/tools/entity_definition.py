@@ -81,6 +81,7 @@ class EntityDefinitionFrame(EditorFrame):
         if len(entity_selection) > 0:
             self.update_button.sensitive = True
             self.remove_button.sensitive = True
+            self.context['chosen_entity'] = entity_selection[0].component
         else:
             self.update_button.sensitive = False
             self.remove_button.sensitive = False
