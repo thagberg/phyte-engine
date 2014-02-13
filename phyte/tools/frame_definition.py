@@ -266,7 +266,7 @@ class FrameDefinitionFrame(EditorFrame):
         # hasn't been defined for that ListPortView yet
         # Creating copies of each Frame is not the cleanest solution,
         # but it works
-        for item in self.context['animations']:
+        for item in self.context['animations'][self.context['chosen_entity']]:
             copy_ani = Animation(item.image_file, item.frames)
             items.append(copy_ani)
         self.ani_list.items = items

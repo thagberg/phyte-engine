@@ -42,6 +42,9 @@ class AnimationDefinitionFrame(EditorFrame):
         self.remove_button = Button('Remove Graphic')
         self.file_button = Button('Browse')
         self.file_entry = Entry()
+        self.ani_list = ScrolledList(200, 200, self.anis)
+        self.add_ani_button = Button('Add Animation')
+        self.remove_ani_button = Button('Remove Animation')
 
         # build widget list
         append = self.widgets.append
@@ -51,6 +54,9 @@ class AnimationDefinitionFrame(EditorFrame):
         append(self.remove_button)
         append(self.file_button)
         append(self.file_entry)
+        append(self.ani_list)
+        append(self.add_ani_button)
+        append(self.remove_ani_button)
 
         # set widget properties
         self.set_pos(self.file_button, (10,0))
@@ -59,12 +65,17 @@ class AnimationDefinitionFrame(EditorFrame):
         self.set_pos(self.add_button, (255, 30))
         self.set_pos(self.update_button, (255, 60))
         self.set_pos(self.remove_button, (255, 90))
+        self.set_pos(self.ani_list, (10, 360))
+        self.set_pos(self.add_ani_button, (215, 360))
+        self.set_pos(self.remove_ani_button, (215, 390))
 
         # miscelaneous
         self.add_button.sensitive = False
         self.update_button.sensitive = False
         self.remove_button.sensitive = False
         self.file_entry.minsize = (250, self.file_entry.minsize[1])
+        self.add_ani_button.sensitive = False
+        self.remove_ani_button.sensitive = False
 
         # wire up GUI
         self.file_button.connect_signal(SIG_CLICKED, 
@@ -76,6 +87,29 @@ class AnimationDefinitionFrame(EditorFrame):
                                          self._set_current_graphic)
         self.add_button.connect_signal(SIG_CLICKED, self._add_graphic)
         self.remove_button.connect_signal(SIG_CLICKED, self._remove_graphic)
+        self.add_ani_button.connect_signal(SIG_CLICKED, 
+                                           self._add_animation)
+        self.remove_ani_button.connect_signal(SIG_CLICKED, 
+                                              self._remove_animation)
+        self.ani_list.connect_signal(SIG_SELECTCHANGED, 
+                                     self._activate_controls)
+
+    def _add_animation(self):
+        selection = self.graphic_list.get_selected()[0]
+        graphic = selection.component
+        ani = animation.AnimationComponent(entity_id=self.context['chosen_entity'],
+                                           graphic=graphic)
+        get_text = lambda: 'Animation: {file}'.format(file=graphic.file_name)
+        ani_wrapper = Component(ani, get_text)
+        self.ani_list.items.append(ani_wrapper)
+        self.ani_list.child.update_items()
+        self.anis.append(ani)
+
+    def _remove_animation(self):
+        selection = self.ani_list.get_selected()[0]
+        self.ani_list.items.remove(selection)
+        self.ani_list.child.update_items()
+        self.anis.remove(selection.component)
 
     def _set_current_graphic(self):
         selection = self.graphic_list.get_selected()[0]
@@ -126,6 +160,7 @@ class AnimationDefinitionFrame(EditorFrame):
 
     def _activate_controls(self):
         selection = self.graphic_list.get_selected()
+        ani_selection = self.ani_list.get_selected()
         if self.image is not None:
             self.add_button.sensitive = True
         else:
@@ -134,9 +169,16 @@ class AnimationDefinitionFrame(EditorFrame):
         if len(selection) > 0:
             self.update_button.sensitive = True
             self.remove_button.sensitive = True
+            self.add_ani_button.sensitive = True
         else:
             self.update_button.sensitive = False
             self.remove_button.sensitive = False
+            self.add_ani_button.sensitive = False
+
+        if len(ani_selection) > 0:
+            self.remove_ani_button.sensitive = True
+        else:
+            self.remove_ani_button.sensitive = False
             
 
     def update(self, events):
