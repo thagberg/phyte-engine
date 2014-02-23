@@ -28,7 +28,7 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 editor_surface = pygame.Surface(EDITOR_SIZE)
 editor_surface = editor_surface.convert_alpha()
 editor_surface.fill(TRANS)
-image = pygame.image.load('content/sticksheet.png')
+image = pygame.image.load('../content/sticksheet.png')
 
 # set up GUI renderer
 re = Renderer()
@@ -85,21 +85,22 @@ tab_list.items.append(state_tab)
 tab_list.connect_signal(SIG_SELECTCHANGED, activate_tab)
 
 
-running = True
-while(running):
-    events = pygame.event.get()
-    for event in events:
-        if event.type == pygame.QUIT:
-            running = False
+def run_editor():
+    running = True
+    while(running):
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
 
-    # update the current tab and draw it to editor surface
-    if current_tab is not None:
-        current_tab.update(events)
+        # update the current tab and draw it to editor surface
+        if current_tab is not None:
+            current_tab.update(events)
 
-    # pass events to ocempgui renderer
-    re.distribute_events(*events)
+        # pass events to ocempgui renderer
+        re.distribute_events(*events)
 
-    # draw the editor pane
-    draw_editor(editor_surface)
+        # draw the editor pane
+        draw_editor(editor_surface)
 
-    pygame.display.flip()
+        pygame.display.flip()

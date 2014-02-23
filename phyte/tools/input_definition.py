@@ -5,7 +5,7 @@ from ocempgui.widgets.components import *
 
 from frame import EditorFrame
 from common import *
-from ..engine import inputs
+from engine import inputs
 
 
 class Input(TextListItem):

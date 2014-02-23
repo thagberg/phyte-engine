@@ -7,7 +7,7 @@ from frame import EditorFrame
 from rule_definition import Rule
 from input_definition import Input
 from common import *
-from ..engine import events
+from engine import events
 
 
 class State(TextListItem):

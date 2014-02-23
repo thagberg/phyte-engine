@@ -5,7 +5,7 @@ from ocempgui.widgets.components import *
 
 from frame import EditorFrame
 from common import *
-from ..engine import animation, graphics2d
+from engine import animation, graphics2d
 
 
 class Animation(TextListItem):
