@@ -1,4 +1,5 @@
 import sys
+from collections import defaultdict
 
 from PyQt4 import QtGui, QtCore
 
@@ -11,7 +12,7 @@ class Example(QtGui.QWidget):
 
     def initUI(self):
         top = QtGui.QGridLayout()
-        self.context = dict()
+        self.context = defaultdict(object)
         self.entity_editor = EntityDefinitionEditor(self.context)
 
         top.addWidget(self.entity_editor.group, 0, 0)

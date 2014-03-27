@@ -3,6 +3,7 @@ from PyQt4 import QtGui
 from editor_qt import Editor
 from engine.entity import Entity
 
+
 class EntityDefinitionEditor(Editor):
     def __init__(self, context):
         super(EntityDefinitionEditor, self).__init__(context)        
@@ -26,9 +27,13 @@ class EntityDefinitionEditor(Editor):
         self.add_entity_button.clicked.connect(self.add_entity)
 
     def add_entity(self, checked):
-        print self.entity_name_field.text()
-        new_entity = QtGui.QListWidgetItem()
-        new_entity.setText(self.entity_name_field.text())
-        #self.entity_list_model.appendRow(new_entity)
-        self.entity_list_view.addItem(new_entity)
-        print 'Added new entity'
+        entity_name = self.entity_name_field.text()
+        new_entity_item = QtGui.QListWidgetItem()
+        new_entity = Entity(entity_name)
+        new_entity_item.setText(entity_name)
+        self.entity_list_view.addItem(new_entity_item)
+        self.context[entity_name] = dict()
+        self.context[entity_name]['entity'] = new_entity 
+
+    def select_entity(self, previous, current):
+        self.context['selected_entity'] = current.text()
