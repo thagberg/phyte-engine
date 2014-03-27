@@ -6,7 +6,9 @@ from ocempgui.widgets.components import *
 from frame import EditorFrame
 from animation_definition import Animation
 from common import *
+from engine import animation, graphics2d
 
+import pdb
 
 class Frame(TextListItem):
     def __init__(self, crop, repeat=0, hitboxes=None):
@@ -148,9 +150,9 @@ class FrameDefinitionFrame(EditorFrame):
             self.current_ani.frames = list()
             for frame in self.frame_list.items:
                 self.current_ani.frames.append(frame)
-        ani_selection = self.ani_list.get_selected()[0]
+        ani_selection = self.ani_list.get_selected()[0].component
         if ani_selection is not None:
-            self.image = self._load_image(ani_selection.image_file)
+            self.image = self._load_image(ani_selection.graphic.file_name)
             self.context['chosen_animation'] = ani_selection
             self.frames = ListItemCollection(ani_selection.frames)
             self.frame_list.items = self.frames
@@ -267,8 +269,11 @@ class FrameDefinitionFrame(EditorFrame):
         # Creating copies of each Frame is not the cleanest solution,
         # but it works
         for item in self.context['animations'][self.context['chosen_entity']]:
-            copy_ani = Animation(item.image_file, item.frames)
-            items.append(copy_ani)
+            copy_ani = animation.AnimationComponent(entity_id=item.entity_id,
+                                                    graphic=item.graphic)
+            get_text = lambda: 'Animation: {file}'.format(file=item.graphic.file_name)
+            copy_wrapper = Component(copy_ani, get_text)
+            items.append(copy_wrapper)
         self.ani_list.items = items
         self.ani_list.child.update_items()
 

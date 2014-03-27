@@ -7,6 +7,7 @@ from frame import EditorFrame
 from common import *
 from engine import animation, graphics2d
 
+import pdb
 
 class Animation(TextListItem):
     def __init__(self, image_file, frames=None):
@@ -103,13 +104,13 @@ class AnimationDefinitionFrame(EditorFrame):
         ani_wrapper = Component(ani, get_text)
         self.ani_list.items.append(ani_wrapper)
         self.ani_list.child.update_items()
-        self.anis.append(ani)
+        self.context['animations'][self.context['chosen_entity']].append(ani)
 
     def _remove_animation(self):
         selection = self.ani_list.get_selected()[0]
         self.ani_list.items.remove(selection)
         self.ani_list.child.update_items()
-        self.anis.remove(selection.component)
+        self.context['animations'][self.context['chosen_entity']].remove(ani)
 
     def _set_current_graphic(self):
         selection = self.graphic_list.get_selected()[0]
