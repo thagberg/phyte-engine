@@ -37,10 +37,23 @@ class GraphicDefinitionEditor(Editor):
         self.graphic_file_name_field.setText(file_name)
 
     def add_graphic(self):
+        # add the new graphic to the UI
         file_name = self.graphic_file_name_field.text()
         graphic_item = QtGui.QListWidgetItem(file_name)
         self.graphic_list_view.addItem(graphic_item)
 
+        # then add it to the application context
+        entity = self.context.get('selected_entity')
+        if entity:
+            self.context[entity]['components']['graphic'].append(file_name)
+
     def remove_graphic(self):
+        # remove the selectd graphic item from the UI
         selected_index = self.graphic_list_view.currentRow()
+        selected_item = self.graphic_list_view.currentItem()
         self.graphic_list_view.takeItem(selected_index)
+
+        # then remove it from the application context
+        entity = self.context.get('selected_entity')
+        if entity:
+            self.context[entity]['components']['graphic'].remove(seleted_item)

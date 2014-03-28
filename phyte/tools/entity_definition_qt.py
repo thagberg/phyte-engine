@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from PyQt4 import QtGui
 
 from editor_qt import Editor
@@ -32,6 +34,7 @@ class EntityDefinitionEditor(Editor):
         self.entity_list_view.addItem(new_entity_item)
         self.context[entity_name] = dict()
         self.context[entity_name]['entity'] = new_entity 
+        self.context[entity_name]['components'] = defaultdict(list)
 
     def select_entity(self, previous, current):
         self.context['selected_entity'] = current.text()
