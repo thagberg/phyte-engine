@@ -4,6 +4,7 @@ class Editor(object):
     def __init__(self, context, group=None):
         self.context = context
         self.group = group if group is not None else QtGui.QGroupBox('Editor')
+        self.hide()
 
     def show(self):
         self.group.show()

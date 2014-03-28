@@ -6,35 +6,54 @@ from entity_definition_qt import EntityDefinitionEditor
 from graphic_definition_qt import GraphicDefinitionEditor
 from editor_qt import EditorManager
 
-class Example(QtGui.QWidget):
+class PhyteEditor(QtGui.QWidget):
     def __init__(self):
-        super(Example, self).__init__()
+        super(PhyteEditor, self).__init__()
         self.initUI()
 
     def initUI(self):
         top = QtGui.QGridLayout()
         self.context = dict()
+        self.editor_selector_view = QtGui.QListWidget()
+        self.editor_item_map = dict()
         self.editor_manager = EditorManager()
         entity_editor = EntityDefinitionEditor(self.context)
         graphic_editor = GraphicDefinitionEditor(self.context)
 
+        # add editors to editor manager
         self.editor_manager.add_editor('entity', entity_editor)
         self.editor_manager.add_editor('graphic', graphic_editor)
 
-        top.addWidget(entity_editor.group, 0, 0)
-        top.addWidget(graphic_editor.group,0, 0)
+        # set up editor view
+        entity_editor_item = QtGui.QListWidgetItem('Entity')
+        entity_graphic_item = QtGui.QListWidgetItem('Graphic')
+        self.editor_item_map[entity_editor_item] = 'entity'
+        self.editor_item_map[entity_graphic_item] = 'graphic'
+        self.editor_selector_view.addItem(entity_editor_item)
+        self.editor_selector_view.addItem(entity_graphic_item)
 
-        self.editor_manager.show_editor('graphic')
+        # set up layout
+        top.addWidget(self.editor_selector_view,0,0)
+        top.addWidget(entity_editor.group, 0, 1)
+        top.addWidget(graphic_editor.group,0, 1)
+
+        # wire up event handlers
+        self.editor_selector_view.currentItemChanged.connect(self.select_editor)
 
         self.setLayout(top)
 
         self.show()
 
+    def select_editor(self):
+        selected_item = self.editor_selector_view.currentItem()
+        selected_editor = self.editor_item_map[selected_item]
+        self.editor_manager.show_editor(selected_editor)
+
 
 def main():
 
     app = QtGui.QApplication(sys.argv)
-    ex = Example()
+    ex = PhyteEditor()
 
     sys.exit(app.exec_())
 
