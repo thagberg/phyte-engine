@@ -1,4 +1,3 @@
-from ocempgui.widgets.components import TextListItem
 
 
 WHITE = (255, 255, 255, 255)
@@ -17,7 +16,7 @@ MOUSE_RIGHT = 3
 ENTITY_ID = -1
 
 
-class Component(TextListItem):
+class Component(object):
     def __init__(self, component, get_text):
         super(Component, self).__init__()
         self.component = component

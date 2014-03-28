@@ -28,9 +28,8 @@ class EntityDefinitionEditor(Editor):
 
     def add_entity(self, checked):
         entity_name = self.entity_name_field.text()
-        new_entity_item = QtGui.QListWidgetItem()
+        new_entity_item = QtGui.QListWidgetItem(entity_name)
         new_entity = Entity(entity_name)
-        new_entity_item.setText(entity_name)
         self.entity_list_view.addItem(new_entity_item)
         self.context[entity_name] = dict()
         self.context[entity_name]['entity'] = new_entity 
