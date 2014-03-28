@@ -6,8 +6,7 @@ from engine.entity import Entity
 
 class EntityDefinitionEditor(Editor):
     def __init__(self, context):
-        super(EntityDefinitionEditor, self).__init__(context)        
-        self.group = QtGui.QGroupBox('Entity')
+        super(EntityDefinitionEditor, self).__init__(context, QtGui.QGroupBox('Entity'))
         self.layout = QtGui.QGridLayout()
         self.entity_name_field = QtGui.QLineEdit()
         self.entity_name_label =  QtGui.QLabel('Entity Name')

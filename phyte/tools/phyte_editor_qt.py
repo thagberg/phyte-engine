@@ -5,6 +5,7 @@ from PyQt4 import QtGui, QtCore
 
 from entity_definition_qt import EntityDefinitionEditor
 from graphic_definition_qt import GraphicDefinitionEditor
+from editor_qt import EditorManager
 
 class Example(QtGui.QWidget):
     def __init__(self):
@@ -14,14 +15,17 @@ class Example(QtGui.QWidget):
     def initUI(self):
         top = QtGui.QGridLayout()
         self.context = defaultdict(object)
-        self.entity_editor = EntityDefinitionEditor(self.context)
-        self.graphic_editor = GraphicDefinitionEditor(self.context)
+        self.editor_manager = EditorManager()
+        entity_editor = EntityDefinitionEditor(self.context)
+        graphic_editor = GraphicDefinitionEditor(self.context)
 
-        self.entity_editor.group.hide()
-        #self.graphic_editor.group.hide()
+        self.editor_manager.add_editor('entity', entity_editor)
+        self.editor_manager.add_editor('graphic', graphic_editor)
 
-        top.addWidget(self.entity_editor.group, 0, 0)
-        top.addWidget(self.graphic_editor.group,0, 0)
+        top.addWidget(entity_editor.group, 0, 0)
+        top.addWidget(graphic_editor.group,0, 0)
+
+        self.editor_manager.show_editor('graphic')
 
         self.setLayout(top)
 
