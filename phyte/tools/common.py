@@ -1,4 +1,4 @@
-
+from PyQt4 import QtGui
 
 WHITE = (255, 255, 255, 255)
 RED = (255, 0, 0, 255)
@@ -17,13 +17,13 @@ ENTITY_ID = -1
 
 
 class Component(object):
-    def __init__(self, component, get_text):
+    def __init__(self, component):
         super(Component, self).__init__()
         self.component = component
         self.type_name = self.component.__class__.__name__
-        self.get_text = get_text
-        self.text = ''
-        self.refresh_text()
 
-    def refresh_text(self):
-        self.text = self.get_text()
+
+class WidgetItemComponent(QtGui.QListWidgetItem):
+    def __init__(self, item_text, component):
+        super(WidgetItemComponent, self).__init__(item_text)
+        self.component = component
