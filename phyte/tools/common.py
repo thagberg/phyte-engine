@@ -1,4 +1,4 @@
-from PyQt4 import QtGui
+from PyQt4 import QtGui, Qt, QtCore
 
 WHITE = (255, 255, 255, 255)
 RED = (255, 0, 0, 255)
@@ -17,9 +17,10 @@ ENTITY_ID = -1
 
 
 class Component(object):
-    def __init__(self, component):
+    def __init__(self, component, text):
         super(Component, self).__init__()
         self.component = component
+        self.text = text
         self.type_name = self.component.__class__.__name__
 
 
@@ -27,3 +28,14 @@ class WidgetItemComponent(QtGui.QListWidgetItem):
     def __init__(self, item_text, component):
         super(WidgetItemComponent, self).__init__(item_text)
         self.component = component
+
+
+class ComponentListModel(Qt.QAbstractListModel):
+    def __init__(self, parent=None):
+        super(ComponentListModel, self).__init__(parent)
+
+    def rowCount(self, parent=Qt.QModelIndex()):
+        pass
+
+    def data(self, index, role=QtCore.Qt.DisplayRole):
+        pass

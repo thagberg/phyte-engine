@@ -1,7 +1,7 @@
 from PyQt4 import QtGui
 
 from editor_qt import Editor
-from common import Component
+from common import Component, WidgetItemComponent
 from engine.animation import AnimationComponent
 
 
@@ -40,10 +40,22 @@ class AnimationDefinitionEditor(Editor):
         self.animation_list_view.currentItemChanged.connect(self.select_animation)
 
     def add_animation(self):
-        pass
+        animation_name = self.animation_name_field.text()
+        selected_graphic = self.graphic_list_view.currentItem()
+        entity = self.context['selected_entity']
+        animation_component = AnimationComponent(entity_id=entity,
+                                                 graphic=selected_graphic)
+        widget_component = WidgetItemComponent(animation_name, animation_component)
+        self.animation_list_view.addItem(widget_component)
+
+        # add new component to the application context
+        self.context[entity]['components']['animation'].append(widget_component)
 
     def remove_animation(self):
-        pass
+        entity = self.context['selected_entity']
+        selected_index = self.animation_list_view.currentIndex()
+        selected_animation = self.animation_list_view.takeItem(selected_index)
+        self.context[entity]['components']['animation'].remove(selected_animation)
 
     def select_graphic(self):
         pass

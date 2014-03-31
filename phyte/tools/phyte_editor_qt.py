@@ -14,6 +14,7 @@ class PhyteEditor(QtGui.QWidget):
 
     def initUI(self):
         top = QtGui.QGridLayout()
+        editor_switcher = QtGui.QGridLayout()
         self.context = dict()
         self.editor_selector_view = QtGui.QListWidget()
         self.editor_item_map = dict()
@@ -40,10 +41,19 @@ class PhyteEditor(QtGui.QWidget):
         self.editor_selector_view.addItem(animation_editor_item)
 
         # set up layout
-        top.addWidget(self.editor_selector_view,0,0)
-        top.addWidget(entity_editor.group, 0, 1)
-        top.addWidget(graphic_editor.group,0, 1)
-        top.addWidget(animation_editor.group,0,1)
+        self.splitter = QtGui.QSplitter()
+        holder_widget = QtGui.QWidget()
+        holder_widget.setLayout(editor_switcher)
+        editor_switcher.addWidget(entity_editor.group)
+        editor_switcher.addWidget(graphic_editor.group)
+        editor_switcher.addWidget(animation_editor.group)
+        self.splitter.addWidget(self.editor_selector_view)
+        self.splitter.addWidget(holder_widget)
+        top.addWidget(self.splitter,0,0)
+        #top.addWidget(self.editor_selector_view,0,0)
+        #top.addWidget(entity_editor.group, 0, 1)
+        #top.addWidget(graphic_editor.group,0, 1)
+        #top.addWidget(animation_editor.group,0,1)
 
         # wire up event handlers
         self.editor_selector_view.currentItemChanged.connect(self.select_editor)
