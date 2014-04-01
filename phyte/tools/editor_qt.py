@@ -1,16 +1,14 @@
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
-class Editor(object):
+class Editor(QtGui.QWidget):
     def __init__(self, context, group=None):
+        super(Editor, self).__init__()
         self.context = context
+        self.layout = QtGui.QBoxLayout(QtGui.QBoxLayout.LeftToRight)
         self.group = group if group is not None else QtGui.QGroupBox('Editor')
+        self.layout.addWidget(self.group)
+        self.setLayout(self.layout)
         self.hide()
-
-    def show(self):
-        self.group.show()
-
-    def hide(self):
-        self.group.hide()
 
 
 class EditorManager(object):
