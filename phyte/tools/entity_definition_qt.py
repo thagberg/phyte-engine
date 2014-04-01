@@ -4,6 +4,7 @@ from PyQt4 import QtGui
 
 from editor_qt import Editor
 from engine.entity import Entity
+from common import Component, ComponentListModel
 
 
 class EntityDefinitionEditor(Editor):
@@ -13,9 +14,9 @@ class EntityDefinitionEditor(Editor):
         self.entity_name_field = QtGui.QLineEdit()
         self.entity_name_label =  QtGui.QLabel('Entity Name')
         self.add_entity_button = QtGui.QPushButton('Add Entity')
-        self.entity_list_view = QtGui.QListWidget()
-        #self.entity_list_model = QtGui.QStandardItemModel()
-        #self.entity_list_view.setModel(self.entity_list_model)
+        self.entity_list_view = QtGui.QListView()
+        self.entity_list_model = ComponentListModel()
+        self.entity_list_view.setModel(self.entity_list_model)
 
         self.layout.addWidget(self.entity_name_label,0,0)
         self.layout.addWidget(self.entity_name_field,0,1)
@@ -29,9 +30,10 @@ class EntityDefinitionEditor(Editor):
 
     def add_entity(self, checked):
         entity_name = self.entity_name_field.text()
-        new_entity_item = QtGui.QListWidgetItem(entity_name)
         new_entity = Entity(entity_name)
-        self.entity_list_view.addItem(new_entity_item)
+        new_entity_wrapper = Component(new_entity, entity_name)
+        self.entity_list_model.add_component(new_entity_wrapper)
+        #self.entity_list_view.addItem(new_entity_item)
         self.context[entity_name] = dict()
         self.context[entity_name]['entity'] = new_entity 
         self.context[entity_name]['components'] = defaultdict(list)
