@@ -1,7 +1,7 @@
 from PyQt4 import QtGui
 
 from editor_qt import Editor
-from common import Component, WidgetItemComponent
+from common import Component, ComponentListModel
 from engine.animation import AnimationComponent
 
 
@@ -45,7 +45,7 @@ class AnimationDefinitionEditor(Editor):
         entity = self.context['selected_entity']
         animation_component = AnimationComponent(entity_id=entity,
                                                  graphic=selected_graphic)
-        widget_component = WidgetItemComponent(animation_name, animation_component)
+        #widget_component = WidgetItemComponent(animation_name, animation_component)
         self.animation_list_view.addItem(widget_component)
 
         # add new component to the application context

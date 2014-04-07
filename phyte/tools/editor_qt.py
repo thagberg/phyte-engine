@@ -1,5 +1,7 @@
 from PyQt4 import QtGui, QtCore
 
+from event import Event, EVENT_QUEUE
+
 class Editor(QtGui.QWidget):
     def __init__(self, context, group=None):
         super(Editor, self).__init__()

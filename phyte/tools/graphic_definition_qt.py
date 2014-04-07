@@ -1,23 +1,28 @@
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
 from editor_qt import Editor
 from common import Component, WidgetItemComponent
 from engine.graphics2d import GraphicsComponent
+from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
 
 
 class GraphicDefinitionEditor(Editor):
     def __init__(self, context):
         super(GraphicDefinitionEditor, self).__init__(context, QtGui.QGroupBox('Graphics'))
+        # setup gui stuff
         self.layout =  QtGui.QGridLayout()
         self.view_buttons_layout = QtGui.QVBoxLayout()
         self.graphic_file_name_field = QtGui.QLineEdit()
         self.graphic_file_button = QtGui.QPushButton('Choose Graphic')
-        self.graphic_list_view = QtGui.QListWidget()
         self.add_graphic_button = QtGui.QPushButton('Add Graphic')
         self.remove_graphic_button = QtGui.QPushButton('Remove Graphic')
         self.graphic_file_viewer = QtGui.QLabel()
         self.graphic_name_field = QtGui.QLineEdit()
         self.graphic_name_label = QtGui.QLabel('Graphic Name')
+        self.graphic_list_view = QtGui.QListWidget()
+
+        # events
+        EVENT_MAPPING.register_handler('selected_entity', self.set_graphics)
 
         # setup layout
         self.layout.addWidget(self.graphic_file_name_field,0,0)
@@ -49,18 +54,16 @@ class GraphicDefinitionEditor(Editor):
         graphic_component = GraphicsComponent(self.context.get('selected_entity'),
                                               None,
                                               file_name)
-        component = Component(graphic_component)
-        widget_component = WidgetItemComponent(widget_text, 
-                                               component)
+        graphic_component_wrapper = WidgetItemComponent(file_name, graphic_component)
+        self.graphic_list_view.addItem(graphic_component_wrapper)
 
-        self.graphic_list_view.addItem(widget_component)
         # render it to the label image holder
         self.show_graphic(file_name)
 
         # then add it to the application context
-        entity = self.context.get('selected_entity')
-        if entity:
-            self.context[entity]['components']['graphic'].append(widget_component)
+        entity_name = self.context.get('selected_entity')
+        if entity_name:
+            self.context[entity_name]['components']['graphic'].append(graphic_component_wrapper)
 
     def show_graphic(self, file_name):
         self.current_graphic = QtGui.QPixmap(file_name)
@@ -82,5 +85,16 @@ class GraphicDefinitionEditor(Editor):
         # this function gets called when a graphic is removed,
         # so we need to make sure there is actually a selected item
         if selected_item:
-            file_name = selected_item.component.component.file_name
+            file_name = selected_item.component.file_name
             self.show_graphic(file_name)
+
+    def set_graphics(self, event):
+        entity = event.entity
+        available_graphics = self.context[entity]['components']['graphic']
+        # do a "soft" clear of the list
+        # if we actually call self.graphic_list_view.clear(),
+        # the C++ Qt objects will be deleted
+        for i in range(self.graphic_list_view.count()):
+            self.graphic_list_view.takeItem(i)
+        for graphic in available_graphics:
+            self.graphic_list_view.addItem(graphic)
