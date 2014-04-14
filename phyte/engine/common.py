@@ -36,3 +36,9 @@ class BoxComponent(object):
         self.hitstun = hitstun
         self.push = push
         self.moveable = moveable 
+
+
+class AssetComponent(object):
+    def __init__(self, file_name, surface):
+        self.file_name = file_name
+        self.surface = surface
