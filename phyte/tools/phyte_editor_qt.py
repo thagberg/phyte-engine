@@ -6,6 +6,7 @@ from entity_definition_qt import EntityDefinitionEditor
 from graphic_definition_qt import GraphicDefinitionEditor
 from animation_definition_qt import AnimationDefinitionEditor
 from asset_definition_qt import AssetDefinitionEditor
+from frame_definition_qt import FrameDefinitionEditor
 from editor_qt import EditorManager
 
 class PhyteEditor(QtGui.QWidget):
@@ -24,27 +25,32 @@ class PhyteEditor(QtGui.QWidget):
         graphic_editor = GraphicDefinitionEditor(self.context)
         animation_editor = AnimationDefinitionEditor(self.context)
         asset_editor = AssetDefinitionEditor(self.context)
+        frame_editor = FrameDefinitionEditor(self.context)
 
         # add editors to editor manager
         self.editor_manager.add_editor('entity', entity_editor)
         self.editor_manager.add_editor('graphic', graphic_editor)
         self.editor_manager.add_editor('animation', animation_editor)
         self.editor_manager.add_editor('asset', asset_editor)
+        self.editor_manager.add_editor('frame', frame_editor)
 
         # set up editor view
         entity_editor_item = QtGui.QListWidgetItem('Entity')
         graphic_editor_item = QtGui.QListWidgetItem('Graphic')
         animation_editor_item = QtGui.QListWidgetItem('Animation')
         asset_editor_item = QtGui.QListWidgetItem('Asset')
+        frame_editor_item = QtGui.QListWidgetItem('Frame')
 
         self.editor_item_map[entity_editor_item] = 'entity'
         self.editor_item_map[graphic_editor_item] = 'graphic'
         self.editor_item_map[animation_editor_item] = 'animation'
         self.editor_item_map[asset_editor_item] = 'asset'
+        self.editor_item_map[frame_editor_item] = 'frame'
         self.editor_selector_view.addItem(entity_editor_item)
         self.editor_selector_view.addItem(graphic_editor_item)
         self.editor_selector_view.addItem(animation_editor_item)
         self.editor_selector_view.addItem(asset_editor_item)
+        self.editor_selector_view.addItem(frame_editor_item)
 
         # set up layout
         self.splitter = QtGui.QSplitter()
@@ -54,13 +60,10 @@ class PhyteEditor(QtGui.QWidget):
         editor_switcher.addWidget(graphic_editor)
         editor_switcher.addWidget(animation_editor)
         editor_switcher.addWidget(asset_editor)
+        editor_switcher.addWidget(frame_editor)
         self.splitter.addWidget(self.editor_selector_view)
         self.splitter.addWidget(holder_widget)
         top.addWidget(self.splitter,0,0)
-        #top.addWidget(self.editor_selector_view,0,0)
-        #top.addWidget(entity_editor.group, 0, 1)
-        #top.addWidget(graphic_editor.group,0, 1)
-        #top.addWidget(animation_editor.group,0,1)
 
         # wire up event handlers
         self.editor_selector_view.currentItemChanged.connect(self.select_editor)

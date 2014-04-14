@@ -10,6 +10,7 @@ class AnimationDefinitionEditor(Editor):
     def __init__(self, context):
         super(AnimationDefinitionEditor, self).__init__(context,
                                                         QtGui.QGroupBox('Animation'))
+        self.outer_layout = QtGui.QHBoxLayout()
         self.layout = QtGui.QGridLayout()
         self.animation_name_field = QtGui.QLineEdit()
         self.animation_name_label = QtGui.QLabel('Animation Name')
@@ -38,15 +39,16 @@ class AnimationDefinitionEditor(Editor):
         EVENT_MAPPING.register_handler('selected_graphic', self.set_animations)
 
         # setup layout
+        self.outer_layout.addLayout(self.layout)
+        self.outer_layout.addWidget(self.graphic_viewer)
         self.layout.addWidget(self.animation_name_label,0,0)
         self.layout.addWidget(self.animation_name_field,0,1)
         self.layout.addWidget(self.animation_list_view,1,0)
         self.animation_buttons_layout.addWidget(self.add_animation_button)
         self.animation_buttons_layout.addWidget(self.remove_animation_button)
         self.layout.addLayout(self.animation_buttons_layout,1,1)
-        self.layout.addWidget(self.graphic_viewer,0,2)
 
-        self.group.setLayout(self.layout)
+        self.group.setLayout(self.outer_layout)
 
         # wire up gui event handlers
         self.add_animation_button.clicked.connect(self.add_animation)
@@ -103,12 +105,19 @@ class AnimationDefinitionEditor(Editor):
         self.context[entity]['components']['animation'].remove(inner_ani_component)
 
     def select_animation(self):
-        selected_animation = self.animation_list_view.currentItem()
+        selected_item = self.animation_list_view.currentItem()
         # this function gets called when an animation is removed,
         # so we need to make sure there is actually a selected item
-        if selected_animation:
-            file_name = selected_animation.component.component.graphic.component.file_name
+        if selected_item:
+            selected_component = selected_item.component
+            file_name = selected_component.component.graphic.component.file_name
             self.show_graphic(file_name)
+
+            # fire event for selecting a graphic
+            new_event = Event('selected_animation',
+                              animation_component=selected_component,
+                              entity=selected_component.component.entity_id)
+            EVENT_MANAGER.fire_event(new_event)
 
     def show_graphic(self, file_name):
         # first clear anything currently being rendered

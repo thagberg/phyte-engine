@@ -11,6 +11,7 @@ class AssetDefinitionEditor(Editor):
     def __init__(self, context):
         super(AssetDefinitionEditor, self).__init__(context, QtGui.QGroupBox('Assets'))
         # setup gui stuff
+        self.outer_layout = QtGui.QHBoxLayout()
         self.layout =  QtGui.QGridLayout()
         self.view_buttons_layout = QtGui.QVBoxLayout()
         self.asset_file_name_field = QtGui.QLineEdit()
@@ -24,18 +25,19 @@ class AssetDefinitionEditor(Editor):
         self.view_area = QtGui.QScrollArea()
 
         # setup layout
+        self.outer_layout.addLayout(self.layout)
+        self.outer_layout.addWidget(self.view_area)
         self.layout.addWidget(self.asset_file_name_field,0,0)
         self.layout.addWidget(self.asset_file_button,0,1)
         self.layout.addWidget(self.asset_list_view,1,0)
         self.view_buttons_layout.addWidget(self.add_asset_button)
         self.view_buttons_layout.addWidget(self.remove_asset_button)
         self.layout.addLayout(self.view_buttons_layout,1,1)
-        self.layout.addWidget(self.view_area,0,2)
         # setup view area layout
         self.view_area.setWidgetResizable(True)
         self.view_area.setWidget(self.asset_file_viewer)
 
-        self.group.setLayout(self.layout)
+        self.group.setLayout(self.outer_layout)
 
         # wire up gui event handlers
         self.asset_file_button.clicked.connect(self.open_file_dialog)

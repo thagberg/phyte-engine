@@ -20,7 +20,7 @@ class EventMapping(object):
         self.mapping[event_type].remove(handler)
 
     def __getitem__(self, key):
-        return self.mapping.get(key)
+        return self.mapping[key]
 
 
 class EventQueue(object):
