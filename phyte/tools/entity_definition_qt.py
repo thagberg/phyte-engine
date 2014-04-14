@@ -33,10 +33,11 @@ class EntityDefinitionEditor(Editor):
     def add_entity(self):
         entity_name = self.entity_name_field.text()
         new_entity = Entity(entity_name)
-        new_entity_wrapper = WidgetItemComponent(entity_name, new_entity)
-        self.entity_list_view.addItem(new_entity_wrapper)
+        new_entity_wrapper = Component(new_entity, entity_name)
+        widget_component = WidgetItemComponent(entity_name, new_entity_wrapper)
+        self.entity_list_view.addItem(widget_component)
         self.context[entity_name] = dict()
-        self.context[entity_name]['entity'] = new_entity_wrapper
+        self.context[entity_name]['entity'] = new_entity
         self.context[entity_name]['components'] = defaultdict(list)
 
     def select_entity(self, current, previous):
