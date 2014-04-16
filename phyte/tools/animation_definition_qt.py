@@ -19,7 +19,6 @@ class AnimationDefinitionEditor(Editor):
         self.remove_animation_button = QtGui.QPushButton('Remove Animation')
         self.animation_buttons_layout = QtGui.QVBoxLayout()
         self.graphic_viewer = QtGui.QGraphicsView()
-        self.frame_painter = QtGui.QPainter()
         self.current_graphic = None
         self.graphic_item = None
 
@@ -27,13 +26,6 @@ class AnimationDefinitionEditor(Editor):
         self.graphic_viewer.setScene(QtGui.QGraphicsScene())
         self.frame_rect = QtCore.QRect()
         self.dragging = False
-
-        # special graphic_viewer settings
-        self.graphic_viewer.mousePressEvent = self.image_click
-        self.graphic_viewer.mouseReleaseEvent = self.image_release
-        self.graphic_viewer.mouseMoveEvent = self.image_drag
-        self.frame_painter.begin(self.graphic_viewer)
-        self.frame_painter.setPen(QtCore.Qt.red)
 
         # events
         EVENT_MAPPING.register_handler('selected_graphic', self.set_animations)
@@ -54,30 +46,6 @@ class AnimationDefinitionEditor(Editor):
         self.add_animation_button.clicked.connect(self.add_animation)
         self.remove_animation_button.clicked.connect(self.remove_animation)
         self.animation_list_view.currentItemChanged.connect(self.select_animation)
-
-    def image_click(self, event):
-        click_pos = event.pos()
-        self.dragging = True
-        self.frame_rect.setX(click_pos.x())
-        self.frame_rect.setY(click_pos.y())
-        self.frame_rect.setWidth(0)
-        self.frame_rect.setHeight(0)
-        self.draw_rect(self.frame_rect)
-
-    def image_release(self, event):
-        release_pos = event.pos()
-        self.frame_rect.setWidth(release_pos.x() - self.frame_rect.x())
-        self.frame_rect.setHeight(release_pos.y() - self.frame_rect.y())
-        self.draw_rect(self.frame_rect)
-
-    def image_drag(self, event):
-        drag_pos = event.pos()
-        self.frame_rect.setWidth(drag_pos.x() - self.frame_rect.x())
-        self.frame_rect.setHeight(drag_pos.y() - self.frame_rect.y())
-        self.draw_rect(self.frame_rect)
-
-    def draw_rect(self, rect):
-        self.frame_painter.drawRect(rect)
 
     def add_animation(self):
         animation_name = self.animation_name_field.text()

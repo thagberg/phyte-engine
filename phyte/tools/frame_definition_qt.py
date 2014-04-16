@@ -6,10 +6,65 @@ from engine.animation import AnimationComponent, FrameComponent
 from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
 
 
+class FrameViewer(QtGui.QGraphicsView):
+    def __init__(self):
+        super(FrameViewer, self).__init__()
+        self.current_graphic = QtGui.QPixmap()
+        self.frame_rect = QtCore.QRect(10, 10, 100, 100)
+        self.graphic_item = None
+        self.file_name = ''
+
+        # frame properties
+        self.setScene(QtGui.QGraphicsScene())
+
+    def drawForeground(self, painter, rect):
+        super(FrameViewer, self).drawForeground(painter, rect)
+        painter.setPen(QtCore.Qt.red)
+        painter.drawRect(10, 10, 100, 100)
+        if self.graphic_item:
+            if self.frame_rect:
+                painter.drawRect(self.frame_rect)
+
+    def mousePressEvent(self, event):
+        click_pos = event.pos()
+        self.dragging = True
+        self.frame_rect.setX(click_pos.x())
+        self.frame_rect.setY(click_pos.y())
+        self.frame_rect.setWidth(0)
+        self.frame_rect.setHeight(0)
+        self.update()
+
+    def mouseReleaseEvent(self, event):
+        release_pos = event.pos()
+        self.frame_rect.setWidth(release_pos.x() - self.frame_rect.x())
+        self.frame_rect.setHeight(release_pos.y() - self.frame_rect.y())
+        self.update()
+
+    def mouseMoveEvent(self, event):
+        drag_pos = event.pos()
+        self.frame_rect.setWidth(drag_pos.x() - self.frame_rect.x())
+        self.frame_rect.setHeight(drag_pos.y() - self.frame_rect.y())
+        self.update()
+
+    def show_graphic(self, file_name):
+        # first clear anything currently being rendered
+        if self.graphic_item:
+            self.scene().removeItem(self.graphic_item)
+
+        # then create the new graphic from the given file name and render it
+        self.current_graphic.load(file_name)
+        self.graphic_item = QtGui.QGraphicsPixmapItem(self.current_graphic)
+        self.scene().addItem(self.graphic_item)
+
+    def set_graphic_file(self, file_name):
+        self.file_name = file_name
+        self.show_graphic(self.file_name)
+
+
 class FrameDefinitionEditor(Editor):
     def __init__(self, context):
         super(FrameDefinitionEditor, self).__init__(context,
-                                                        QtGui.QGroupBox('Animation'))
+                                                    QtGui.QGroupBox('Animation'))
         self.outer_layout = QtGui.QHBoxLayout()
         self.layout = QtGui.QGridLayout()
         self.frame_name_field = QtGui.QLineEdit()
@@ -18,22 +73,7 @@ class FrameDefinitionEditor(Editor):
         self.add_frame_button = QtGui.QPushButton('Add Frame')
         self.remove_frame_button = QtGui.QPushButton('Remove Frame')
         self.frame_buttons_layout = QtGui.QVBoxLayout()
-        self.graphic_viewer = QtGui.QGraphicsView()
-        self.frame_painter = QtGui.QPainter()
-        self.current_graphic = None
-        self.graphic_item = None
-
-        # frame properties
-        self.graphic_viewer.setScene(QtGui.QGraphicsScene())
-        self.frame_rect = QtCore.QRect()
-        self.dragging = False
-
-        # special graphic_viewer settings
-        self.graphic_viewer.mousePressEvent = self.image_click
-        self.graphic_viewer.mouseReleaseEvent = self.image_release
-        self.graphic_viewer.mouseMoveEvent = self.image_drag
-        self.frame_painter.begin(self.graphic_viewer)
-        self.frame_painter.setPen(QtCore.Qt.red)
+        self.graphic_viewer = FrameViewer()
 
         # events
         EVENT_MAPPING.register_handler('selected_animation', self.set_animation)
@@ -54,30 +94,6 @@ class FrameDefinitionEditor(Editor):
         self.add_frame_button.clicked.connect(self.add_frame)
         self.remove_frame_button.clicked.connect(self.remove_frame)
         self.frame_list_view.currentItemChanged.connect(self.select_frame)
-
-    def image_click(self, event):
-        click_pos = event.pos()
-        self.dragging = True
-        self.frame_rect.setX(click_pos.x())
-        self.frame_rect.setY(click_pos.y())
-        self.frame_rect.setWidth(0)
-        self.frame_rect.setHeight(0)
-        self.draw_rect(self.frame_rect)
-
-    def image_release(self, event):
-        release_pos = event.pos()
-        self.frame_rect.setWidth(release_pos.x() - self.frame_rect.x())
-        self.frame_rect.setHeight(release_pos.y() - self.frame_rect.y())
-        self.draw_rect(self.frame_rect)
-
-    def image_drag(self, event):
-        drag_pos = event.pos()
-        self.frame_rect.setWidth(drag_pos.x() - self.frame_rect.x())
-        self.frame_rect.setHeight(drag_pos.y() - self.frame_rect.y())
-        self.draw_rect(self.frame_rect)
-
-    def draw_rect(self, rect):
-        self.frame_painter.drawRect(rect)
 
     def add_frame(self):
         frame_name = self.frame_name_field.text()
@@ -119,14 +135,7 @@ class FrameDefinitionEditor(Editor):
             EVENT_MANAGER.fire_event(new_event)
 
     def show_graphic(self, file_name):
-        # first clear anything currently being rendered
-        if self.graphic_item:
-            self.graphic_viewer.scene().removeItem(self.graphic_item)
-
-        # then create the new graphic from the given file name and render it
-        self.current_graphic = QtGui.QPixmap(file_name)
-        self.graphic_item = QtGui.QGraphicsPixmapItem(self.current_graphic)
-        self.graphic_viewer.scene().addItem(self.graphic_item)
+        self.graphic_viewer.set_graphic_file(file_name)
 
     def set_animation(self, event):
         entity = event.entity
