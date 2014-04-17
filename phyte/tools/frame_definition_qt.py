@@ -9,8 +9,9 @@ from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
 class FrameViewer(QtGui.QGraphicsView):
     def __init__(self):
         super(FrameViewer, self).__init__()
+        self.setUpdatesEnabled(True)
         self.current_graphic = QtGui.QPixmap()
-        self.frame_rect = QtCore.QRect(10, 10, 100, 100)
+        self.frame_rect = QtCore.QRect(0, 0, 0, 0)
         self.graphic_item = None
         self.file_name = ''
 
@@ -20,31 +21,40 @@ class FrameViewer(QtGui.QGraphicsView):
     def drawForeground(self, painter, rect):
         super(FrameViewer, self).drawForeground(painter, rect)
         painter.setPen(QtCore.Qt.red)
-        painter.drawRect(10, 10, 100, 100)
+        painter.drawRect(self.frame_rect)
         if self.graphic_item:
             if self.frame_rect:
                 painter.drawRect(self.frame_rect)
 
     def mousePressEvent(self, event):
         click_pos = event.pos()
+        # translate the click position into scene coordinates
+        click_pos = self.mapToScene(click_pos)
         self.dragging = True
         self.frame_rect.setX(click_pos.x())
         self.frame_rect.setY(click_pos.y())
         self.frame_rect.setWidth(0)
         self.frame_rect.setHeight(0)
         self.update()
+        self.repaint()
 
     def mouseReleaseEvent(self, event):
         release_pos = event.pos()
+        # translate the release position into scene coordinates
+        release_pos = self.mapToScene(release_pos)
         self.frame_rect.setWidth(release_pos.x() - self.frame_rect.x())
         self.frame_rect.setHeight(release_pos.y() - self.frame_rect.y())
         self.update()
+        self.repaint()
 
     def mouseMoveEvent(self, event):
         drag_pos = event.pos()
+        # traslate the drag position into scene coordinates
+        drag_pos = self.mapToScene(drag_pos)
         self.frame_rect.setWidth(drag_pos.x() - self.frame_rect.x())
         self.frame_rect.setHeight(drag_pos.y() - self.frame_rect.y())
         self.update()
+        self.repaint()
 
     def show_graphic(self, file_name):
         # first clear anything currently being rendered
@@ -142,6 +152,8 @@ class FrameDefinitionEditor(Editor):
         ani = event.animation_component
         self.selected_animation = ani
         frames = ani.component.frames
+
+        self.show_graphic(ani.component.graphic.component.file_name)
 
         # do a soft clear of the animation list
         for i in range(self.frame_list_view.count()-1,-1,-1):
