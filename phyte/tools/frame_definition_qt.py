@@ -149,9 +149,7 @@ class FrameDefinitionEditor(Editor):
         frame_name = self.frame_name_field.text()
         entity = self.context['selected_entity']
         ani = self.selected_animation
-        frame_name = '{ani_name} - {index}'.format(ani_name=ani.text,
-                                                   index=len(ani.component.frames))
-        crop = QRect(int(self.frame_x_field.text()),
+        crop = QtCore.QRect(int(self.frame_x_field.text()),
                      int(self.frame_y_field.text()),
                      int(self.frame_width_field.text()),
                      int(self.frame_height_field.text()))
@@ -169,10 +167,10 @@ class FrameDefinitionEditor(Editor):
 
     def update_fields(self, event):
         crop = event.crop
-        self.frame_x_field.setText(crop.x())
-        self.frame_y_field.setText(crop.y())
-        self.frame_width_field.setText(crop.width())
-        self.frame_width_height.setText(crop.height())
+        self.frame_x_field.setText(str(crop.x()))
+        self.frame_y_field.setText(str(crop.y()))
+        self.frame_width_field.setText(str(crop.width()))
+        self.frame_height_field.setText(str(crop.height()))
 
     def remove_frame(self):
         entity = self.context['selected_entity']
@@ -194,11 +192,11 @@ class FrameDefinitionEditor(Editor):
 
             # set field values
             crop = selected_component.component.crop
-            self.frame_x_field.setText(crop.x())
-            self.frame_y_field.setText(crop.y())
-            self.frame_width_field.setText(crop.width())
-            self.frame_height_field.setText(crop.height())
-            self.frame_repeat_field.setText(selected_component.component.repeat)
+            self.frame_x_field.setText(str(crop.x()))
+            self.frame_y_field.setText(str(crop.y()))
+            self.frame_width_field.setText(str(crop.width()))
+            self.frame_height_field.setText(str(crop.height()))
+            self.frame_repeat_field.setText(str(selected_component.component.repeat))
 
             # fire event for selecting a graphic
             new_event = Event('selected_frame',
