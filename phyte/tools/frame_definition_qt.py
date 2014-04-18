@@ -64,7 +64,7 @@ class FrameViewer(QtGui.QGraphicsView):
             drag_pos = self.mapToScene(drag_pos)
             self.frame_rect.setWidth(drag_pos.x() - self.frame_rect.x())
             self.frame_rect.setHeight(drag_pos.y() - self.frame_rect.y())
-            self.awkard_update()
+            self.awkward_update()
 
             # fire event for updating frame crop
             new_event = Event('updated_frame_crop',
