@@ -74,19 +74,18 @@ class HitboxViewer(QtGui.QGraphicsView):
                               crop=self.frame_rect)
             EVENT_MANAGER.fire_event(new_event)
 
-    def show_graphic(self, file_name):
+    def show_graphic(self, file_name, crop):
         # first clear anything currently being rendered
         if self.graphic_item:
             self.scene().removeItem(self.graphic_item)
 
         # then create the new graphic from the given file name and render it
         self.current_graphic.load(file_name)
+        # if a crop rectangle is provided, crop the image to that
+        if crop:
+            self.current_graphic = self.current_graphic.copy(crop)
         self.graphic_item = QtGui.QGraphicsPixmapItem(self.current_graphic)
         self.scene().addItem(self.graphic_item)
-
-    def set_graphic_file(self, file_name):
-        self.file_name = file_name
-        self.show_graphic(self.file_name)
 
 
 class HitboxDefinitionEditor(Editor):
@@ -174,8 +173,9 @@ class HitboxDefinitionEditor(Editor):
         file_name = event.graphic_file_name
         self.selected_frame = frame
         boxes = frame.component.hitboxes
+        crop = frame.component.crop
 
-        self.show_graphic(file_name)
+        self.show_graphic(file_name, crop)
 
         # do a soft clear of the box list
         for i in range(self.box_list_view.count()-1,-1,-1):
@@ -202,5 +202,5 @@ class HitboxDefinitionEditor(Editor):
             frame_wrapper = WidgetItemComponent(frame.text, frame)
             self.frame_list_view.addItem(frame_wrapper)
 
-    def show_graphic(self, file_name):
-        self.graphic_viewer.set_graphic_file(file_name)
+    def show_graphic(self, file_name, crop):
+        self.graphic_viewer.show_graphic(file_name, crop)
