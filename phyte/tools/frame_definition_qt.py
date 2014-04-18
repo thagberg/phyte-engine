@@ -50,8 +50,7 @@ class FrameViewer(QtGui.QGraphicsView):
         self.dragging = False
         self.frame_rect.setWidth(release_pos.x() - self.frame_rect.x())
         self.frame_rect.setHeight(release_pos.y() - self.frame_rect.y())
-        self.update()
-        self.repaint()
+        self.awkward_update()
 
         # fire event for updating frame crop
         new_event = Event('updated_frame_crop',
@@ -65,8 +64,7 @@ class FrameViewer(QtGui.QGraphicsView):
             drag_pos = self.mapToScene(drag_pos)
             self.frame_rect.setWidth(drag_pos.x() - self.frame_rect.x())
             self.frame_rect.setHeight(drag_pos.y() - self.frame_rect.y())
-            self.update()
-            self.repaint()
+            self.awkard_update()
 
             # fire event for updating frame crop
             new_event = Event('updated_frame_crop',
@@ -86,6 +84,14 @@ class FrameViewer(QtGui.QGraphicsView):
     def set_graphic_file(self, file_name):
         self.file_name = file_name
         self.show_graphic(self.file_name)
+
+    def awkward_update(self):
+        '''
+            Use this to force a repaint until it is determined how to
+            get update() to cause a repaint
+        '''
+        self.scene().removeItem(self.graphic_item)
+        self.scene().addItem(self.graphic_item)
 
 
 class FrameDefinitionEditor(Editor):
@@ -176,9 +182,8 @@ class FrameDefinitionEditor(Editor):
         entity = self.context['selected_entity']
         selected_index = self.frame_list_view.currentRow()
         selected_frame = self.frame_list_view.takeItem(selected_index)
-        self.frame_list_view.takeItem(selected_index)
 
-        # remove the animation from its parent animation
+        # remove the frame from its parent animation
         frame_component = selected_frame.component
         self.selected_animation.component.remove(frame_component)
 
@@ -198,7 +203,7 @@ class FrameDefinitionEditor(Editor):
             self.frame_height_field.setText(str(crop.height()))
             self.frame_repeat_field.setText(str(selected_component.component.repeat))
 
-            # fire event for selecting a graphic
+            # fire event for selecting a frame
             new_event = Event('selected_frame',
                               frame_component=selected_component,
                               entity=selected_component.component.entity_id,
