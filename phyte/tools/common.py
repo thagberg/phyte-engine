@@ -64,3 +64,4 @@ class ComponentListModel(QtCore.QAbstractListModel):
                                   QtCore.QModelIndex())
         except:
             return None
+

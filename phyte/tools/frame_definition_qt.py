@@ -38,23 +38,40 @@ class FrameViewer(QtGui.QGraphicsView):
         self.update()
         self.repaint()
 
+        # fire event for updating frame crop
+        new_event = Event('updated_frame_crop',
+                          crop=self.frame_rect)
+        EVENT_MANAGER.fire_event(new_event)
+
     def mouseReleaseEvent(self, event):
         release_pos = event.pos()
         # translate the release position into scene coordinates
         release_pos = self.mapToScene(release_pos)
+        self.dragging = False
         self.frame_rect.setWidth(release_pos.x() - self.frame_rect.x())
         self.frame_rect.setHeight(release_pos.y() - self.frame_rect.y())
         self.update()
         self.repaint()
 
+        # fire event for updating frame crop
+        new_event = Event('updated_frame_crop',
+                          crop=self.frame_rect)
+        EVENT_MANAGER.fire_event(new_event)
+
     def mouseMoveEvent(self, event):
         drag_pos = event.pos()
-        # traslate the drag position into scene coordinates
-        drag_pos = self.mapToScene(drag_pos)
-        self.frame_rect.setWidth(drag_pos.x() - self.frame_rect.x())
-        self.frame_rect.setHeight(drag_pos.y() - self.frame_rect.y())
-        self.update()
-        self.repaint()
+        if self.dragging:
+            # traslate the drag position into scene coordinates
+            drag_pos = self.mapToScene(drag_pos)
+            self.frame_rect.setWidth(drag_pos.x() - self.frame_rect.x())
+            self.frame_rect.setHeight(drag_pos.y() - self.frame_rect.y())
+            self.update()
+            self.repaint()
+
+            # fire event for updating frame crop
+            new_event = Event('updated_frame_crop',
+                              crop=self.frame_rect)
+            EVENT_MANAGER.fire_event(new_event)
 
     def show_graphic(self, file_name):
         # first clear anything currently being rendered
@@ -93,9 +110,12 @@ class FrameDefinitionEditor(Editor):
         self.frame_width_field = QtGui.QLineEdit()
         self.frame_height_label = QtGui.QLabel('Height')
         self.frame_height_field = QtGui.QLineEdit()
+        self.frame_repeat_label = QtGui.QLabel('Repeat')
+        self.frame_repeat_field = QtGui.QLineEdit()
 
         # events
         EVENT_MAPPING.register_handler('selected_animation', self.set_animation)
+        EVENT_MAPPING.register_handler('updated_frame_crop', self.update_fields)
 
         # setup layout
         self.outer_layout.addLayout(self.layout)
@@ -110,6 +130,8 @@ class FrameDefinitionEditor(Editor):
         self.frame_form_layout.addWidget(self.frame_width_field,1,3)
         self.frame_form_layout.addWidget(self.frame_height_label,2,2)
         self.frame_form_layout.addWidget(self.frame_height_field,2,3)
+        self.frame_form_layout.addWidget(self.frame_repeat_label,3,0)
+        self.frame_form_layout.addWidget(self.frame_repeat_field,3,1)
         self.layout.addLayout(self.frame_form_layout,0,0)
         self.layout.addWidget(self.frame_list_view,1,0)
         self.frame_buttons_layout.addWidget(self.add_frame_button)
@@ -129,7 +151,14 @@ class FrameDefinitionEditor(Editor):
         ani = self.selected_animation
         frame_name = '{ani_name} - {index}'.format(ani_name=ani.text,
                                                    index=len(ani.component.frames))
-        frame_component = FrameComponent(entity_id=entity)
+        crop = QRect(int(self.frame_x_field.text()),
+                     int(self.frame_y_field.text()),
+                     int(self.frame_width_field.text()),
+                     int(self.frame_height_field.text()))
+        repeat = int(self.frame_repeat_field.text())
+        frame_component = FrameComponent(entity_id=entity,
+                                         crop=crop,
+                                         repeat=repeat)
         frame_component_wrapper = Component(frame_component, frame_name)
         widget_component = WidgetItemComponent(frame_name, 
                                                frame_component_wrapper)
@@ -137,6 +166,13 @@ class FrameDefinitionEditor(Editor):
 
         # add new frame component to the selected animation's frame list
         ani.component.frames.append(frame_component_wrapper)
+
+    def update_fields(self, event):
+        crop = event.crop
+        self.frame_x_field.setText(crop.x())
+        self.frame_y_field.setText(crop.y())
+        self.frame_width_field.setText(crop.width())
+        self.frame_width_height.setText(crop.height())
 
     def remove_frame(self):
         entity = self.context['selected_entity']
@@ -156,10 +192,19 @@ class FrameDefinitionEditor(Editor):
             file_name = graphic.file_name
             self.show_graphic(file_name)
 
+            # set field values
+            crop = selected_component.component.crop
+            self.frame_x_field.setText(crop.x())
+            self.frame_y_field.setText(crop.y())
+            self.frame_width_field.setText(crop.width())
+            self.frame_height_field.setText(crop.height())
+            self.frame_repeat_field.setText(selected_component.component.repeat)
+
             # fire event for selecting a graphic
             new_event = Event('selected_frame',
                               frame_component=selected_component,
-                              entity=selected_component.component.entity_id)
+                              entity=selected_component.component.entity_id,
+                              graphic_file_name=file_name)
             EVENT_MANAGER.fire_event(new_event)
 
     def show_graphic(self, file_name):
