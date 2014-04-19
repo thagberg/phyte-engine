@@ -14,6 +14,8 @@ class MoveDefinitionEditor(Editor):
 
         # gui elements
         self.layout = QtGui.QGridLayout()
+        self.move_name_label = QtGui.QLabel('Move Name')
+        self.move_name_field = QtGui.QLineEdit()
         self.ani_picker_label = QtGui.QLabel('Choose Animation')
         self.ani_list_view = QtGui.QListWidget()
         self.ani_picker_layout = QtGui.QVBoxLayout()
@@ -34,9 +36,11 @@ class MoveDefinitionEditor(Editor):
         self.inp_list_view.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
 
         # set up layout
+        self.layout.addWidget(self.move_name_label,0,0)
+        self.layout.addWidget(self.move_name_field,0,1)
         self.ani_picker_layout.addWidget(self.ani_picker_label)
         self.ani_picker_layout.addWidget(self.ani_list_view)
-        self.layout.addLayout(self.ani_picker_layout,0,0)
+        self.layout.addLayout(self.ani_picker_layout,1,0)
         self.inp_select_layout.addWidget(self.inp_picker_label)
         self.inp_select_layout.addWidget(self.inp_list_view)
         self.inp_layout.addLayout(self.inp_select_layout)
@@ -44,11 +48,11 @@ class MoveDefinitionEditor(Editor):
         self.inps_button_layout.addWidget(self.remove_inps_button)
         self.inp_layout.addLayout(self.inps_button_layout)
         self.inp_layout.addWidget(self.selected_inp_list_view)
-        self.layout.addLayout(self.inp_layout,0,1)
-        self.layout.addWidget(self.move_list_view,1,0)
+        self.layout.addLayout(self.inp_layout,1,1)
+        self.layout.addWidget(self.move_list_view,2,0)
         self.move_button_layout.addWidget(self.add_move_button)
         self.move_button_layout.addWidget(self.remove_move_button)
-        self.layout.addLayout(self.move_button_layout,1,1)
+        self.layout.addLayout(self.move_button_layout,2,1)
 
         self.group.setLayout(self.layout)
 
@@ -99,10 +103,35 @@ class MoveDefinitionEditor(Editor):
         #TODO remove this input from the currently selected move
 
     def add_move(self):
-        pass
+        move_name = self.move_name_field.text()
+        entity = self.context['selected_entity']
+        selected_animation = self.ani_list_view.currentItem().component
+        # build a list of the chosen inputs
+        inputs = list()
+        for i in range(self.selected_inp_list_view.count()):
+            item = self.selected_inp_list_view.item(i)
+            inp_component = item.component
+            inputs.append(inp_component)
+
+        # construct the move component
+        move = MoveComponent(entity_id=entity,
+                             name=move_name,
+                             animation=selected_animation,
+                             inputs=inputs)
+        move_component_wrapper = Component(move, move_name)
+        widget_component = WidgetItemComponent(move_name, move_component_wrapper)
+        self.move_list_view.addItem(widget_component)
+
+        # add the move component to the application context
+        self.context[entity]['components']['move'].append(move_component_wrapper)
 
     def remove_move(self):
-        pass
+        entity = self.context['selected_entity']
+        selected_index = self.move_list_view.currentIndex()
+        selected_item = self.move_list_view.takeItem(selected_index)
+
+        # remove the move component from the application context
+        self.context[entity]['components']['move'].remove(selected_item.component)
 
     def new_input(self, event):
         widget_component = WidgetItemComponent(event.input_component.text, 
