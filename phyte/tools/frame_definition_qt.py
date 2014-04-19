@@ -185,7 +185,7 @@ class FrameDefinitionEditor(Editor):
 
         # remove the frame from its parent animation
         frame_component = selected_frame.component
-        self.selected_animation.component.remove(frame_component)
+        self.selected_animation.component.frames.remove(frame_component)
 
     def select_frame(self):
         selected_item = self.frame_list_view.currentItem()

@@ -44,6 +44,11 @@ class InputDefinitionEditor(Editor):
         # add input to the application context
         self.context['inputs'].append(inp_wrapper)
 
+        # fire event for adding new input
+        new_event = Event('added_input',
+                          input_component=inp_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
+
     def remove_input(self):
         selected_index = self.input_list_view.currentRow()
         selected_input = self.input_list_view.takeItem(selected_index)

@@ -62,6 +62,12 @@ class AnimationDefinitionEditor(Editor):
         context_animations = self.context[entity]['components']['animation']
         context_animations.append(animation_component_wrapper)
 
+        # fire event for adding an animation
+        new_event = Event('added_animation',
+                          animation_component=animation_component_wrapper,
+                          entity=animation_component_wrapper.component.entity_id)
+        EVENT_MANAGER.fire_event(new_event)
+
     def remove_animation(self):
         entity = self.context['selected_entity']
         selected_index = self.animation_list_view.currentRow()
@@ -72,6 +78,12 @@ class AnimationDefinitionEditor(Editor):
         inner_ani_component = selected_animation.component
         self.context[entity]['components']['animation'].remove(inner_ani_component)
 
+        # fire event for removing an animation
+        new_event = Event('removed_animation',
+                          animation_component=inner_ani_component,
+                          entity=inner_ani_component.component.entity_id)
+        EVENT_MANAGER.fire_event(new_event)
+
     def select_animation(self):
         selected_item = self.animation_list_view.currentItem()
         # this function gets called when an animation is removed,
@@ -81,7 +93,7 @@ class AnimationDefinitionEditor(Editor):
             file_name = selected_component.component.graphic.component.file_name
             self.show_graphic(file_name)
 
-            # fire event for selecting a graphic
+            # fire event for selecting an animation
             new_event = Event('selected_animation',
                               animation_component=selected_component,
                               entity=selected_component.component.entity_id)
