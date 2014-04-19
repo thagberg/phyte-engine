@@ -9,6 +9,7 @@ from asset_definition_qt import AssetDefinitionEditor
 from frame_definition_qt import FrameDefinitionEditor
 from hitbox_definition_qt import HitboxDefinitionEditor
 from move_definition_qt import MoveDefinitionEditor
+from input_definition_qt import InputDefinitionEditor
 from editor_qt import EditorManager
 
 class PhyteEditor(QtGui.QWidget):
@@ -30,6 +31,7 @@ class PhyteEditor(QtGui.QWidget):
         frame_editor = FrameDefinitionEditor(self.context)
         hitbox_editor = HitboxDefinitionEditor(self.context)
         move_editor = MoveDefinitionEditor(self.context)
+        input_editor = InputDefinitionEditor(self.context)
 
         # add editors to editor manager
         self.editor_manager.add_editor('entity', entity_editor)
@@ -39,6 +41,7 @@ class PhyteEditor(QtGui.QWidget):
         self.editor_manager.add_editor('frame', frame_editor)
         self.editor_manager.add_editor('hitbox', hitbox_editor)
         self.editor_manager.add_editor('move', move_editor)
+        self.editor_manager.add_editor('input', input_editor)
 
         # set up editor view
         entity_editor_item = QtGui.QListWidgetItem('Entity')
@@ -48,6 +51,7 @@ class PhyteEditor(QtGui.QWidget):
         frame_editor_item = QtGui.QListWidgetItem('Frame')
         hitbox_editor_item = QtGui.QListWidgetItem('Hitbox')
         move_editor_item = QtGui.QListWidgetItem('Move')
+        input_editor_item = QtGui.QListWidgetItem('Input')
 
         self.editor_item_map[entity_editor_item] = 'entity'
         self.editor_item_map[graphic_editor_item] = 'graphic'
@@ -56,6 +60,7 @@ class PhyteEditor(QtGui.QWidget):
         self.editor_item_map[frame_editor_item] = 'frame'
         self.editor_item_map[hitbox_editor_item] = 'hitbox'
         self.editor_item_map[move_editor_item] = 'move'
+        self.editor_item_map[input_editor_item] = 'input'
         self.editor_selector_view.addItem(entity_editor_item)
         self.editor_selector_view.addItem(graphic_editor_item)
         self.editor_selector_view.addItem(animation_editor_item)
@@ -63,6 +68,7 @@ class PhyteEditor(QtGui.QWidget):
         self.editor_selector_view.addItem(frame_editor_item)
         self.editor_selector_view.addItem(hitbox_editor_item)
         self.editor_selector_view.addItem(move_editor_item)
+        self.editor_selector_view.addItem(input_editor_item)
 
         # set up layout
         self.splitter = QtGui.QSplitter()
@@ -75,6 +81,7 @@ class PhyteEditor(QtGui.QWidget):
         editor_switcher.addWidget(frame_editor)
         editor_switcher.addWidget(hitbox_editor)
         editor_switcher.addWidget(move_editor)
+        editor_switcher.addWidget(input_editor)
         self.splitter.addWidget(self.editor_selector_view)
         self.splitter.addWidget(holder_widget)
         top.addWidget(self.splitter,0,0)

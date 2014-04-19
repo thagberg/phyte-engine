@@ -15,6 +15,7 @@ MOUSE_RIGHT = 3
 
 ENTITY_ID = -1
 
+UNIVERSE_ENTITY = 'universe'
 
 class Component(object):
     def __init__(self, component, text):
