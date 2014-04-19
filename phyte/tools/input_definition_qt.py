@@ -55,3 +55,8 @@ class InputDefinitionEditor(Editor):
 
         # remove the input from the application context
         self.context['inputs'].remove(selected_input.component)
+
+        # fire event for removing aninput
+        new_event = Event('removed_input',
+                          input_component=selected_input.component)
+        EVENT_MANAGER.fire_event(new_event)

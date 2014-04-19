@@ -58,6 +58,7 @@ class MoveDefinitionEditor(Editor):
 
         # internal events
         EVENT_MAPPING.register_handler('added_input', self.new_input)
+        EVENT_MAPPING.register_handler('removed_input', self.removed_input)
         EVENT_MAPPING.register_handler('selected_entity', self.set_animations)
         EVENT_MAPPING.register_handler('added_animation', self.add_animation)
         EVENT_MAPPING.register_handler('removed_animation', self.remove_animation)
@@ -161,3 +162,10 @@ class MoveDefinitionEditor(Editor):
             widget_component = self.ani_list_view.item(i)
             if widget_component.component == event.animation_component:
                 self.ani_list_view.takeItem(i)
+
+    def removed_input(self, event):
+        for i in range(self.inp_list_view.count()-1,-1,-1):
+            item = self.inp_list_view.item(i)
+            inp = item.component
+            if event.input_component == inp:
+                self.inp_list_view.takeItem(i)
