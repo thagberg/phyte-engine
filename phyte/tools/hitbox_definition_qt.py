@@ -250,8 +250,8 @@ class HitboxDefinitionEditor(Editor):
             # set field values
             hurtactive = 2 if box.hurtactive else 0
             hitactive = 2 if box.hitactive else 0
-            blockactive = 2 if box.hitactive else 0
-            solid = 2 if box.hitactive else 0
+            blockactive = 2 if box.blockactive else 0
+            solid = 2 if box.solid else 0
             self.box_x_field.setText(str(box.rect.x()))
             self.box_y_field.setText(str(box.rect.y()))
             self.box_width_field.setText(str(box.rect.width()))
