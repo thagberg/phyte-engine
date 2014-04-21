@@ -128,7 +128,7 @@ class MoveDefinitionEditor(Editor):
 
     def remove_move(self):
         entity = self.context['selected_entity']
-        selected_index = self.move_list_view.currentIndex()
+        selected_index = self.move_list_view.currentRow()
         selected_item = self.move_list_view.takeItem(selected_index)
 
         # remove the move component from the application context
