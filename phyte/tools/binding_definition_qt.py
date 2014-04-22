@@ -63,21 +63,10 @@ class BindingDefinitionEditor(Editor):
                                                selected_component)
         self.selected_inp_list_view.addItem(widget_component)
 
-        # add this input to the actual binding component
-        if self.current_binding is not None:
-            key = selected_component.text
-            self.current_binding.component[key] = selected_component
-
     def remove_input(self):
         selected_index = self.selected_inp_list_view.currentRow()
         selected_item = self.selected_inp_list_view.takeItem(selected_index)
         selected_component = selected_item.component
-
-        # remove this input from the actual binding component
-        if self.current_binding is not None:
-            key = selected_component.text
-            if key in self.current_binding.component.bindings:
-                del self.current_bindings.component.bindings[key]
 
     def add_binding(self):
         entity = self.context['selected_entity']
@@ -145,3 +134,10 @@ class BindingDefinitionEditor(Editor):
             inp = item.component
             if event.input_component == inp:
                 self.inp_list_view.takeItem(i)
+
+    def edit_binding(self):
+        bindings = dict()
+        for i in range(self.selected_inp_list_view.count()):
+            input_comp = self.selected_inp_list_view.item(i).component
+            key= input_comp.text
+            bindings[key] = input_comp
