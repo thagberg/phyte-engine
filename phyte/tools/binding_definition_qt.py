@@ -87,6 +87,11 @@ class BindingDefinitionEditor(Editor):
         # add the component to the application context
         self.context[entity]['components']['binding'].append(binding_comp_wrapper)
 
+        # fire event for adding new binding
+        new_event = Event('added_binding',
+                          binding_component=binding_comp_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
+
     def remove_binding(self):
         entity = self.context['selected_entity']
         selected_index = self.binding_list_view.currentRow()
@@ -95,6 +100,11 @@ class BindingDefinitionEditor(Editor):
 
         # remove the component from the application context
         self.context[entity]['components']['binding'].remove(selected_component)
+
+        # fire event for removing binding
+        new_event = Event('removed_binding',
+                          binding_component=selected_component)
+        EVENT_MANAGER.fire_event(new_event)
 
     def select_binding(self):
         selected_item = self.binding_list_view.currentItem()

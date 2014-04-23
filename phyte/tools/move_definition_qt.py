@@ -126,6 +126,11 @@ class MoveDefinitionEditor(Editor):
         # add the move component to the application context
         self.context[entity]['components']['move'].append(move_component_wrapper)
 
+        # fire event for adding new move
+        new_event = Event('added_move',
+                          move_component=move_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
+
     def remove_move(self):
         entity = self.context['selected_entity']
         selected_index = self.move_list_view.currentRow()
@@ -133,6 +138,11 @@ class MoveDefinitionEditor(Editor):
 
         # remove the move component from the application context
         self.context[entity]['components']['move'].remove(selected_item.component)
+
+        # fire event for removing move
+        new_event = Event('removed_move',
+                          move_component=selected_item.component)
+        EVENT_MANAGER.fire_event(new_event)
 
     def new_input(self, event):
         widget_component = WidgetItemComponent(event.input_component.text, 
