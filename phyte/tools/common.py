@@ -31,6 +31,13 @@ class WidgetItemComponent(QtGui.QListWidgetItem):
         self.component = component
 
 
+class TreeWidgetItemComponent(QtGui.QTreeWidgetItem):
+    def __init__(self, item_text, component):
+        super(TreeWidgetItemComponent, self).__init__()
+        self.component = component
+        self.setText(0, item_text)
+
+
 class ComponentListModel(QtCore.QAbstractListModel):
     def __init__(self, components=None, parent=None):
         super(ComponentListModel, self).__init__(parent)

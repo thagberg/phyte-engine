@@ -137,7 +137,7 @@ class FrameDefinitionEditor(Editor):
         self.frame_form_layout.addWidget(self.frame_height_label,2,2)
         self.frame_form_layout.addWidget(self.frame_height_field,2,3)
         self.frame_form_layout.addWidget(self.frame_repeat_label,3,0)
-        self.frame_form_layout.addWidget(self.frame_repeat_field,3,1)
+        self.frame_form_layout.addWidget(self.frame_repeat_field,3,1,1,2)
         self.layout.addLayout(self.frame_form_layout,0,0)
         self.layout.addWidget(self.frame_list_view,1,0)
         self.frame_buttons_layout.addWidget(self.add_frame_button)
@@ -171,6 +171,13 @@ class FrameDefinitionEditor(Editor):
         # add new frame component to the selected animation's frame list
         ani.component.frames.append(frame_component_wrapper)
 
+        # fire event
+        new_event = Event('added_component',
+                          entity=entity,
+                          component_type='frame',
+                          component=frame_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
+
     def update_fields(self, event):
         crop = event.crop
         self.frame_x_field.setText(str(crop.x()))
@@ -186,6 +193,13 @@ class FrameDefinitionEditor(Editor):
         # remove the frame from its parent animation
         frame_component = selected_frame.component
         self.selected_animation.component.frames.remove(frame_component)
+
+        # fire event
+        new_event = Event('removed_component',
+                          entity=entity,
+                          component_type='frame',
+                          component=frame_component)
+        EVENT_MANAGER.fire_event(new_event)
 
     def select_frame(self):
         selected_item = self.frame_list_view.currentItem()

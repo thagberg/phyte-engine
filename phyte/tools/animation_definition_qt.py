@@ -67,6 +67,11 @@ class AnimationDefinitionEditor(Editor):
                           animation_component=animation_component_wrapper,
                           entity=animation_component_wrapper.component.entity_id)
         EVENT_MANAGER.fire_event(new_event)
+        new_event = Event('added_component',
+                          entity=entity,
+                          component_type='animation',
+                          component=animation_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
 
     def remove_animation(self):
         entity = self.context['selected_entity']
@@ -82,6 +87,11 @@ class AnimationDefinitionEditor(Editor):
         new_event = Event('removed_animation',
                           animation_component=inner_ani_component,
                           entity=inner_ani_component.component.entity_id)
+        EVENT_MANAGER.fire_event(new_event)
+        new_event = Event('removed_component',
+                          entity=entity,
+                          component_type='animation',
+                          component=animation_component_wrapper)
         EVENT_MANAGER.fire_event(new_event)
 
     def select_animation(self):

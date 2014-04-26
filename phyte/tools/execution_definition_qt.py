@@ -96,7 +96,12 @@ class ExecutionDefinitionEditor(Editor):
 
         # fire event for adding new execution
         new_event = Event('added_execution',
-                          execution_component=exec_comp_wrapper)
+                          execution_component=exec_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
+        new_event = Event('added_component',
+                          entity=entity,
+                          component_type='execution',
+                          component=exec_component_wrapper)
         EVENT_MANAGER.fire_event(new_event)
 
     def remove_exec(self):
@@ -111,6 +116,11 @@ class ExecutionDefinitionEditor(Editor):
         # fire event for removing execution
         new_event = Event('removed_execution',
                           execution_component=selected_component)
+        EVENT_MANAGER.fire_event(new_event)
+        new_event = Event('removed_component',
+                          entity=entity,
+                          component_type='execution',
+                          component=selected_component)
         EVENT_MANAGER.fire_event(new_event)
 
     def select_exec(self):
@@ -129,7 +139,7 @@ class ExecutionDefinitionEditor(Editor):
             widget_component = WidgetItemComponent(binding.text, binding)
             self.binding_list_view.addItem(widget_component)
 
-        execs = self.context[entity]['components']['exececution']
+        execs = self.context[entity]['components']['execution']
         for i in range(self.exec_list_view.count()-1,-1,-1):
             self.exec_list_view.takeItem(i)
 

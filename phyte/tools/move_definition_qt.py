@@ -72,7 +72,8 @@ class MoveDefinitionEditor(Editor):
         self.remove_move_button.clicked.connect(self.remove_move)
 
     def select_animation(self, current, previous):
-        self.selected_animation = current.component
+        if current is not None:
+            self.selected_animation = current.component
 
     def add_inputs(self):
         # possible multiple selection
@@ -130,6 +131,11 @@ class MoveDefinitionEditor(Editor):
         new_event = Event('added_move',
                           move_component=move_component_wrapper)
         EVENT_MANAGER.fire_event(new_event)
+        new_event = Event('added_component',
+                          entity=entity,
+                          component_type='move',
+                          component=move_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
 
     def remove_move(self):
         entity = self.context['selected_entity']
@@ -142,6 +148,11 @@ class MoveDefinitionEditor(Editor):
         # fire event for removing move
         new_event = Event('removed_move',
                           move_component=selected_item.component)
+        EVENT_MANAGER.fire_event(new_event)
+        new_event = Event('removed_component',
+                          entity=entity,
+                          component_type='move',
+                          component=selected_item.component)
         EVENT_MANAGER.fire_event(new_event)
 
     def new_input(self, event):

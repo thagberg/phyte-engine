@@ -91,6 +91,11 @@ class BindingDefinitionEditor(Editor):
         new_event = Event('added_binding',
                           binding_component=binding_comp_wrapper)
         EVENT_MANAGER.fire_event(new_event)
+        new_event = Event('added_component',
+                          entity=entity,
+                          component_type='binding',
+                          component=binding_comp_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
 
     def remove_binding(self):
         entity = self.context['selected_entity']
@@ -105,20 +110,26 @@ class BindingDefinitionEditor(Editor):
         new_event = Event('removed_binding',
                           binding_component=selected_component)
         EVENT_MANAGER.fire_event(new_event)
+        new_event = Event('removed_component',
+                          entity=entity,
+                          component_type='binding',
+                          component=selected_component)
+        EVENT_MANAGER.fire_event(new_event)
 
     def select_binding(self):
         selected_item = self.binding_list_view.currentItem()
-        selected_component = selected_item.component
-        self.current_binding = selected_component
+        if selected_item is not None:
+            selected_component = selected_item.component
+            self.current_binding = selected_component
 
-        # do a soft clear of the selected inputs
-        for i in range(self.selected_inp_list_view.count()-1,-1,-1):
-            item = self.selected_inp_list_view.takeItem(i)
+            # do a soft clear of the selected inputs
+            for i in range(self.selected_inp_list_view.count()-1,-1,-1):
+                item = self.selected_inp_list_view.takeItem(i)
 
-        # repopulate with the bound inputs for this binding component
-        for key, comp in self.current_binding.component.bindings.iteritems():
-            widget_component = WidgetItemComponent(key, comp)
-            self.selected_inp_list_view.addItem(widget_component)
+            # repopulate with the bound inputs for this binding component
+            for key, comp in self.current_binding.component.bindings.iteritems():
+                widget_component = WidgetItemComponent(key, comp)
+                self.selected_inp_list_view.addItem(widget_component)
 
     def set_bindings(self, event):
         entity = event.entity

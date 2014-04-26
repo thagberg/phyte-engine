@@ -233,6 +233,13 @@ class HitboxDefinitionEditor(Editor):
         # add box to the selected frame's box list
         frame.hitboxes.append(box_component_wrapper)
 
+        # fire event
+        new_event = Event('added_component',
+                          entity=entity,
+                          component_type='hitbox',
+                          component=box_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
+
     def remove_box(self):
         entity = self.context['selected_entity']
         selected_index = self.box_list_view.currentRow()
@@ -240,6 +247,13 @@ class HitboxDefinitionEditor(Editor):
 
         # remove the box from its parent frame
         self.selected_frame.component.hitboxes.remove(selected_box.component)
+
+        # fire event
+        new_event = Event('removed_component',
+                          entity=entity,
+                          component_type='hitbox',
+                          component=selected_box.component)
+        EVENT_MANAGER.fire_event(new_event)
 
     def select_box(self):
         selected_item = self.box_list_view.currentItem()

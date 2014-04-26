@@ -67,6 +67,16 @@ class GraphicDefinitionEditor(Editor):
         if entity_name:
             self.context[entity_name]['components']['graphic'].append(graphic_component_wrapper)
 
+        # fire off an event
+        new_event = Event('graphic_added',
+                          graphic_component=graphic_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
+        new_event = Event('added_component',
+                          entity=entity_name,
+                          component_type='graphic',
+                          component=graphic_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
+
 
     def show_graphic(self, file_name):
         self.current_graphic = QtGui.QPixmap(file_name)
@@ -86,6 +96,11 @@ class GraphicDefinitionEditor(Editor):
         # fire off an event
         new_event = Event('graphic_removed',
                           graphic_component=graphic_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
+        new_event = Event('removed_component',
+                          entity=entity,
+                          component_type='graphic',
+                          component=graphic_component_wrapper)
         EVENT_MANAGER.fire_event(new_event)
 
     def select_graphic(self):
