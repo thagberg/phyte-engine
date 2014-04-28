@@ -82,7 +82,7 @@ class ExecutionDefinitionEditor(Editor):
         moves = list()
         for i in range(self.selected_move_list_view.count()):
             item = self.selected_move_list_view.item(i)
-            move = item.component
+            move = item.component.component
             moves.append(move)
         exec_component = ExecutionComponent(entity_id=entity,
                                             executables=moves,

@@ -91,7 +91,7 @@ class GraphicDefinitionEditor(Editor):
         # then remove it from the application context
         entity = self.context.get('selected_entity')
         if entity:
-            self.context['entities'][entity]['components']['graphic'].remove(selected_item)
+            self.context['entities'][entity]['components']['graphic'].remove(selected_item.component)
 
         # fire off an event
         new_event = Event('graphic_removed',
