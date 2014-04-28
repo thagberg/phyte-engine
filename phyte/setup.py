@@ -9,4 +9,7 @@ setup(
     description = ("A 2D fighting game engine built on Pygame"),
     license = "MIT",
     packages = ["engine", "tools"],
+    install_requires = [
+        "dill == 0.2b1"
+    ]
 )
