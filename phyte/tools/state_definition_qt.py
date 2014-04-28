@@ -181,13 +181,55 @@ class StateDefinitionEditor(Editor):
         self.selected_rule_list_view.addItem(widget_component)
 
     def remove_rule(self):
-        pass
+        selected_index = self.selected_rule_list_view.currentRow()
+        selected_item = self.selected_rule_list_view.takeItem(selected_index)
 
     def add_state(self):
-        pass
+        entity = self.context['selected_entity']
+        state_name = self.state_name_field.text()
+        # get activation event
+        act_event_name = self.activation_list_view.currentItem().text()
+        # get deactivation event
+        deact_event_name = self.deactivation_list_view.currentItem().text()
+        # get activation component
+        act_component = self.activation_component_tree_view.currentItem().component
+        # build list of rules added to this state
+        rules = dict()
+        for i in range(self.selected_rule_list_view.count()):
+            item = self.selected_rule_list_view.item(i)
+            rule_component = item.component
+            rules[item.text()] = rule_component
+        # create state component
+        state_component = StateComponent(entity_id=entity,
+                                         rules=rules.keys(),
+                                         activation_event_type=act_event_name,
+                                         deactivation_event_type=deact_event_name,
+                                         activation_component=act_component,
+                                         rule_values=rules)
+        state_component_wrapper = Component(state_component, state_name)
+        widget_component = WidgetItemComponent(state_name, state_component_wrapper)
+        self.state_list_view.addItem(widget_component)
+        # add state component to application context
+        self.context[entity]['components']['state'].append(state_component_wrapper)
+        # fire event for adding component
+        new_event = Event('added_component',
+                          entity=entity,
+                          component_type='state',
+                          component=state_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
 
     def remove_state(self):
-        pass
+        entity = self.context['selected_entity']
+        selected_index = self.state_list_view.currentRow()
+        selected_item = self.state_list_view.takeItem(selected_index)
+        # remove state component from application context
+        self.context[entity]['components']['state'].remove(selected_item.component)
+        # fire event for removing component
+        new_event = Event('removed_component',
+                          entity=entity,
+                          component_type='state',
+                          component=selected_item.component)
+        EVENT_MANAGER.fire_event(new_event)
 
     def select_state(self):
         pass

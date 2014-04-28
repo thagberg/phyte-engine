@@ -69,7 +69,7 @@ class RuleDefinitionEditor(Editor):
 
         # fire event for adding rule
         new_event = Event('added_rule',
-                          rule_component=rule_component)
+                          rule_component=rule_component_wrapper)
         EVENT_MANAGER.fire_event(new_event)
 
     def remove_rule(self):
