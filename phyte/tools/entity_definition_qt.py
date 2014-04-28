@@ -11,6 +11,8 @@ from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
 class EntityDefinitionEditor(Editor):
     def __init__(self, context):
         super(EntityDefinitionEditor, self).__init__(context, QtGui.QGroupBox('Entity'))
+        if 'entities' not in self.context:
+            self.context['entities'] = dict()
         # define gui elements
         self.layout = QtGui.QGridLayout()
         self.entity_name_field = QtGui.QLineEdit()
@@ -36,9 +38,9 @@ class EntityDefinitionEditor(Editor):
         new_entity_wrapper = Component(new_entity, entity_name)
         widget_component = WidgetItemComponent(entity_name, new_entity_wrapper)
         self.entity_list_view.addItem(widget_component)
-        self.context[entity_name] = dict()
-        self.context[entity_name]['entity'] = new_entity
-        self.context[entity_name]['components'] = defaultdict(list)
+        self.context['entities'][entity_name] = dict()
+        self.context['entities'][entity_name]['entity'] = new_entity
+        self.context['entities'][entity_name]['components'] = defaultdict(list)
 
     def select_entity(self, current, previous):
         self.context['selected_entity'] = current.text()

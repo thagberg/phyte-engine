@@ -15,8 +15,9 @@ from execution_definition_qt import ExecutionDefinitionEditor
 from rule_definition_qt import RuleDefinitionEditor
 from state_definition_qt import StateDefinitionEditor
 from editor_qt import EditorManager
+import serialize
 
-class PhyteEditor(QtGui.QWidget):
+class PhyteEditor(QtGui.QMainWindow):
     def __init__(self):
         super(PhyteEditor, self).__init__()
         self.initUI()
@@ -24,6 +25,7 @@ class PhyteEditor(QtGui.QWidget):
     def initUI(self):
         top = QtGui.QGridLayout()
         editor_switcher = QtGui.QGridLayout()
+        self.center_widget = QtGui.QWidget()
         self.context = dict()
         self.editor_selector_view = QtGui.QListWidget()
         self.editor_item_map = dict()
@@ -40,6 +42,15 @@ class PhyteEditor(QtGui.QWidget):
         execution_editor = ExecutionDefinitionEditor(self.context)
         rule_editor = RuleDefinitionEditor(self.context)
         state_editor = StateDefinitionEditor(self.context)
+
+        # set up menu bar
+        save_action = QtGui.QAction('Save', self)
+        exit_action = QtGui.QAction('Exit', self)
+        file_menu = self.menuBar().addMenu('&File')
+        file_menu.addAction(save_action)
+        file_menu.addAction(exit_action)
+        exit_action.triggered.connect(self.close)
+        save_action.triggered.connect(self.save)
 
         # add editors to editor manager
         self.editor_manager.add_editor('entity', entity_editor)
@@ -117,7 +128,8 @@ class PhyteEditor(QtGui.QWidget):
         # wire up event handlers
         self.editor_selector_view.currentItemChanged.connect(self.select_editor)
 
-        self.setLayout(top)
+        self.center_widget.setLayout(top)
+        self.setCentralWidget(self.center_widget)
 
         self.show()
 
@@ -126,12 +138,17 @@ class PhyteEditor(QtGui.QWidget):
         selected_editor = self.editor_item_map[selected_item]
         self.editor_manager.show_editor(selected_editor)
 
+    def save(self):
+        file_name = QtGui.QFileDialog.getSaveFileName(self, 'Save Configuration', '~')
+        serialize.save(self.context, file_name)
+
 
 def main():
 
     app = QtGui.QApplication(sys.argv)
     ex = PhyteEditor()
+    app.exec_()
 
-    sys.exit(app.exec_())
 
-main()
+if __name__ == "__main__":
+    sys.exit(main())

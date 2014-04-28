@@ -125,7 +125,7 @@ class MoveDefinitionEditor(Editor):
         self.move_list_view.addItem(widget_component)
 
         # add the move component to the application context
-        self.context[entity]['components']['move'].append(move_component_wrapper)
+        self.context['entities'][entity]['components']['move'].append(move_component_wrapper)
 
         # fire event for adding new move
         new_event = Event('added_move',
@@ -143,7 +143,7 @@ class MoveDefinitionEditor(Editor):
         selected_item = self.move_list_view.takeItem(selected_index)
 
         # remove the move component from the application context
-        self.context[entity]['components']['move'].remove(selected_item.component)
+        self.context['entities'][entity]['components']['move'].remove(selected_item.component)
 
         # fire event for removing move
         new_event = Event('removed_move',
@@ -162,7 +162,7 @@ class MoveDefinitionEditor(Editor):
 
     def set_animations(self, event):
         entity = event.entity
-        available_animations = self.context[entity]['components']['animation']
+        available_animations = self.context['entities'][entity]['components']['animation']
         # do a "soft" clear of the list
         # if we actually call self.graphic_list_view.clear(),
         # the C++ Qt objects will be deleted

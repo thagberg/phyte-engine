@@ -92,7 +92,7 @@ class ExecutionDefinitionEditor(Editor):
         self.exec_list_view.addItem(widget_component)
         
         # add execution component to the application context
-        self.context[entity]['components']['execution'].append(exec_component_wrapper)
+        self.context['entities'][entity]['components']['execution'].append(exec_component_wrapper)
 
         # fire event for adding new execution
         new_event = Event('added_execution',
@@ -111,7 +111,7 @@ class ExecutionDefinitionEditor(Editor):
         selected_component = selected_item.component
 
         # remove execution component from the application context
-        self.context[entity]['components']['execution'].remove(selected_component)
+        self.context['entities'][entity]['components']['execution'].remove(selected_component)
 
         # fire event for removing execution
         new_event = Event('removed_execution',
@@ -128,7 +128,7 @@ class ExecutionDefinitionEditor(Editor):
 
     def set_entity(self, event):
         entity = event.entity
-        bindings = self.context[entity]['components']['binding']
+        bindings = self.context['entities'][entity]['components']['binding']
         # do a "soft" clear of the list
         # if we actually call self.graphic_list_view.clear(),
         # the C++ Qt objects will be deleted
@@ -139,7 +139,7 @@ class ExecutionDefinitionEditor(Editor):
             widget_component = WidgetItemComponent(binding.text, binding)
             self.binding_list_view.addItem(widget_component)
 
-        execs = self.context[entity]['components']['execution']
+        execs = self.context['entities'][entity]['components']['execution']
         for i in range(self.exec_list_view.count()-1,-1,-1):
             self.exec_list_view.takeItem(i)
 

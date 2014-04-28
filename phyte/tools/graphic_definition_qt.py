@@ -65,7 +65,7 @@ class GraphicDefinitionEditor(Editor):
         # then add it to the application context
         entity_name = self.context.get('selected_entity')
         if entity_name:
-            self.context[entity_name]['components']['graphic'].append(graphic_component_wrapper)
+            self.context['entities'][entity_name]['components']['graphic'].append(graphic_component_wrapper)
 
         # fire off an event
         new_event = Event('graphic_added',
@@ -91,7 +91,7 @@ class GraphicDefinitionEditor(Editor):
         # then remove it from the application context
         entity = self.context.get('selected_entity')
         if entity:
-            self.context[entity]['components']['graphic'].remove(selected_item)
+            self.context['entities'][entity]['components']['graphic'].remove(selected_item)
 
         # fire off an event
         new_event = Event('graphic_removed',
@@ -121,7 +121,7 @@ class GraphicDefinitionEditor(Editor):
 
     def set_graphics(self, event):
         entity = event.entity
-        available_graphics = self.context[entity]['components']['graphic']
+        available_graphics = self.context['entities'][entity]['components']['graphic']
         # do a "soft" clear of the list
         # if we actually call self.graphic_list_view.clear(),
         # the C++ Qt objects will be deleted

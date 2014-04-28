@@ -59,7 +59,7 @@ class AnimationDefinitionEditor(Editor):
         self.animation_list_view.addItem(widget_component)
 
         # add new component to the application context
-        context_animations = self.context[entity]['components']['animation']
+        context_animations = self.context['entities'][entity]['components']['animation']
         context_animations.append(animation_component_wrapper)
 
         # fire event for adding an animation
@@ -81,7 +81,7 @@ class AnimationDefinitionEditor(Editor):
 
         # remove the animation from the application context
         inner_ani_component = selected_animation.component
-        self.context[entity]['components']['animation'].remove(inner_ani_component)
+        self.context['entities'][entity]['components']['animation'].remove(inner_ani_component)
 
         # fire event for removing an animation
         new_event = Event('removed_animation',
@@ -123,7 +123,7 @@ class AnimationDefinitionEditor(Editor):
         entity = event.entity
         graphic = event.graphic_component
         self.selected_graphic = graphic
-        animations = self.context[entity]['components']['animation']
+        animations = self.context['entities'][entity]['components']['animation']
         animations = [x for x in animations if x.component.graphic.component == graphic.component]
 
         # do a soft clear of the animation list

@@ -106,10 +106,10 @@ class StateDefinitionEditor(Editor):
                 child_item = item.takeChild(j)
 
         # repopulate the tree with the current entity's components
-        tl_items = self.context[entity]['components'].keys()
+        tl_items = self.context['entities'][entity]['components'].keys()
         # component types represent the top level tree items
         for item in tl_items:
-            components = self.context[entity]['components'][item]
+            components = self.context['entities'][entity]['components'][item]
             tl_tree_item = TreeWidgetItemComponent(item, components)
             self.activation_component_tree_view.addTopLevelItem(tl_tree_item)
             # the components should all be listed under their respective 
@@ -129,9 +129,9 @@ class StateDefinitionEditor(Editor):
                     grand_child_item = child_item.takeChild(k)
 
         # then repopulate the tree with components and component properties
-        tl_items = self.context[entity]['components'].keys()
+        tl_items = self.context['entities'][entity]['components'].keys()
         for item in tl_items:
-            components = self.context[entity]['components'][item]
+            components = self.context['entities'][entity]['components'][item]
             tl_tree_item = TreeWidgetItemComponent(item, components)
             rule_value_tree.addTopLevelItem(tl_tree_item)
             for component in components:
@@ -168,11 +168,11 @@ class StateDefinitionEditor(Editor):
         # we then look for a chosen component property
         if rule_value is None or rule_value == '':
             component_item = self.rule_value_component_tree_view.currentItem()
-            component_text = component_item.text()
+            component_text = component_item.text(0)
             component = component_item.component
             rule_value = lambda: component
-            if component_item.parentWidget() != 0:
-                component_text = '{a}.{b}'.format(a=component_item.parentWidget().text(),
+            if component_item.parent() != None:
+                component_text = '{a}.{b}'.format(a=component_item.parent().text(0),
                                                   b=component_text)
             rule_text = '{name} - {value}'.format(name=rule_name,
                                                   value=component_text)
@@ -210,7 +210,7 @@ class StateDefinitionEditor(Editor):
         widget_component = WidgetItemComponent(state_name, state_component_wrapper)
         self.state_list_view.addItem(widget_component)
         # add state component to application context
-        self.context[entity]['components']['state'].append(state_component_wrapper)
+        self.context['entities'][entity]['components']['state'].append(state_component_wrapper)
         # fire event for adding component
         new_event = Event('added_component',
                           entity=entity,

@@ -85,7 +85,7 @@ class BindingDefinitionEditor(Editor):
         self.binding_list_view.addItem(widget_component)
 
         # add the component to the application context
-        self.context[entity]['components']['binding'].append(binding_comp_wrapper)
+        self.context['entities'][entity]['components']['binding'].append(binding_comp_wrapper)
 
         # fire event for adding new binding
         new_event = Event('added_binding',
@@ -104,7 +104,7 @@ class BindingDefinitionEditor(Editor):
         selected_component = selected_item.component
 
         # remove the component from the application context
-        self.context[entity]['components']['binding'].remove(selected_component)
+        self.context['entities'][entity]['components']['binding'].remove(selected_component)
 
         # fire event for removing binding
         new_event = Event('removed_binding',
@@ -133,7 +133,7 @@ class BindingDefinitionEditor(Editor):
 
     def set_bindings(self, event):
         entity = event.entity
-        available_bindings = self.context[entity]['components']['binding']
+        available_bindings = self.context['entities'][entity]['components']['binding']
         # do a "soft" clear of the list
         # if we actually call self.graphic_list_view.clear(),
         # the C++ Qt objects will be deleted
