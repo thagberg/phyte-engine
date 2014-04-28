@@ -2,7 +2,7 @@ import dill as pickle
 from collections import defaultdict
 
 
-def save(context, file_name):
+def save_config(context, file_name):
     config_file = file(file_name, 'w')
     clean_context = defaultdict(dict)
 
@@ -36,5 +36,6 @@ def save(context, file_name):
     pickle.dump(clean_context, config_file)
     config_file.close() 
 
-def open(file_name):
-    pass
+def open_config(file_name):
+    new_context = dict()
+    return new_context

@@ -45,12 +45,15 @@ class PhyteEditor(QtGui.QMainWindow):
 
         # set up menu bar
         save_action = QtGui.QAction('Save', self)
+        open_action = QtGui.QAction('Open', self)
         exit_action = QtGui.QAction('Exit', self)
         file_menu = self.menuBar().addMenu('&File')
+        file_menu.addAction(open_action)
         file_menu.addAction(save_action)
         file_menu.addAction(exit_action)
         exit_action.triggered.connect(self.close)
-        save_action.triggered.connect(self.save)
+        save_action.triggered.connect(self.save_config)
+        open_action.triggered.connect(self.open_config)
 
         # add editors to editor manager
         self.editor_manager.add_editor('entity', entity_editor)
@@ -138,9 +141,13 @@ class PhyteEditor(QtGui.QMainWindow):
         selected_editor = self.editor_item_map[selected_item]
         self.editor_manager.show_editor(selected_editor)
 
-    def save(self):
-        file_name = QtGui.QFileDialog.getSaveFileName(self, 'Save Configuration', '~')
-        serialize.save(self.context, file_name)
+    def save_config(self):
+        file_name = QtGui.QFileDialog.getSaveFileName(self, 'Save Configuration')
+        serialize.save_config(self.context, file_name)
+
+    def open_config(self):
+        file_name = QtGui.QFileDialog.getOpenFileName(self, 'Open Configuration File')
+        new_context = serialize.open_config(file_name)
 
 
 def main():
