@@ -304,7 +304,7 @@ class HitboxDefinitionEditor(Editor):
         # repopulate box list
         for box in boxes:
             box_wrapper = WidgetItemComponent(box.text, box)
-            self.box_list_view.addItem(box)
+            self.box_list_view.addItem(box_wrapper)
 
     def set_animation(self, event):
         entity = event.entity
@@ -347,3 +347,6 @@ class HitboxDefinitionEditor(Editor):
     def set_solid(self, state):
         self.check_context['solid'] = state
         self.graphic_viewer.awkward_update()
+
+    def update(self):
+        self.box_list_view.clear()

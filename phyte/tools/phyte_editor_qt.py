@@ -15,6 +15,7 @@ from execution_definition_qt import ExecutionDefinitionEditor
 from rule_definition_qt import RuleDefinitionEditor
 from state_definition_qt import StateDefinitionEditor
 from editor_qt import EditorManager
+from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
 import serialize
 
 class PhyteEditor(QtGui.QMainWindow):
@@ -148,6 +149,11 @@ class PhyteEditor(QtGui.QMainWindow):
     def open_config(self):
         file_name = QtGui.QFileDialog.getOpenFileName(self, 'Open Configuration File')
         new_context = serialize.open_config(file_name)
+        self.context = new_context
+        # fire off event
+        new_event = Event('set_context',
+                          context=self.context)
+        EVENT_MANAGER.fire_event(new_event)
 
 
 def main():

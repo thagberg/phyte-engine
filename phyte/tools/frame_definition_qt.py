@@ -242,3 +242,6 @@ class FrameDefinitionEditor(Editor):
         for frame in frames:
             frame_wrapper = WidgetItemComponent(frame.text, frame)
             self.frame_list_view.addItem(frame_wrapper)
+
+    def update(self):
+        self.frame_list_view.clear()

@@ -98,3 +98,9 @@ class AssetDefinitionEditor(Editor):
         if selected_item:
             file_name = selected_item.component.component.file_name
             self.show_asset(file_name)
+
+    def update(self):
+        self.asset_list_view.clear()
+        for asset in self.context['assets']:
+            widget_component = WidgetItemComponent(asset.text, asset)
+            self.asset_list_view.addItem(widget_component)

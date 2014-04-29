@@ -98,3 +98,9 @@ class RuleDefinitionEditor(Editor):
             self.value_field.setText(str(selected_component.component.value))
             index = self.operator_list_view.findText(selected_component.component.operator)
             self.operator_list_view.setCurrentIndex(index)
+
+    def update(self):
+        self.rule_list_view.clear()
+        for rule in self.context['rules']:
+            widget_component = WidgetItemComponent(rule.text, rule)
+            self.rule_list_view.addItem(widget_component)

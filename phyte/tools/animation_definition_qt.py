@@ -133,3 +133,11 @@ class AnimationDefinitionEditor(Editor):
         for animation in animations:
             animation_wrapper = WidgetItemComponent(animation.text, animation)
             self.animation_list_view.addItem(animation_wrapper)
+
+    def update(self):
+        entity = self.context['selected_entity']
+        self.animation_list_view.clear()
+        if entity and entity != '':
+            for animation in self.context[entity]['components']['animation']:
+                widget_component = WidgetItemComponent(animation.text, animation)
+                self.animation_list_view.addItem(widget_component)

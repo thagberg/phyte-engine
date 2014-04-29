@@ -176,3 +176,11 @@ class ExecutionDefinitionEditor(Editor):
             if component == move_component:
                 self.move_list_view.takeItem(i)
                 break
+
+    def update(self):
+        entity = self.context['selected_entity']
+        self.exec_list_view.clear()
+        if entity and entity != '':
+            for execution in self.context[entity]['components']['execution']:
+                widget_component = WidgetItemComponent(execution.text, execution)
+                self.exec_list_view.addItem(widget_component)

@@ -145,3 +145,15 @@ class GraphicDefinitionEditor(Editor):
             current_asset = self.asset_list_view.item(i)
             if current_asset.component == asset_component:
                 self.asset_list_view.takeItem(i)
+
+    def update(self):
+        entity = self.context['selected_entity']
+        self.graphic_list_view.clear()
+        self.asset_list_view.clear()
+        for asset in self.context['assets']:
+            widget_component = WidgetItemComponent(asset.text, asset)
+            self.asset_list_view.addItem(widget_component)
+        if entity and entity != '':
+            for graphic in self.context[entity]['components']['graphic']:
+                widget_component = WidgetItemComponent(graphic.text, graphic)
+                self.graphic_list_view.addItem(widget_component)

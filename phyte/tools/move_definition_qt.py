@@ -190,3 +190,11 @@ class MoveDefinitionEditor(Editor):
             inp = item.component
             if event.input_component == inp:
                 self.inp_list_view.takeItem(i)
+
+    def update(self):
+        entity = self.context['selected_entity']
+        self.move_list_view.clear()
+        if entity and entity != '':
+            for move in self.context[entity]['components']['move']:
+                widget_component = WidgetItemComponent(move.text, move)
+                self.move_list_view.addItem(widget_component)

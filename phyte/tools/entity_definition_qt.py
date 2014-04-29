@@ -47,3 +47,9 @@ class EntityDefinitionEditor(Editor):
         new_event = Event('selected_entity',
                           entity=self.context['selected_entity'])
         EVENT_MANAGER.fire_event(new_event)
+
+    def update(self):
+        self.entity_list_view.clear()
+        for name, entity in self.context['entities'].iteritems():
+            widget_component = WidgetItemComponent(name, entity)
+            self.entity_list_view.addItem(widget_component)

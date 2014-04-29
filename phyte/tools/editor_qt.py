@@ -1,6 +1,6 @@
 from PyQt4 import QtGui, QtCore
 
-from event import Event, EVENT_QUEUE
+from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
 
 class Editor(QtGui.QWidget):
     def __init__(self, context, group=None):
@@ -11,6 +11,16 @@ class Editor(QtGui.QWidget):
         self.layout.addWidget(self.group)
         self.setLayout(self.layout)
         self.hide()
+
+        # internal events
+        EVENT_MAPPING.register_handler('set_context', self.set_context)
+
+    def set_context(self, event):
+        self.context = event.context
+        self.update()
+
+    def update(self):
+        pass
 
 
 class EditorManager(object):

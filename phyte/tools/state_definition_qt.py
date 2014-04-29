@@ -248,3 +248,11 @@ class StateDefinitionEditor(Editor):
             if component == rule_component:
                 self.rule_list_view.takeItem(i)
                 break
+
+    def update(self):
+        entity = self.context['selected_entity']
+        self.state_list_view.clear()
+        if entity and entity != '':
+            for state in self.context[entity]['components']['state']:
+                widget_component = WidgetItemComponent(state.text, state)
+                self.state_list_view.addItem(widget_component)

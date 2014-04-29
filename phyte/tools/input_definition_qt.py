@@ -60,3 +60,9 @@ class InputDefinitionEditor(Editor):
         new_event = Event('removed_input',
                           input_component=selected_input.component)
         EVENT_MANAGER.fire_event(new_event)
+
+    def update(self):
+        self.input_list_view.clear()
+        for inp in self.context['inputs']:
+            widget_component = WidgetItemComponent(inp.text, inp)
+            self.input_list_view.addItem(widget_component)
