@@ -6,6 +6,14 @@ BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 
+
+class Vector2(object):
+    def __init__(self, entity_id, vec):
+        self.entity_id = entity_id
+        self.x = vec[0]
+        self.y = vec[1]
+
+
 class LocationComponent(object):
     def __init__(self, entity_id, point):
         self.entity_id = entity_id

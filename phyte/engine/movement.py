@@ -78,12 +78,21 @@ class MovementSystem(System):
 
     def update(self, time):
         self.delta = time
+        # this is, admittedly, a little bit weird
+        # When a top level movement component is added, it has None as a parent,
+        # and thus gets added to the list of movement components for the parent None
+        # This means it won't be iterated over in this loop, however, when a child
+        # of that top level movement component is added, a list of components for 
+        # that top level component as a key is created, so it will only ever be updated
+        # if it has children.  For this reason, there is always a need to have at least
+        # two levels of movement components to accomplish anything
         for parent, children in [(x,y) for x,y in self.components.iteritems() if x is not None]:
             for child in [x for x in children if x.active]:
                 child.body[0] += child.velocity[0]
                 child.body[1] += child.velocity[1]
 
-        for parent in [x for x in self.components.keys() if x is not None]:
+            # now update the parent body if it is active
+            # often the "body" of a child will be the velocity of the parent
             if parent.active:
                 parent.body[0] += parent.velocity[0]
                 parent.body[1] += parent.velocity[1]

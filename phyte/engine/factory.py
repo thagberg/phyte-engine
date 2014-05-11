@@ -131,6 +131,12 @@ class ComponentFactory(object):
             vel = props['vel']
             component = common.VelocityComponent(entity_id=entity_id, vel=vel)
 
+        # Vector2
+        elif type == 'vec2':
+            entity_id = props.get('entity_id')
+            vec = props['vec']
+            component = common.Vector2(entity_id=entity_id, vec=vec)
+
         # BoxComponent
         elif type == 'hit':
             entity_id = props['entity_id']

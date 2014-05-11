@@ -574,8 +574,8 @@ fps_debug_component = factory.create_component('deb', entity_id=fps_entity.entit
 # player test objects
 
 p_entity = factory.create_entity()
-p_loc = factory.create_component('loc', entity_id=p_entity.entity_id,
-                                 point=[400,500])
+p_loc = factory.create_component('vec2', entity_id=p_entity.entity_id,
+                                 vec=[400,500])
 p_bindings = {
     'up': pygame.K_UP,
     'down': pygame.K_DOWN,
