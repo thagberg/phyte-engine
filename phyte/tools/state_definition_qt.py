@@ -253,6 +253,6 @@ class StateDefinitionEditor(Editor):
         entity = self.context['selected_entity']
         self.state_list_view.clear()
         if entity and entity != '':
-            for state in self.context[entity]['components']['state']:
+            for state in self.context['entities'][entity]['components']['state']:
                 widget_component = WidgetItemComponent(state.text, state)
                 self.state_list_view.addItem(widget_component)

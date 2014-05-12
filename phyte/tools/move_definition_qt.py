@@ -173,6 +173,15 @@ class MoveDefinitionEditor(Editor):
             widget_component = WidgetItemComponent(animation.text, animation)
             self.ani_list_view.addItem(widget_component)
 
+        # now do the moves list
+        available_moves = self.context['entities'][entity]['components']['move']
+        for i in range(self.move_list_view.count()-1,-1,-1):
+            self.move_list_view.takeItem(i)
+
+        for move in available_moves:
+            widget_component = WidgetItemComponent(move.text, move)
+            self.move_list_view.addItem(widget_component)
+
     def add_animation(self, event):
         ani_component = event.animation_component
         widget_component = WidgetItemComponent(ani_component.text, ani_component)
@@ -192,9 +201,19 @@ class MoveDefinitionEditor(Editor):
                 self.inp_list_view.takeItem(i)
 
     def update(self):
+        # first update move list
         entity = self.context['selected_entity']
         self.move_list_view.clear()
         if entity and entity != '':
-            for move in self.context[entity]['components']['move']:
+            for move in self.context['entities'][entity]['components']['move']:
                 widget_component = WidgetItemComponent(move.text, move)
                 self.move_list_view.addItem(widget_component)
+
+        # then update input list
+        self.inp_list_view.clear()
+        for inp in self.context['inputs']:
+            widget_component = WidgetItemComponent(inp.text, inp)
+            self.inp_list_view.addItem(widget_component)
+
+        # finally update animation list
+        self.ani_list_view.clear()

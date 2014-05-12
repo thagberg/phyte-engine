@@ -138,6 +138,6 @@ class AnimationDefinitionEditor(Editor):
         entity = self.context['selected_entity']
         self.animation_list_view.clear()
         if entity and entity != '':
-            for animation in self.context[entity]['components']['animation']:
+            for animation in self.context['entities'][entity]['components']['animation']:
                 widget_component = WidgetItemComponent(animation.text, animation)
                 self.animation_list_view.addItem(widget_component)

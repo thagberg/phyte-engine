@@ -3,6 +3,7 @@ from PyQt4 import QtGui, QtCore
 from editor_qt import Editor
 from common import Component, WidgetItemComponent, TreeWidgetItemComponent
 from engine.movement import MovementComponent, VaryingMovementComponent
+from engine.common import Vector2
 from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
 
 
@@ -77,13 +78,24 @@ class MovementDefinitionEditor(Editor):
         standard = self.velocity_standard_type.isChecked()
         pulse = self.velocity_pulse_type.isChecked()
         parent = self.parent_list_view.currentItem()
-        body= self.body_tree_view.currentItem()
+        body= self.body_tree_view.currentItem().component
+        x = int(self.velocity_x_field.text())
+        y = int(self.velocity_y_field.text())
+        velocity = Vector2(entity, x, y)
+        velocity_wrapper = Component(velocity, "{x}, {y}".format(x=x,y=y))
         if parent != None:
             parent = parent.component
 
         # create movement component object
         movement_component = MovementComponent(entity_id=entity,
-        pass
+                                               body=body,
+                                               parent=parent,
+                                               velocity=velocity_wrapper)
+        movement_component_wrapper = Component(movement_component, name)
+        widget_component = WidgetItemComponent(name, movement_component_wrapper)
+
+        self.movement_list_view.addItem(widget_component)
+        self.context[entity]['components']['movement'].append(movement_component_wrapper)
 
     def remove_movement(self):
         pass

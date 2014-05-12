@@ -139,6 +139,7 @@ class ExecutionDefinitionEditor(Editor):
             widget_component = WidgetItemComponent(binding.text, binding)
             self.binding_list_view.addItem(widget_component)
 
+        # now do it for execution components
         execs = self.context['entities'][entity]['components']['execution']
         for i in range(self.exec_list_view.count()-1,-1,-1):
             self.exec_list_view.takeItem(i)
@@ -146,6 +147,15 @@ class ExecutionDefinitionEditor(Editor):
         for exec_comp in execs:
             widget_component = WidgetItemComponent(exec_comp.text, exec_comp)
             self.exec_list_view.addItem(widget_component)
+
+        # finally do it for moves
+        moves = self.context['entities'][entity]['components']['move']
+        for i in range(self.move_list_view.count()-1,-1,-1):
+            self.move_list_view.takeItem(i)
+
+        for move in moves:
+            widget_component = WidgetItemComponent(move.text, move)
+            self.move_list_view.addItem(widget_component)
 
     def added_binding(self, event):
         binding_component = event.binding_component

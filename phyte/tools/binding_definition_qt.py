@@ -162,3 +162,18 @@ class BindingDefinitionEditor(Editor):
             input_comp = self.selected_inp_list_view.item(i).component
             key= input_comp.text
             bindings[key] = input_comp
+
+    def update(self):
+        # first update input list
+        self.inp_list_view.clear()
+        for inp in self.context['inputs']:
+            widget_component = WidgetItemComponent(inp.text, inp)
+            self.inp_list_view.addItem(widget_component)
+
+        # then update binding list
+        entity = self.context['selected_entity']
+        self.binding_list_view.clear()
+        if entity and entity != '':
+            for bind in self.context['entities'][entity]['components']['binding']:
+                widget_component = WidgetItemComponent(binding.text, binding)
+                self.binding_list_view.addItem(widget_component)

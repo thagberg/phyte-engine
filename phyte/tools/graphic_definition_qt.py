@@ -154,6 +154,6 @@ class GraphicDefinitionEditor(Editor):
             widget_component = WidgetItemComponent(asset.text, asset)
             self.asset_list_view.addItem(widget_component)
         if entity and entity != '':
-            for graphic in self.context[entity]['components']['graphic']:
+            for graphic in self.context['entities'][entity]['components']['graphic']:
                 widget_component = WidgetItemComponent(graphic.text, graphic)
                 self.graphic_list_view.addItem(widget_component)
