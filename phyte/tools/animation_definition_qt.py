@@ -24,7 +24,6 @@ class AnimationDefinitionEditor(Editor):
 
         # frame properties
         self.graphic_viewer.setScene(QtGui.QGraphicsScene())
-        self.frame_rect = QtCore.QRect()
         self.dragging = False
 
         # events
@@ -48,7 +47,7 @@ class AnimationDefinitionEditor(Editor):
         self.animation_list_view.currentItemChanged.connect(self.select_animation)
 
     def add_animation(self):
-        animation_name = self.animation_name_field.text()
+        animation_name = str(self.animation_name_field.text())
         entity = self.context['selected_entity']
         animation_component = AnimationComponent(entity_id=entity,
                                                  graphic=self.selected_graphic)

@@ -76,7 +76,7 @@ class ExecutionDefinitionEditor(Editor):
 
     def add_exec(self):
         entity = self.context['selected_entity']
-        exec_name = self.exec_name_field.text()
+        exec_name = str(self.exec_name_field.text())
         binding = self.binding_list_view.currentItem().component
         # build list of selected moves
         moves = list()

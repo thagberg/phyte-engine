@@ -15,6 +15,8 @@ from execution_definition_qt import ExecutionDefinitionEditor
 from rule_definition_qt import RuleDefinitionEditor
 from state_definition_qt import StateDefinitionEditor
 from movement_definition_qt import MovementDefinitionEditor
+from vector_definition_qt import VectorDefinitionEditor
+from physics_definition_qt import PhysicsDefinitionEditor
 from editor_qt import EditorManager
 from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
 import serialize
@@ -45,6 +47,8 @@ class PhyteEditor(QtGui.QMainWindow):
         rule_editor = RuleDefinitionEditor(self.context)
         state_editor = StateDefinitionEditor(self.context)
         movement_editor = MovementDefinitionEditor(self.context)
+        vector_editor = VectorDefinitionEditor(self.context)
+        physics_editor = PhysicsDefinitionEditor(self.context)
 
         # set up menu bar
         save_action = QtGui.QAction('Save', self)
@@ -72,6 +76,8 @@ class PhyteEditor(QtGui.QMainWindow):
         self.editor_manager.add_editor('rule', rule_editor)
         self.editor_manager.add_editor('state', state_editor)
         self.editor_manager.add_editor('movement', movement_editor)
+        self.editor_manager.add_editor('vector', vector_editor)
+        self.editor_manager.add_editor('physics', physics_editor)
 
         # set up editor view
         entity_editor_item = QtGui.QListWidgetItem('Entity')
@@ -87,6 +93,8 @@ class PhyteEditor(QtGui.QMainWindow):
         rule_editor_item = QtGui.QListWidgetItem('Rule')
         state_editor_item = QtGui.QListWidgetItem('State')
         movement_editor_item = QtGui.QListWidgetItem('Movement')
+        vector_editor_item = QtGui.QListWidgetItem('Vector')
+        physics_editor_item = QtGui.QListWidgetItem('Physics')
 
         self.editor_item_map[entity_editor_item] = 'entity'
         self.editor_item_map[graphic_editor_item] = 'graphic'
@@ -101,6 +109,8 @@ class PhyteEditor(QtGui.QMainWindow):
         self.editor_item_map[rule_editor_item] = 'rule'
         self.editor_item_map[state_editor_item] = 'state'
         self.editor_item_map[movement_editor_item] = 'movement'
+        self.editor_item_map[vector_editor_item] = 'vector'
+        self.editor_item_map[physics_editor_item] = 'physics'
         self.editor_selector_view.addItem(entity_editor_item)
         self.editor_selector_view.addItem(graphic_editor_item)
         self.editor_selector_view.addItem(animation_editor_item)
@@ -114,6 +124,8 @@ class PhyteEditor(QtGui.QMainWindow):
         self.editor_selector_view.addItem(rule_editor_item)
         self.editor_selector_view.addItem(state_editor_item)
         self.editor_selector_view.addItem(movement_editor_item)
+        self.editor_selector_view.addItem(vector_editor_item)
+        self.editor_selector_view.addItem(physics_editor_item)
 
         # set up layout
         self.splitter = QtGui.QSplitter()
@@ -132,6 +144,8 @@ class PhyteEditor(QtGui.QMainWindow):
         editor_switcher.addWidget(rule_editor)
         editor_switcher.addWidget(state_editor)
         editor_switcher.addWidget(movement_editor)
+        editor_switcher.addWidget(vector_editor)
+        editor_switcher.addWidget(physics_editor)
         self.splitter.addWidget(self.editor_selector_view)
         self.splitter.addWidget(holder_widget)
         top.addWidget(self.splitter,0,0)

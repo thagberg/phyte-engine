@@ -33,7 +33,7 @@ class EntityDefinitionEditor(Editor):
         self.entity_list_view.currentItemChanged.connect(self.select_entity)
 
     def add_entity(self):
-        entity_name = self.entity_name_field.text()
+        entity_name = str(self.entity_name_field.text())
         new_entity = Entity(entity_name)
         new_entity_wrapper = Component(new_entity, entity_name)
         widget_component = WidgetItemComponent(entity_name, new_entity_wrapper)
@@ -43,7 +43,7 @@ class EntityDefinitionEditor(Editor):
         self.context['entities'][entity_name]['components'] = defaultdict(list)
 
     def select_entity(self, current, previous):
-        self.context['selected_entity'] = current.text()
+        self.context['selected_entity'] = str(current.text())
         new_event = Event('selected_entity',
                           entity=self.context['selected_entity'])
         EVENT_MANAGER.fire_event(new_event)

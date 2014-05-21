@@ -46,14 +46,14 @@ class AssetDefinitionEditor(Editor):
         self.asset_list_view.currentItemChanged.connect(self.select_asset)
 
     def open_file_dialog(self):
-        file_name = QtGui.QFileDialog.getOpenFileName(self.group, 'Choose Asset', '/home')
+        file_name = str(QtGui.QFileDialog.getOpenFileName(self.group, 'Choose Asset', '/home'))
         asset_file = open(file_name, 'r') 
         self.asset_file_name_field.setText(file_name)
 
     def add_asset(self):
         # add the new graphic to the UI
-        file_name = self.asset_file_name_field.text()
-        asset_name = self.asset_name_field.text()
+        file_name = str(self.asset_file_name_field.text())
+        asset_name = str(self.asset_name_field.text())
         asset_name = asset_name if asset_name else file_name
         asset_component = AssetComponent(file_name, None)
         asset_component_wrapper = Component(asset_component, asset_name)

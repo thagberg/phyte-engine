@@ -32,6 +32,7 @@ class MovementDefinitionEditor(Editor):
         self.velocity_layout = QtGui.QGridLayout()
         self.body_label = QtGui.QLabel('Choose Body')
         self.body_tree_view = QtGui.QTreeWidget()
+        self.body_layout = QtGui.QVBoxLayout()
         self.parent_label = QtGui.QLabel('Choose Parent')
         self.parent_list_view = QtGui.QListWidget()
         self.parent_layout = QtGui.QVBoxLayout()
@@ -52,9 +53,12 @@ class MovementDefinitionEditor(Editor):
         self.velocity_layout.addWidget(self.velocity_y_label,2,0)
         self.velocity_layout.addWidget(self.velocity_y_field,2,1)
         self.layout.addWidget(self.velocity_group,1,0)
+        self.body_layout.addWidget(self.body_label)
+        self.body_layout.addWidget(self.body_tree_view)
+        self.layout.addLayout(self.body_layout,1,1)
         self.parent_layout.addWidget(self.parent_label)
         self.parent_layout.addWidget(self.parent_list_view)
-        self.layout.addLayout(self.parent_layout,1,1)
+        self.layout.addLayout(self.parent_layout,1,2)
         self.layout.addWidget(self.movement_list_view,2,0)
         self.movement_button_layout.addWidget(self.add_movement_button)
         self.movement_button_layout.addWidget(self.remove_movement_button)
@@ -74,14 +78,14 @@ class MovementDefinitionEditor(Editor):
 
     def add_movement(self):
         entity = self.context['selected_entity']
-        name = self.move_name_field.text()
+        name = str(self.move_name_field.text())
         standard = self.velocity_standard_type.isChecked()
         pulse = self.velocity_pulse_type.isChecked()
         parent = self.parent_list_view.currentItem()
         body= self.body_tree_view.currentItem().component
-        x = int(self.velocity_x_field.text())
-        y = int(self.velocity_y_field.text())
-        velocity = Vector2(entity, x, y)
+        x = float(self.velocity_x_field.text())
+        y = float(self.velocity_y_field.text())
+        velocity = Vector2(entity, [x, y])
         velocity_wrapper = Component(velocity, "{x}, {y}".format(x=x,y=y))
         if parent != None:
             parent = parent.component
@@ -95,13 +99,19 @@ class MovementDefinitionEditor(Editor):
         widget_component = WidgetItemComponent(name, movement_component_wrapper)
 
         self.movement_list_view.addItem(widget_component)
-        self.context[entity]['components']['movement'].append(movement_component_wrapper)
+        self.context['entities'][entity]['components']['movement'].append(movement_component_wrapper)
 
     def remove_movement(self):
         pass
 
     def update(self):
-        pass
+        entity = self.context['selected_entity']
+        # first update movement list
+        self.movement_list_view.clear()
+        if entity and entity != '':
+            for movement in self.context['entities'][entity]['components']['movement']:
+                widget_component = WidgetItemComponent(movement.text, movement)
+                self.movement_list_view.addItem(widget_component)
 
     def _find_bodies(self):
         entity = self.context['selected_entity']
@@ -124,12 +134,16 @@ class MovementDefinitionEditor(Editor):
 
         # populate body tree with Vector2 components
         for comp_type, components in self.context['entities'][entity]['components'].iteritems():
+            if comp_type == 'vector':
+                for component in components:
+                    tl_tree_item = TreeWidgetItemComponent(component.text, component)
+                    self.body_tree_view.addTopLevelItem(tl_tree_item)
             for component in components:
                 inner_comp = component.component
                 for name in [x for x in dir(inner_comp) if not x.startswith('_')]:
                     attr = inner_comp.__dict__[name]
                     if type(attr).__name__ == 'Vector2':
-                        tl_tree_item = TreeWidgetItemComponent(component, inner_comp)
+                        tl_tree_item = TreeWidgetItemComponent(component.text, inner_comp)
                         self.body_tree_view.addTopLevelItem(tl_tree_item)
                         tree_item = TreeWidgetItemComponent(name, attr)
                         tl_tree_item.addChild(tree_item)

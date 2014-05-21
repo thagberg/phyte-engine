@@ -70,7 +70,7 @@ class BindingDefinitionEditor(Editor):
 
     def add_binding(self):
         entity = self.context['selected_entity']
-        binding_name = self.binding_name_field.text()
+        binding_name = str(self.binding_name_field.text())
         # begin by building the bindings dictionary
         bindings = dict()
         for i in range(self.selected_inp_list_view.count()):

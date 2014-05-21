@@ -1,5 +1,7 @@
-import dill as pickle
 from collections import defaultdict
+
+import dill as pickle
+import yaml
 
 from common import Component
 
@@ -43,7 +45,8 @@ def save_config(context, file_name):
             clean_context['inputs'].append(inp)
 
     # pickle and save to file
-    pickle.dump(clean_context, config_file)
+    #pickle.dump(clean_context, config_file)
+    yaml.dump(clean_context, config_file)
     config_file.close() 
 
 

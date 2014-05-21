@@ -35,7 +35,7 @@ class InputDefinitionEditor(Editor):
         self.remove_input_button.clicked.connect(self.remove_input)
 
     def add_input(self):
-        inp_name = self.input_name_field.text()
+        inp_name = str(self.input_name_field.text())
         inp = Input(name=inp_name)
         inp_wrapper = Component(inp, inp_name)
         widget_component = WidgetItemComponent(inp_name, inp_wrapper)

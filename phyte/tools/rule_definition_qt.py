@@ -50,9 +50,9 @@ class RuleDefinitionEditor(Editor):
         self.rule_list_view.currentItemChanged.connect(self.select_rule)
 
     def add_rule(self):
-        rule_name = self.rule_name_field.text()
+        rule_name = str(self.rule_name_field.text())
         operator = str(self.operator_list_view.itemText(self.operator_list_view.currentIndex()))
-        value = self.value_field.text()
+        value = str(self.value_field.text())
         try:
             value = float(value)
         except ValueError:

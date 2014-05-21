@@ -1,4 +1,5 @@
 from PyQt4 import QtGui, QtCore
+from pygame import Rect
 
 from editor_qt import Editor
 from common import Component, WidgetItemComponent
@@ -11,7 +12,7 @@ class FrameViewer(QtGui.QGraphicsView):
         super(FrameViewer, self).__init__()
         self.setUpdatesEnabled(True)
         self.current_graphic = QtGui.QPixmap()
-        self.frame_rect = QtCore.QRect(0, 0, 0, 0)
+        self.frame_rect = Rect(0, 0, 0, 0)
         self.graphic_item = None
         self.file_name = ''
 
@@ -20,21 +21,29 @@ class FrameViewer(QtGui.QGraphicsView):
 
     def drawForeground(self, painter, rect):
         super(FrameViewer, self).drawForeground(painter, rect)
+        qt_rect = QtCore.QRect(self.frame_rect.x,
+                               self.frame_rect.y,
+                               self.frame_rect.w,
+                               self.frame_rect.h)
         painter.setPen(QtCore.Qt.red)
-        painter.drawRect(self.frame_rect)
+        painter.drawRect(qt_rect)
         if self.graphic_item:
             if self.frame_rect:
-                painter.drawRect(self.frame_rect)
+                painter.drawRect(qt_rect)
 
     def mousePressEvent(self, event):
         click_pos = event.pos()
         # translate the click position into scene coordinates
         click_pos = self.mapToScene(click_pos)
         self.dragging = True
-        self.frame_rect.setX(click_pos.x())
-        self.frame_rect.setY(click_pos.y())
-        self.frame_rect.setWidth(0)
-        self.frame_rect.setHeight(0)
+        self.frame_rect.x = click_pos.x()
+        self.frame_rect.y = click_pos.y()
+        self.frame_rect.w = 0
+        self.frame_rect.h = 0
+        #self.frame_rect.setX(click_pos.x())
+        #self.frame_rect.setY(click_pos.y())
+        #self.frame_rect.setWidth(0)
+        #self.frame_rect.setHeight(0)
         self.update()
         self.repaint()
 
@@ -48,8 +57,10 @@ class FrameViewer(QtGui.QGraphicsView):
         # translate the release position into scene coordinates
         release_pos = self.mapToScene(release_pos)
         self.dragging = False
-        self.frame_rect.setWidth(release_pos.x() - self.frame_rect.x())
-        self.frame_rect.setHeight(release_pos.y() - self.frame_rect.y())
+        self.frame_rect.w = release_pos.x() - self.frame_rect.x
+        self.frame_rect.h = release_pos.y() - self.frame_rect.y
+        #self.frame_rect.setWidth(release_pos.x() - self.frame_rect.x())
+        #self.frame_rect.setHeight(release_pos.y() - self.frame_rect.y())
         self.awkward_update()
 
         # fire event for updating frame crop
@@ -62,8 +73,10 @@ class FrameViewer(QtGui.QGraphicsView):
         if self.dragging:
             # traslate the drag position into scene coordinates
             drag_pos = self.mapToScene(drag_pos)
-            self.frame_rect.setWidth(drag_pos.x() - self.frame_rect.x())
-            self.frame_rect.setHeight(drag_pos.y() - self.frame_rect.y())
+            self.frame_rect.w = drag_pos.x() - self.frame_rect.x
+            self.frame_rect.h = drag_pos.y() - self.frame_rect.y
+            #self.frame_rect.setWidth(drag_pos.x() - self.frame_rect.x())
+            #self.frame_rect.setHeight(drag_pos.y() - self.frame_rect.y())
             self.awkward_update()
 
             # fire event for updating frame crop
@@ -152,13 +165,13 @@ class FrameDefinitionEditor(Editor):
         self.frame_list_view.currentItemChanged.connect(self.select_frame)
 
     def add_frame(self):
-        frame_name = self.frame_name_field.text()
+        frame_name = str(self.frame_name_field.text())
         entity = self.context['selected_entity']
         ani = self.selected_animation
-        crop = QtCore.QRect(int(self.frame_x_field.text()),
-                     int(self.frame_y_field.text()),
-                     int(self.frame_width_field.text()),
-                     int(self.frame_height_field.text()))
+        crop = Rect(int(self.frame_x_field.text()),
+                    int(self.frame_y_field.text()),
+                    int(self.frame_width_field.text()),
+                    int(self.frame_height_field.text()))
         repeat = int(self.frame_repeat_field.text())
         frame_component = FrameComponent(entity_id=entity,
                                          crop=crop,
@@ -180,10 +193,10 @@ class FrameDefinitionEditor(Editor):
 
     def update_fields(self, event):
         crop = event.crop
-        self.frame_x_field.setText(str(crop.x()))
-        self.frame_y_field.setText(str(crop.y()))
-        self.frame_width_field.setText(str(crop.width()))
-        self.frame_height_field.setText(str(crop.height()))
+        self.frame_x_field.setText(str(crop.x))
+        self.frame_y_field.setText(str(crop.y))
+        self.frame_width_field.setText(str(crop.w))
+        self.frame_height_field.setText(str(crop.h))
 
     def remove_frame(self):
         entity = self.context['selected_entity']
@@ -211,10 +224,10 @@ class FrameDefinitionEditor(Editor):
 
             # set field values
             crop = selected_component.component.crop
-            self.frame_x_field.setText(str(crop.x()))
-            self.frame_y_field.setText(str(crop.y()))
-            self.frame_width_field.setText(str(crop.width()))
-            self.frame_height_field.setText(str(crop.height()))
+            self.frame_x_field.setText(str(crop.x))
+            self.frame_y_field.setText(str(crop.y))
+            self.frame_width_field.setText(str(crop.w))
+            self.frame_height_field.setText(str(crop.h))
             self.frame_repeat_field.setText(str(selected_component.component.repeat))
 
             # fire event for selecting a frame

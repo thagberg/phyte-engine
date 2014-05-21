@@ -105,7 +105,7 @@ class MoveDefinitionEditor(Editor):
         #TODO remove this input from the currently selected move
 
     def add_move(self):
-        move_name = self.move_name_field.text()
+        move_name = str(self.move_name_field.text())
         entity = self.context['selected_entity']
         selected_animation = self.ani_list_view.currentItem().component
         # build a list of the chosen inputs

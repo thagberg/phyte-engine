@@ -1,4 +1,5 @@
 from PyQt4 import QtGui, QtCore
+from pygame import Rect
 
 from editor_qt import Editor
 from common import Component, WidgetItemComponent
@@ -12,7 +13,7 @@ class HitboxViewer(QtGui.QGraphicsView):
         self.check_context = check_context
         self.setUpdatesEnabled(True)
         self.current_graphic = QtGui.QPixmap()
-        self.box_rect = QtCore.QRect(0, 0, 0, 0)
+        self.box_rect = Rect(0, 0, 0, 0)
         self.graphic_item = None
         self.file_name = ''
 
@@ -24,7 +25,11 @@ class HitboxViewer(QtGui.QGraphicsView):
         painter.setPen(self.resolve_color())
         if self.graphic_item:
             if self.box_rect:
-                painter.drawRect(self.box_rect)
+                qt_rect = QtCore.QRect(self.box_rect.x,
+                                        self.box_rect.y,
+                                        self.box_rect.w,
+                                        self.box_rect.h)
+                painter.drawRect(qt_rect)
 
     def resolve_color(self):
         '''
@@ -55,10 +60,10 @@ class HitboxViewer(QtGui.QGraphicsView):
         # translate the click position into scene coordinates
         click_pos = self.mapToScene(click_pos)
         self.dragging = True
-        self.box_rect.setX(click_pos.x())
-        self.box_rect.setY(click_pos.y())
-        self.box_rect.setWidth(0)
-        self.box_rect.setHeight(0)
+        self.box_rect.x = click_pos.x()
+        self.box_rect.y = click_pos.y()
+        self.box_rect.w = 0
+        self.box_rect.h = 0
         self.awkward_update()
 
         # fire event for updating box 
@@ -71,8 +76,10 @@ class HitboxViewer(QtGui.QGraphicsView):
         # translate the release position into scene coordinates
         release_pos = self.mapToScene(release_pos)
         self.dragging = False
-        self.box_rect.setWidth(release_pos.x() - self.box_rect.x())
-        self.box_rect.setHeight(release_pos.y() - self.box_rect.y())
+        self.box_rect.w = release_pos.x() - self.box_rect.x
+        self.box_rect.h = release_pos.y() - self.box_rect.y
+        #self.box_rect.setWidth(release_pos.x() - self.box_rect.x())
+        #self.box_rect.setHeight(release_pos.y() - self.box_rect.y())
         self.awkward_update()
 
         # fire event for updating box
@@ -85,8 +92,10 @@ class HitboxViewer(QtGui.QGraphicsView):
         if self.dragging:
             # traslate the drag position into scene coordinates
             drag_pos = self.mapToScene(drag_pos)
-            self.box_rect.setWidth(drag_pos.x() - self.box_rect.x())
-            self.box_rect.setHeight(drag_pos.y() - self.box_rect.y())
+            self.box_rect.w = drag_pos.x() - self.box_rect.x
+            self.box_rect.h = drag_pos.y() - self.box_rect.y
+            #self.box_rect.setWidth(drag_pos.x() - self.box_rect.x())
+            #self.box_rect.setHeight(drag_pos.y() - self.box_rect.y())
             self.awkward_update()
 
             # fire event for updating frame box
@@ -103,15 +112,16 @@ class HitboxViewer(QtGui.QGraphicsView):
         self.current_graphic.load(file_name)
         # if a crop rectangle is provided, crop the image to that
         if crop:
-            self.current_graphic = self.current_graphic.copy(crop)
+            qt_rect = QtCore.QRect(crop.x, crop.y, crop.w, crop.h)
+            self.current_graphic = self.current_graphic.copy(qt_rect)
         self.graphic_item = QtGui.QGraphicsPixmapItem(self.current_graphic)
         self.scene().addItem(self.graphic_item)
 
     def set_box(self, x, y, w, h):
-        self.box_rect.setX(x)
-        self.box_rect.setY(y)
-        self.box_rect.setWidth(w)
-        self.box_rect.setHeight(h)
+        self.box_rect.x = x
+        self.box_rect.y = y
+        self.box_rect.w = w
+        self.box_rect.h = h
         self.awkward_update()
 
     def awkward_update(self):
@@ -208,13 +218,13 @@ class HitboxDefinitionEditor(Editor):
         self.box_solid_check.stateChanged.connect(self.set_solid)
 
     def add_box(self):
-        box_name = self.box_name_field.text()
+        box_name = str(self.box_name_field.text())
         entity = self.context['selected_entity']
         frame = self.selected_frame.component
-        rect = QtCore.QRect(int(self.box_x_field.text()),
-                            int(self.box_y_field.text()),
-                            int(self.box_width_field.text()),
-                            int(self.box_height_field.text()))
+        rect = Rect(int(self.box_x_field.text()),
+                        int(self.box_y_field.text()),
+                        int(self.box_width_field.text()),
+                        int(self.box_height_field.text()))
         hitactive = self.check_context['hitactive'] > 0
         hurtactive = self.check_context['hurtactive'] > 0
         blockactive = self.check_context['blockactive'] > 0
@@ -266,20 +276,20 @@ class HitboxDefinitionEditor(Editor):
             hitactive = 2 if box.hitactive else 0
             blockactive = 2 if box.blockactive else 0
             solid = 2 if box.solid else 0
-            self.box_x_field.setText(str(box.rect.x()))
-            self.box_y_field.setText(str(box.rect.y()))
-            self.box_width_field.setText(str(box.rect.width()))
-            self.box_height_field.setText(str(box.rect.height()))
+            self.box_x_field.setText(str(box.rect.x))
+            self.box_y_field.setText(str(box.rect.y))
+            self.box_width_field.setText(str(box.rect.w))
+            self.box_height_field.setText(str(box.rect.h))
             self.box_hurtactive_check.setCheckState(hurtactive)
             self.box_hitactive_check.setCheckState(hitactive)
             self.box_blockactive_check.setCheckState(blockactive)
             self.box_solid_check.setCheckState(solid)
 
             # update drawn box in graphic viewer
-            self.graphic_viewer.set_box(x=box.rect.x(),
-                                        y=box.rect.y(),
-                                        w=box.rect.width(),
-                                        h=box.rect.height())
+            self.graphic_viewer.set_box(x=box.rect.x,
+                                        y=box.rect.y,
+                                        w=box.rect.w,
+                                        h=box.rect.h)
 
             # fire event for selecting a box
             new_event = Event('selected_box',
@@ -327,10 +337,10 @@ class HitboxDefinitionEditor(Editor):
 
     def update_fields(self, event):
         box = event.box
-        self.box_x_field.setText(str(box.x()))
-        self.box_y_field.setText(str(box.y()))
-        self.box_width_field.setText(str(box.width()))
-        self.box_height_field.setText(str(box.height()))
+        self.box_x_field.setText(str(box.x))
+        self.box_y_field.setText(str(box.y))
+        self.box_width_field.setText(str(box.w))
+        self.box_height_field.setText(str(box.h))
 
     def set_hitactive(self, state):
         self.check_context['hitactive'] = state

@@ -144,6 +144,12 @@ class StateDefinitionEditor(Editor):
                     component_attr_item = TreeWidgetItemComponent(name, attr)
                     component_item.addChild(component_attr_item)
 
+        # finally, repopulate the state component list
+        self.state_list_view.clear()
+        for state in self.context['entities'][entity]['components']['state']:
+            widget_component = WidgetItemComponent(state.text, state)
+            self.state_list_view.addItem(widget_component)
+
     def add_component(self, event):
         # TODO: optimize this process.  To save time, right
         #       now I am just completely wiping out and rebuilding
@@ -162,17 +168,17 @@ class StateDefinitionEditor(Editor):
         rule_name = selected_component.text
 
         # determine the rule value for this rule
-        rule_value = self.rule_value_field.text()
+        rule_value = str(self.rule_value_field.text())
         rule_text = '{name} - {value}'.format(name=rule_name, value=rule_value)
         # if no value is entered in the rule value field,
         # we then look for a chosen component property
         if rule_value is None or rule_value == '':
             component_item = self.rule_value_component_tree_view.currentItem()
-            component_text = component_item.text(0)
+            component_text = str(component_item.text(0))
             component = component_item.component
-            rule_value = lambda: component
+            rule_value = component
             if component_item.parent() != None:
-                component_text = '{a}.{b}'.format(a=component_item.parent().text(0),
+                component_text = '{a}.{b}'.format(a=str(component_item.parent().text(0)),
                                                   b=component_text)
             rule_text = '{name} - {value}'.format(name=rule_name,
                                                   value=component_text)
@@ -186,11 +192,11 @@ class StateDefinitionEditor(Editor):
 
     def add_state(self):
         entity = self.context['selected_entity']
-        state_name = self.state_name_field.text()
+        state_name = str(self.state_name_field.text())
         # get activation event
-        act_event_name = self.activation_list_view.currentItem().text()
+        act_event_name = str(self.activation_list_view.currentItem().text())
         # get deactivation event
-        deact_event_name = self.deactivation_list_view.currentItem().text()
+        deact_event_name = str(self.deactivation_list_view.currentItem().text())
         # get activation component
         act_component = self.activation_component_tree_view.currentItem().component
         # build list of rules added to this state
@@ -198,7 +204,7 @@ class StateDefinitionEditor(Editor):
         for i in range(self.selected_rule_list_view.count()):
             item = self.selected_rule_list_view.item(i)
             rule_component = item.component
-            rules[item.text()] = rule_component
+            rules[str(item.text())] = rule_component
         # create state component
         state_component = StateComponent(entity_id=entity,
                                          rules=rules.keys(),
@@ -251,8 +257,14 @@ class StateDefinitionEditor(Editor):
 
     def update(self):
         entity = self.context['selected_entity']
+        # first update state list
         self.state_list_view.clear()
         if entity and entity != '':
             for state in self.context['entities'][entity]['components']['state']:
                 widget_component = WidgetItemComponent(state.text, state)
                 self.state_list_view.addItem(widget_component)
+
+        # then update rules
+        for rule in self.context['rules']:
+            widget_component = WidgetItemComponent(rule.text, rule)
+            self.rule_list_view.addItem(widget_component)

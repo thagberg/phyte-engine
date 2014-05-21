@@ -10,7 +10,7 @@ class GraphicDefinitionEditor(Editor):
     def __init__(self, context):
         super(GraphicDefinitionEditor, self).__init__(context, QtGui.QGroupBox('Graphics'))
         # setup gui stuff
-        self.layout =  QtGui.QGridLayout()
+        self.layout = QtGui.QGridLayout()
         self.view_buttons_layout = QtGui.QVBoxLayout()
         self.add_graphic_button = QtGui.QPushButton('Add Graphic')
         self.remove_graphic_button = QtGui.QPushButton('Remove Graphic')
@@ -22,6 +22,9 @@ class GraphicDefinitionEditor(Editor):
         self.asset_list_view = QtGui.QListWidget()
         self.asset_list_label = QtGui.QLabel('Choose Asset')
         self.asset_list_layout = QtGui.QVBoxLayout()
+        self.vector_label = QtGui.QLabel('Choose Destination Vector')
+        self.vector_list_view = QtGui.QListWidget()
+        self.vector_layout = QtGui.QVBoxLayout()
 
         # setup layout
         self.asset_list_layout.addWidget(self.asset_list_label)
@@ -29,10 +32,13 @@ class GraphicDefinitionEditor(Editor):
         self.layout.addLayout(self.asset_list_layout,0,0)
         self.layout.addWidget(self.graphic_name_label,0,1)
         self.layout.addWidget(self.graphic_name_field,0,2)
-        self.layout.addWidget(self.graphic_list_view,1,0)
+        self.vector_layout.addWidget(self.vector_label)
+        self.vector_layout.addWidget(self.vector_list_view)
+        self.layout.addLayout(self.vector_layout,1,0)
+        self.layout.addWidget(self.graphic_list_view,2,0)
         self.graphic_buttons_layout.addWidget(self.add_graphic_button)
         self.graphic_buttons_layout.addWidget(self.remove_graphic_button)
-        self.layout.addLayout(self.graphic_buttons_layout,1,1)
+        self.layout.addLayout(self.graphic_buttons_layout,2,1)
 
         self.group.setLayout(self.layout)
 
@@ -45,16 +51,20 @@ class GraphicDefinitionEditor(Editor):
         EVENT_MAPPING.register_handler('selected_entity', self.set_graphics)
         EVENT_MAPPING.register_handler('asset_added', self.add_asset)
         EVENT_MAPPING.register_handler('asset_removed', self.remove_asset)
+        EVENT_MAPPING.register_handler('vector_added', self.add_vector)
+        EVENT_MAPPING.register_handler('vector_removed', self.remove_vector)
 
     def add_graphic(self):
         # add the new graphic to the UI
         selected_asset = self.asset_list_view.currentItem()
         selected_component = selected_asset.component
         file_name = selected_component.component.file_name
-        graphic_name = self.graphic_name_field.text()
-        graphic_component = GraphicsComponent(self.context.get('selected_entity'),
-                                              selected_component.component.surface,
-                                              file_name)
+        graphic_name = str(self.graphic_name_field.text())
+        selected_vector = self.vector_list_view.currentItem().component
+        graphic_component = GraphicsComponent(entity_id=self.context.get('selected_entity'),
+                                              surface=selected_component.component.surface,
+                                              file_name=file_name,
+                                              dest=selected_vector)
         graphic_component_wrapper = Component(graphic_component, graphic_name)
         widget_component = WidgetItemComponent(graphic_name, graphic_component_wrapper)
         self.graphic_list_view.addItem(widget_component)
@@ -132,10 +142,19 @@ class GraphicDefinitionEditor(Editor):
             widget_component = WidgetItemComponent(graphic.text, graphic)
             self.graphic_list_view.addItem(widget_component)
 
+        # clear the vector list
+        available_vectors = self.context['entities'][entity]['components']['vector']
+        for i in range(self.vector_list_view.count()-1,-1,-1):
+            self.vector_list_view.takeItem(i)
+
+        for vector in available_vectors:
+            widget_component = WidgetItemComponent(vector.text, vector)
+            self.vector_list_view.addItem(widget_component)
+
     def add_asset(self, event):
         asset_component = event.asset_component
         widget_component = WidgetItemComponent(asset_component.text,
-                                                      asset_component)
+                                               asset_component)
         self.asset_list_view.addItem(widget_component)
 
     def remove_asset(self, event):
@@ -145,6 +164,20 @@ class GraphicDefinitionEditor(Editor):
             current_asset = self.asset_list_view.item(i)
             if current_asset.component == asset_component:
                 self.asset_list_view.takeItem(i)
+
+    def add_vector(self, event):
+        vector_component = event.vector_component
+        widget_component = WidgetItemComponent(vector_component.text,
+                                               vector_component)
+        self.vector_list_view.addItem(widget_component)
+
+    def remove_vector(self, event):
+        vector_component = event.vector_component
+        count = self.vector_list_view.count()
+        for i in xrange(count-1,-1,-1):
+            current_vector = self.vector_list_view.item(i)
+            if current_vector.component == vector_component:
+                self.vector_list_view.takeItem(i)
 
     def update(self):
         entity = self.context['selected_entity']
