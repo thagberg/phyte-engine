@@ -2,7 +2,7 @@ import animation
 import move
 import physics2d
 import inputs
-import engine
+import game_engine
 import entity
 import graphics2d
 import text

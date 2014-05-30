@@ -73,3 +73,12 @@ class ComponentListModel(QtCore.QAbstractListModel):
         except:
             return None
 
+
+
+class LambdaDef(object):
+    def __init__(self, component, attr):
+        self.component = component
+        self.attr = attr
+
+    def get_lambda(self):
+        return lambda: getattr(self.component, self.attr) 

@@ -2,9 +2,15 @@ from PyQt4 import QtGui, QtCore
 
 from editor_qt import Editor
 from engine.state import StateComponent
-from common import Component, WidgetItemComponent, TreeWidgetItemComponent, UNIVERSE_ENTITY
+from common import Component, WidgetItemComponent, TreeWidgetItemComponent, LambdaDef, UNIVERSE_ENTITY
 from engine import events
 from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
+
+
+class RuleRuleValueWrapper(object):
+    def __init__(self, rule, rule_value):
+        self.rule = rule
+        self.rule_value = rule_value
 
 
 class StateDefinitionEditor(Editor):
@@ -140,8 +146,8 @@ class StateDefinitionEditor(Editor):
                 # then add a child item for each non-private attribute of 
                 # this component
                 for name in (x for x in dir(component.component) if not x.startswith('_')):
-                    attr = component.component.__dict__[name]
-                    component_attr_item = TreeWidgetItemComponent(name, attr)
+                    val = LambdaDef(component.component, name)
+                    component_attr_item = TreeWidgetItemComponent(name, val)
                     component_item.addChild(component_attr_item)
 
         # finally, repopulate the state component list
@@ -183,7 +189,9 @@ class StateDefinitionEditor(Editor):
             rule_text = '{name} - {value}'.format(name=rule_name,
                                                   value=component_text)
 
-        widget_component = WidgetItemComponent(rule_text, rule_value)
+        rule_wrapper = RuleRuleValueWrapper(selected_component, rule_value)
+        #widget_component = WidgetItemComponent(rule_text, rule_value)
+        widget_component = WidgetItemComponent(rule_text, rule_wrapper)
         self.selected_rule_list_view.addItem(widget_component)
 
     def remove_rule(self):
@@ -200,18 +208,20 @@ class StateDefinitionEditor(Editor):
         # get activation component
         act_component = self.activation_component_tree_view.currentItem().component
         # build list of rules added to this state
-        rules = dict()
+        rules = list()
+        rule_values = dict()
         for i in range(self.selected_rule_list_view.count()):
             item = self.selected_rule_list_view.item(i)
             rule_component = item.component
-            rules[str(item.text())] = rule_component
+            rules.append(rule_component.rule)
+            rule_values[str(item.text())] = rule_component.rule_value
         # create state component
         state_component = StateComponent(entity_id=entity,
-                                         rules=rules.keys(),
+                                         rules=rules,
                                          activation_event_type=act_event_name,
                                          deactivation_event_type=deact_event_name,
                                          activation_component=act_component,
-                                         rule_values=rules)
+                                         rule_values=rule_values)
         state_component_wrapper = Component(state_component, state_name)
         widget_component = WidgetItemComponent(state_name, state_component_wrapper)
         self.state_list_view.addItem(widget_component)

@@ -2,24 +2,24 @@ import sys
 
 from PyQt4 import QtGui, QtCore
 
-from entity_definition_qt import EntityDefinitionEditor
-from graphic_definition_qt import GraphicDefinitionEditor
-from animation_definition_qt import AnimationDefinitionEditor
-from asset_definition_qt import AssetDefinitionEditor
-from frame_definition_qt import FrameDefinitionEditor
-from hitbox_definition_qt import HitboxDefinitionEditor
-from move_definition_qt import MoveDefinitionEditor
-from input_definition_qt import InputDefinitionEditor
-from binding_definition_qt import BindingDefinitionEditor
-from execution_definition_qt import ExecutionDefinitionEditor
-from rule_definition_qt import RuleDefinitionEditor
-from state_definition_qt import StateDefinitionEditor
-from movement_definition_qt import MovementDefinitionEditor
-from vector_definition_qt import VectorDefinitionEditor
-from physics_definition_qt import PhysicsDefinitionEditor
-from editor_qt import EditorManager
-from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
-import serialize
+from tools.entity_definition_qt import EntityDefinitionEditor
+from tools.graphic_definition_qt import GraphicDefinitionEditor
+from tools.animation_definition_qt import AnimationDefinitionEditor
+from tools.asset_definition_qt import AssetDefinitionEditor
+from tools.frame_definition_qt import FrameDefinitionEditor
+from tools.hitbox_definition_qt import HitboxDefinitionEditor
+from tools.move_definition_qt import MoveDefinitionEditor
+from tools.input_definition_qt import InputDefinitionEditor
+from tools.binding_definition_qt import BindingDefinitionEditor
+from tools.execution_definition_qt import ExecutionDefinitionEditor
+from tools.rule_definition_qt import RuleDefinitionEditor
+from tools.state_definition_qt import StateDefinitionEditor
+from tools.movement_definition_qt import MovementDefinitionEditor
+from tools.vector_definition_qt import VectorDefinitionEditor
+from tools.physics_definition_qt import PhysicsDefinitionEditor
+from tools.editor_qt import EditorManager
+from tools.event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
+from tools import serialize
 
 class PhyteEditor(QtGui.QMainWindow):
     def __init__(self):

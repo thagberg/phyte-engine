@@ -243,6 +243,9 @@ class HitboxDefinitionEditor(Editor):
         # add box to the selected frame's box list
         frame.hitboxes.append(box_component_wrapper)
 
+        # add the box component to the application context
+        self.context['entities'][entity]['components']['hitbox'].append(box_component_wrapper)
+
         # fire event
         new_event = Event('added_component',
                           entity=entity,
@@ -257,6 +260,9 @@ class HitboxDefinitionEditor(Editor):
 
         # remove the box from its parent frame
         self.selected_frame.component.hitboxes.remove(selected_box.component)
+
+        # remove box from context
+        self.context['entiies'][entity]['components']['hitbox'].remove(selected_box.component)
 
         # fire event
         new_event = Event('removed_component',

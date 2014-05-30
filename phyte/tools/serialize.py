@@ -3,7 +3,8 @@ from collections import defaultdict
 import dill as pickle
 import yaml
 
-from common import Component
+from tools.common import Component
+from tools import *
 
 
 def save_config(context, file_name):
@@ -44,15 +45,14 @@ def save_config(context, file_name):
         for inp in context['inputs']:
             clean_context['inputs'].append(inp)
 
-    # pickle and save to file
-    #pickle.dump(clean_context, config_file)
+    # serialize to file
     yaml.dump(clean_context, config_file)
     config_file.close() 
 
 
 def open_config(file_name):
     config_file = open(file_name, 'r')
-    context = pickle.load(config_file)
+    context = yaml.load(config_file)
     usable_context = dict() 
 
     # entities

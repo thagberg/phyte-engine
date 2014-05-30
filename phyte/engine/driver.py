@@ -6,7 +6,7 @@ import playerUtils
 import animation
 import move
 import physics2d
-import engine
+import game_engine
 import inputs
 import factory
 import entity
@@ -49,7 +49,7 @@ joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_coun
 done = False
 
 # initialize systems
-eng = engine.PygameEngine()
+eng = game_engine.PygameEngine()
 # initialize object factory
 factory = factory.ComponentFactory(eng.process_event)
 
