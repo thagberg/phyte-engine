@@ -65,6 +65,9 @@ class ExecutionSystem(System):
 
     def _clean_input(self, dirty_input, mirror):
         clean_input = dirty_input
+        return clean_input
+        #TODO maybe get rid of this stuff; I'm thinking that
+        # this should be handled within the input system
         if mirror:
             if clean_input in MIRROR_INPUT_MAPPING:
                 clean_input = MIRROR_INPUT_MAPPING[clean_input]
@@ -73,21 +76,50 @@ class ExecutionSystem(System):
                 clean_input = NORMAL_INPUT_MAPPING[clean_input]
         return clean_input 
 
-    def _check_for_move(self, executables, inputs, mirror):
+    def _check_for_move(self, executables, inputs):
+        '''
+            Given a list of moves (executables), and the current input state
+            (including an input buffer) try to find a move which has been
+            executed.  Moves should be listed by priority, decreasing
+        '''
+        inp_buffer = inputs.inp_buffer
         for ex in executables:
             # loop over the executable's inputs and verify that the
             # current input state covers each of them
             match = True
-            for ex_input in ex.inputs:
-                clean_input = self._clean_input(ex_input, mirror)
-                if not inputs.state[clean_input]:
-                    match = False
-                    break
-            if match:
-                return ex
+            # if length of inputs is greater than 1, this is a buffered move
+            if len(ex.inputs) > 1:
+                match_index = 0
+                required_inp = ex.inputs[match_index]
+                # loop over each input in the existing buffer
+                for buffered_inp in inp_buffer:
+                    # if the current required input finds a match in the buffer,
+                    # increase the match index
+                    if buffered_inp == inp:
+                        match_index += 1
+                    # if the match index exceeds the length of the inputs
+                    # we are looking for, then each input has been satisfied
+                    # and this move has been executed
+                    if match_index >= len(ex.inputs):
+                        return ex
+                    # otherwise, check for the next required input
+                    else: 
+                        required_inp = ex.inputs[match_index]
+            else:
+                for frame_inputs in ex.inputs:
+                    for inp in frame_inputs:
+                        if not inputs.state[inp]:
+                            match = False
+                            break
+                if match:
+                    return ex
+        # no match found, no move executed
         return None 
 
     def _change_mirror(entity_id, mirror):
+        '''
+            DEPRECATED
+        '''
         comps = [x for x in self.components if x.entity_id == entity_id]
         for c in comps:
             c.mirror = mirror
@@ -110,8 +142,7 @@ class ExecutionSystem(System):
         self.delta = time
         # iterate only over the active components
         for comp in [x for x in self.components if x.active]:
-            execute = self._check_for_move(comp.executables,
-                                           comp.inputs, comp.mirror)
+            execute = self._check_for_move(comp.executables, comp.inputs)
             if execute and not execute.active:
                 ma_event = GameEvent(MOVEACTIVATE, component=execute)
                 self.delegate(ma_event)
@@ -119,6 +150,9 @@ class ExecutionSystem(System):
 
 
 class BufferedExecutionSystem(ExecutionSystem):
+    '''
+        DEPRECATED
+    '''
     def __init__(self, factory, components=None):
         super(BufferedExecutionSystem, self).__init__(factory, components) 
 

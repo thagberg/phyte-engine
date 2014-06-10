@@ -8,7 +8,7 @@ class GameEvent(object):
 
 
 # use this to keep track of the highest event value
-__HIGHEVENT = 89 
+__HIGHEVENT = 90 
 
 # system events
 UPDATEDIRTY = 0
@@ -59,6 +59,7 @@ JOYBUTTONUP = 24
 MOUSEBUTTONDOWN = 25
 MOUSEBUTTONUP = 26
 JOYAXISMOTION = 27
+MIRRORSTATE = 90
 
 # input-buffer events
 INPUTBUFFEREVENT = 28

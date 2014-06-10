@@ -262,7 +262,7 @@ class HitboxDefinitionEditor(Editor):
         self.selected_frame.component.hitboxes.remove(selected_box.component)
 
         # remove box from context
-        self.context['entiies'][entity]['components']['hitbox'].remove(selected_box.component)
+        self.context['entities'][entity]['components']['hitbox'].remove(selected_box.component)
 
         # fire event
         new_event = Event('removed_component',

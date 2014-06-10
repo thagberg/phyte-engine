@@ -67,9 +67,13 @@ class ComponentFactory(object):
             device = props['device']
             entity_id = props['entity_id']
             # TODO: convert bindings to a bidict
-            bindings = dict() if not 'bindings' in props else props['bindings']
-            inp_buffer = props.get('inp_buffer')
-            component = inputs.InputComponent(entity_id, bindings)
+            bindings = props.get('bindings', dict())
+            mirror_bindings = props.get('mirror_bindings', dict())
+            inp_buffer = props.get('inp_buffer', None)
+            component = inputs.InputComponent(entity_id, 
+                                              bindings, 
+                                              mirror_bindings, 
+                                              inp_buffer)
             new_event = GameEvent(ADDINPUTCOMPONENT, device=device, component=component,
                                   inp_buffer=inp_buffer)
             self.delegate(new_event)
@@ -111,6 +115,7 @@ class ComponentFactory(object):
             style = props['style']
             graphic = props['graphic'] if 'graphic' in props else None
             loc = props['loc'] if 'loc' in props else [0,0]
+            loc = common.Vector2(entity_id=entity_id, vec=loc)
             active = props.get('active', False)
             component = text.TextComponent(entity_id=entity_id, text=c_text, 
                                            loc=loc, graphic=graphic, 

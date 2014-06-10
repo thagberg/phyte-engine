@@ -21,9 +21,11 @@ class Input(object):
 
         
 class InputComponent(object):
-    def __init__(self, entity_id, bindings, inp_buffer=None):
+    def __init__(self, entity_id, bindings, mirror_bindings, inp_buffer=None):
         self.entity_id = entity_id
         self.bindings = bindings
+        self.mirror_bindings = mirror_bindings
+        self.mirror_state = False
         self.state = dict.fromkeys(bindings.keys(), False)
         self.last_state = None
         self.inp_buffer = inp_buffer
@@ -79,6 +81,10 @@ class InputSystem(System):
         elif event.type == MOUSEBUTTONUP:
             self._apply_key_up(KEYB_MOUSE, event.button)
 
+        # miscellaneous events
+        elif event.type == MIRRORSTATE:
+            event.component.mirror_state = event.state
+
 
 
     def update(self, time):
@@ -92,7 +98,7 @@ class InputSystem(System):
         components = self.components[device]
         for component in components:
             binding = component.bindings
-            bind = self._lookup_binding(key, binding)   
+            bind = self._lookup_binding(key, component)
             if bind is None:
                 continue
             component.state[bind] = True
@@ -102,16 +108,23 @@ class InputSystem(System):
         components = self.components[device]
         for component in components:
             binding = component.bindings
-            bind = self._lookup_binding(key, binding)
+            bind = self._lookup_binding(key, component)
             if bind is None:
                 continue
             component.state[bind] = False
             print component.state
 
-    def _lookup_binding(self, input, bindings):
-        for name, bound in bindings.items():
-            if input == bound:
-                return name
+    def _lookup_binding(self, key, component):
+        bindings = component.bindings
+        for name in bindings.keys():
+            # if in mirror mode, check if this input's mirror key
+            # is active instead
+            if component.mirror_state:
+                if key == bindings[component.mirror_bindings[name]]:
+                    return name
+            # not in mirror mode, act as normal
+            elif key == bindings[name]:
+                return  name
         return None
 
 

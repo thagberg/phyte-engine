@@ -1,9 +1,12 @@
 from PyQt4 import QtGui, QtCore
+import pygame
 
 from editor_qt import Editor
-from common import Component, WidgetItemComponent, UNIVERSE_ENTITY
+from common import Component, WidgetItemComponent, InputToKeyBinding, KeyComponent, UNIVERSE_ENTITY
 from engine.inputs import Input, InputComponent
 from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
+
+KEYS = [x for x in pygame.__dict__.keys() if x.startswith('K_')]
 
 
 class BindingDefinitionEditor(Editor):
@@ -18,6 +21,12 @@ class BindingDefinitionEditor(Editor):
         self.selected_inp_list_view = QtGui.QListWidget()
         self.inp_layout = QtGui.QHBoxLayout()
         self.inp_button_layout = QtGui.QVBoxLayout()
+        self.key_label = QtGui.QLabel('Choose Default Key')
+        self.key_list_view = QtGui.QListWidget()
+        self.key_layout = QtGui.QVBoxLayout()
+        self.mirror_label = QtGui.QLabel('Choose Mirror Input')
+        self.mirror_list_view = QtGui.QListWidget()
+        self.mirror_layout = QtGui.QVBoxLayout()
         self.binding_list_view = QtGui.QListWidget()
         self.add_inp_button = QtGui.QPushButton('Add Input')
         self.remove_inp_button = QtGui.QPushButton('Remove Input')
@@ -30,6 +39,12 @@ class BindingDefinitionEditor(Editor):
         self.layout.addWidget(self.binding_name_label,0,0)
         self.layout.addWidget(self.binding_name_field,0,1)
         self.inp_layout.addWidget(self.inp_list_view)
+        self.key_layout.addWidget(self.key_label)
+        self.key_layout.addWidget(self.key_list_view)
+        self.inp_layout.addLayout(self.key_layout)
+        self.mirror_layout.addWidget(self.mirror_label)
+        self.mirror_layout.addWidget(self.mirror_list_view)
+        self.inp_layout.addLayout(self.mirror_layout)
         self.inp_button_layout.addWidget(self.add_inp_button)
         self.inp_button_layout.addWidget(self.remove_inp_button)
         self.inp_layout.addLayout(self.inp_button_layout)
@@ -42,6 +57,13 @@ class BindingDefinitionEditor(Editor):
         self.layout.addLayout(self.button_layout,2,1)
 
         self.group.setLayout(self.layout)
+
+        # miscellaneous
+        for key in KEYS:
+            key_comp = KeyComponent(pygame.__dict__[key])
+            key_wrapper = Component(key_comp, key)
+            widget_item = WidgetItemComponent(key, key_wrapper)
+            self.key_list_view.addItem(widget_item)
 
         # internal events
         EVENT_MAPPING.register_handler('selected_entity', self.set_bindings)
@@ -59,8 +81,16 @@ class BindingDefinitionEditor(Editor):
     def add_input(self):
         selected_item = self.inp_list_view.currentItem()
         selected_component = selected_item.component
-        widget_component = WidgetItemComponent(selected_component.text,
-                                               selected_component)
+        selected_key = self.key_list_view.currentItem().component
+        selected_mirror = self.mirror_list_view.currentItem()
+        selected_mirror = None if selected_mirror is None else selected_mirror.component
+        bound_input = InputToKeyBinding(selected_component, 
+                                        selected_key, 
+                                        selected_mirror)
+        bound_input_wrapper = Component(bound_input, 
+                                        '{a} - {b}'.format(a=selected_component.text, b=selected_key.text))
+        widget_component = WidgetItemComponent(bound_input_wrapper.text,
+                                               bound_input_wrapper)
         self.selected_inp_list_view.addItem(widget_component)
 
     def remove_input(self):
@@ -71,15 +101,19 @@ class BindingDefinitionEditor(Editor):
     def add_binding(self):
         entity = self.context['selected_entity']
         binding_name = str(self.binding_name_field.text())
+
         # begin by building the bindings dictionary
         bindings = dict()
+        mirrors = dict()
         for i in range(self.selected_inp_list_view.count()):
             input_comp = self.selected_inp_list_view.item(i).component
-            key= input_comp.text
+            key = input_comp.component.name.text
             bindings[key] = input_comp
-
+            mirrors[key] = input_comp.component.mirror
         binding_comp = InputComponent(entity_id=entity,
-                                      bindings=bindings)
+                                      bindings=bindings,
+                                      mirror_bindings=mirrors)
+
         binding_comp_wrapper = Component(binding_comp, binding_name)
         widget_component = WidgetItemComponent(binding_name, binding_comp_wrapper)
         self.binding_list_view.addItem(widget_component)
@@ -148,6 +182,9 @@ class BindingDefinitionEditor(Editor):
         widget_component = WidgetItemComponent(event.input_component.text, 
                                                event.input_component)
         self.inp_list_view.addItem(widget_component) 
+        mirror_component = WidgetItemComponent(event.input_component.text,
+                                               event.input_component)
+        self.mirror_list_view.addItem(mirror_component)
 
     def removed_input(self, event):
         for i in range(self.inp_list_view.count()-1,-1,-1):
@@ -155,6 +192,7 @@ class BindingDefinitionEditor(Editor):
             inp = item.component
             if event.input_component == inp:
                 self.inp_list_view.takeItem(i)
+                self.mirror_list_view.takeItem(i)
 
     def edit_binding(self):
         bindings = dict()
@@ -164,11 +202,14 @@ class BindingDefinitionEditor(Editor):
             bindings[key] = input_comp
 
     def update(self):
-        # first update input list
+        # first update input list and mirror input list
         self.inp_list_view.clear()
+        self.mirror_list_view.clear()
         for inp in self.context['inputs']:
             widget_component = WidgetItemComponent(inp.text, inp)
             self.inp_list_view.addItem(widget_component)
+            mirror_component = WidgetItemComponent(inp.text, inp)
+            self.mirror_list_view.addItem(mirror_component)
 
         # then update binding list
         entity = self.context['selected_entity']

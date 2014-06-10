@@ -239,7 +239,7 @@ class StateDefinitionEditor(Editor):
         selected_index = self.state_list_view.currentRow()
         selected_item = self.state_list_view.takeItem(selected_index)
         # remove state component from application context
-        self.context[entity]['components']['state'].remove(selected_item.component)
+        self.context['entities'][entity]['components']['state'].remove(selected_item.component)
         # fire event for removing component
         new_event = Event('removed_component',
                           entity=entity,

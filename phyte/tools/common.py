@@ -82,3 +82,17 @@ class LambdaDef(object):
 
     def get_lambda(self):
         return lambda: getattr(self.component, self.attr) 
+
+
+class KeyComponent(object):
+    def __init__(self, key):
+        self.key = key
+
+
+class InputToKeyBinding(object):
+    def __init__(self, name, key, mirror):
+        self.name = name
+        self.key = key
+        self.mirror = mirror
+
+
