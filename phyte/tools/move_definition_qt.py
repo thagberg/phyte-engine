@@ -63,13 +63,35 @@ class MoveDefinitionEditor(Editor):
         EVENT_MAPPING.register_handler('added_animation', self.add_animation)
         EVENT_MAPPING.register_handler('removed_animation', self.remove_animation)
 
-
         # wire up events
         self.ani_list_view.currentItemChanged.connect(self.select_animation)
         self.add_inps_button.clicked.connect(self.add_inputs)
         self.remove_inps_button.clicked.connect(self.remove_inputs)
         self.add_move_button.clicked.connect(self.add_move)
         self.remove_move_button.clicked.connect(self.remove_move)
+        self.move_list_view.currentItemChanged.connect(self.select_move)
+
+    def select_move(self):
+        selected_item = self.move_list_view.currentItem()
+
+        # clear any selected inputs being currently shown
+        self.selected_inp_list_view.clear()
+
+        # update fields
+        name = selected_item.component.text
+        inputs = selected_item.component.component.inputs
+        for frame_inp in inputs:
+            text = ' + '.join([x.text for x in frame_inp])
+            widget_component = WidgetItemComponent(text, frame_inp)
+            self.selected_inp_list_view.addItem(widget_component)
+
+        # highlight the proper animation
+        animation = selected_item.component.component.animation
+        for i in range(self.ani_list_view.count()):
+            item = self.ani_list_view.item(i)
+            if item.component == animation:
+                self.ani_list_view.setCurrentRow(i)
+                break
 
     def select_animation(self, current, previous):
         if current is not None:

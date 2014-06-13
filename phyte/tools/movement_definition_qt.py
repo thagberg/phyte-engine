@@ -75,6 +75,51 @@ class MovementDefinitionEditor(Editor):
         # wire up events
         self.add_movement_button.clicked.connect(self.add_movement)
         self.remove_movement_button.clicked.connect(self.remove_movement)
+        self.movement_list_view.currentItemChanged.connect(self.select_movement)
+
+    def select_movement(self):
+        '''
+            update the visual state of the widget, which includes
+            field values, radio buttons, selected list view items
+            and selected tree view items
+        '''
+        selected_item = self.movement_list_view.currentItem()
+        parent = selected_item.component.component.parent
+        body = selected_item.component.component.body
+
+        # set radio button states and x and y values based on
+        # whether this movement component has a pulse velocity or 
+        # standard velocity set
+        if selected_item.component.component.pulse_velocity is not None:
+            self.velocity_pulse_type.setChecked(True)
+            x = selected_item.component.component.pulse_velocity.x
+            y = selected_item.component.component.pulse_velocity.y
+        else:
+            self.velocity_standard_type.setChecked(True) 
+            x = selected_item.component.component.velocity.x
+            y = selected_item.component.component.velocity.y
+
+        # update fields
+        self.velocity_x_field.setText(str(x))
+        self.velocity_y_field.setText(str(y))
+
+        # find and select parent in parent list view
+        for i in range(self.parent_list_view.count()):
+            if self.parent_list_view.item(i).component.component == parent:
+                # select this item
+                self.parent_list_view.setCurrentRow(i)
+                break
+
+        # find and select the body in the body tree view
+        for i in range(self.body_tree_view.topLevelItemCount()):
+            tl_item = self.body_tree_view.topLevelItem(i)
+            for j in range(tl_item.childCount()):
+                child_item = tl_item.child(j)
+                if child_item.component.component == body:
+                    # expand parent and select this child item
+                    tl_item.setExpanded(True)
+                    child_item.setSelected(True)
+                    break
 
     def add_movement(self):
         entity = self.context['selected_entity']
@@ -87,6 +132,15 @@ class MovementDefinitionEditor(Editor):
         y = float(self.velocity_y_field.text())
         velocity = Vector2(entity, [x, y])
         velocity_wrapper = Component(velocity, "{x}, {y}".format(x=x,y=y))
+        # add this velocity vector component to context to make sure
+        # its existence is known where it needs to be
+        self.context['entities'][entity]['components']['vector'].append(velocity_wrapper)
+        # fire event
+        new_event = Event('added_component',
+                          entity=entity,
+                          component_type='vector',
+                          component=velocity_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
         if parent != None:
             parent = parent.component
 
@@ -101,8 +155,37 @@ class MovementDefinitionEditor(Editor):
         self.movement_list_view.addItem(widget_component)
         self.context['entities'][entity]['components']['movement'].append(movement_component_wrapper)
 
+        # fire event
+        new_event = Event('added_component',
+                          entity=entity,
+                          component_type='movement',
+                          component=movement_component_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
+
     def remove_movement(self):
-        pass
+        entity = self.context['selected_entity']
+        selected_index = self.movement_list_view.currentRow()
+        selected_item = self.movement_list_view.takeItem(selected_index)
+        selected_component = selected_item.component
+
+        # remove from context
+        self.context['entities'][entity]['components']['movement'].remove(selected_component)
+
+        # fire event
+        new_event = Event('removed_component',
+                          entity=entity,
+                          component_type='movement',
+                          component=selected_component)
+        EVENT_MANAGER.fire_event(new_event)
+
+        # also clean up velocity vector
+        velocity = selected_component.velocity
+        self.context['entities'][entity]['components']['vector'].remove(velocity)
+        new_event = Event('removed_component',
+                          entity=entity,
+                          component_type='vector',
+                          component=velocity)
+        EVENT_MANAGER.fire_event(new_event)
 
     def update(self):
         entity = self.context['selected_entity']
@@ -141,7 +224,14 @@ class MovementDefinitionEditor(Editor):
             for component in components:
                 inner_comp = component.component
                 for name in [x for x in dir(inner_comp) if not x.startswith('_')]:
+                    QtCore.pyqtRemoveInputHook()
                     attr = inner_comp.__dict__[name]
+                    if type(attr).__name__ == 'Component':
+                        if attr.type_name == 'Vector2':
+                            tl_tree_item = TreeWidgetItemComponent(component.text, inner_comp)
+                            self.body_tree_view.addTopLevelItem(tl_tree_item)
+                            tree_item = TreeWidgetItemComponent(name, attr)
+                            tl_tree_item.addChild(tree_item)
                     if type(attr).__name__ == 'Vector2':
                         tl_tree_item = TreeWidgetItemComponent(component.text, inner_comp)
                         self.body_tree_view.addTopLevelItem(tl_tree_item)

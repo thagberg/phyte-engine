@@ -66,7 +66,7 @@ class MovementSystem(System):
 
     def handle_event(self, event):
         if event.type == ADDMOVEMENTCOMPONENT:
-            print "Added new MovementComponent: " + event.component
+            print "Added new MovementComponent: %s" % event.component
             self._add(event.component)
         elif event.type == REMOVEMOVEMENTCOMPONENT:
             self._remove(event.component)
@@ -88,13 +88,12 @@ class MovementSystem(System):
         # if it has children.  For this reason, there is always a need to have at least
         # two levels of movement components to accomplish anything
         for parent, children in [(x,y) for x,y in self.components.iteritems() if x is not None]:
-            set_trace()
             for child in [x for x in children if x.active]:
-                child.body[0] += child.velocity[0]
-                child.body[1] += child.velocity[1]
+                child.body.x += child.velocity.x
+                child.body.y += child.velocity.y
 
             # now update the parent body if it is active
             # often the "body" of a child will be the velocity of the parent
             if parent.active:
-                parent.body[0] += parent.velocity[0]
-                parent.body[1] += parent.velocity[1]
+                parent.body.x += parent.velocity.x
+                parent.body.y += parent.velocity.y

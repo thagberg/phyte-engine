@@ -146,7 +146,8 @@ class StateDefinitionEditor(Editor):
                 # then add a child item for each non-private attribute of 
                 # this component
                 for name in (x for x in dir(component.component) if not x.startswith('_')):
-                    val = LambdaDef(component.component, name)
+                    # still using outer component
+                    val = LambdaDef(component, name)
                     component_attr_item = TreeWidgetItemComponent(name, val)
                     component_item.addChild(component_attr_item)
 
@@ -214,7 +215,7 @@ class StateDefinitionEditor(Editor):
             item = self.selected_rule_list_view.item(i)
             rule_component = item.component
             rules.append(rule_component.rule)
-            rule_values[str(item.text())] = rule_component.rule_value
+            rule_values[str(rule_component.rule.text)] = rule_component.rule_value
         # create state component
         state_component = StateComponent(entity_id=entity,
                                          rules=rules,
@@ -258,7 +259,7 @@ class StateDefinitionEditor(Editor):
     def rule_removed(self, event):
         rule_component = event.rule_component
         # search for the specified component and do a soft remove
-        for i in range(self.rule_list_view.coun()-1,-1,-1):
+        for i in range(self.rule_list_view.count()-1,-1,-1):
             item = self.rule_list_view.item(i)
             component = item.component
             if component == rule_component:

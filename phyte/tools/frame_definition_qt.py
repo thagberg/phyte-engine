@@ -98,6 +98,13 @@ class FrameViewer(QtGui.QGraphicsView):
         self.file_name = file_name
         self.show_graphic(self.file_name)
 
+    def set_rect(self, rect):
+        self.frame_rect.x = rect.x
+        self.frame_rect.y = rect.y
+        self.frame_rect.w = rect.w
+        self.frame_rect.h = rect.h
+        self.awkward_update()
+
     def awkward_update(self):
         '''
             Use this to force a repaint until it is determined how to
@@ -229,6 +236,9 @@ class FrameDefinitionEditor(Editor):
             self.frame_width_field.setText(str(crop.w))
             self.frame_height_field.setText(str(crop.h))
             self.frame_repeat_field.setText(str(selected_component.component.repeat))
+
+            # update any drawn frame boxes
+            self.graphic_viewer.set_rect(crop)
 
             # fire event for selecting a frame
             new_event = Event('selected_frame',
