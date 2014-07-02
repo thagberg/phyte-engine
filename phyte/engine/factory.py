@@ -1,18 +1,18 @@
-import animation
-import move
-import physics2d
-import inputs
-import game_engine
-import entity
-import graphics2d
-import text
-import common
-import debug
-import player
-import execute
-import state
-import movement
-from events import *
+from engine import animation
+from engine import move
+from engine import physics2d
+from engine import inputs
+from engine import game_engine
+from engine import entity
+from engine import graphics2d
+from engine import text
+from engine import common
+from engine import debug
+from engine import player
+from engine import execute
+from engine import state
+from engine import movement
+from engine.events import *
 
 from bidict import bidict
 from pygame import event

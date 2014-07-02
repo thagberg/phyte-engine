@@ -63,7 +63,8 @@ def open_config(file_name):
         usable_context['entities'][name]['components'] = defaultdict(list)
         for comp_type in entity['components']:
             for component in entity['components'][comp_type]:
-                good_component = Component(component.component, component.text)
+                #good_component = Component(component.component, component.text)
+                good_component = component
                 usable_context['entities'][name]['components'][comp_type].append(good_component)
 
     # assets
