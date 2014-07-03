@@ -87,35 +87,54 @@ class MovementDefinitionEditor(Editor):
         parent = selected_item.component.component.parent
         body = selected_item.component.component.body
 
+        # set movement name
+        self.move_name_field.setText(selected_item.text())
+
         # set radio button states and x and y values based on
         # whether this movement component has a pulse velocity or 
         # standard velocity set
         if selected_item.component.component.pulse_velocity is not None:
             self.velocity_pulse_type.setChecked(True)
-            x = selected_item.component.component.pulse_velocity.x
-            y = selected_item.component.component.pulse_velocity.y
+            x = selected_item.component.component.pulse_velocity.component.x
+            y = selected_item.component.component.pulse_velocity.component.y
         else:
             self.velocity_standard_type.setChecked(True) 
-            x = selected_item.component.component.velocity.x
-            y = selected_item.component.component.velocity.y
+            x = selected_item.component.component.velocity.component.x
+            y = selected_item.component.component.velocity.component.y
 
         # update fields
         self.velocity_x_field.setText(str(x))
         self.velocity_y_field.setText(str(y))
 
+        # deselect any selected parent
+        for i in range(self.parent_list_view.count()):
+            self.parent_list_view.setCurrentRow(-1)
+
         # find and select parent in parent list view
         for i in range(self.parent_list_view.count()):
-            if self.parent_list_view.item(i).component.component == parent:
+            if not parent:
+                break
+            if self.parent_list_view.item(i).component.component == parent.component:
                 # select this item
                 self.parent_list_view.setCurrentRow(i)
                 break
 
-        # find and select the body in the body tree view
+        # collapse the body tree view and deselect any selected items
         for i in range(self.body_tree_view.topLevelItemCount()):
             tl_item = self.body_tree_view.topLevelItem(i)
             for j in range(tl_item.childCount()):
                 child_item = tl_item.child(j)
-                if child_item.component.component == body:
+                child_item.setSelected(False)
+            tl_item.setExpanded(False)
+
+        # find and select the body in the body tree view
+        for i in range(self.body_tree_view.topLevelItemCount()):
+            if not body:
+                break
+            tl_item = self.body_tree_view.topLevelItem(i)
+            for j in range(tl_item.childCount()):
+                child_item = tl_item.child(j)
+                if child_item.component.component == body.component:
                     # expand parent and select this child item
                     tl_item.setExpanded(True)
                     child_item.setSelected(True)
@@ -240,6 +259,7 @@ class MovementDefinitionEditor(Editor):
 
 
     def set_entity(self, event):
+        self.update()
         self._find_bodies()
 
     def add_component(self, event):
