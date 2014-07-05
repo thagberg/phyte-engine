@@ -42,6 +42,10 @@ class VectorDefinitionEditor(Editor):
         # wire up events
         self.add_vector_button.clicked.connect(self.add_vector)
         self.remove_vector_button.clicked.connect(self.remove_vector)
+        self.vector_list_view.currentItemChanged.connect(self.select_vector)
+
+    def test(self):
+        print "This didn't crash"
 
     def update(self):
         entity = self.context['selected_entity']
@@ -95,3 +99,15 @@ class VectorDefinitionEditor(Editor):
         for vector in self.context['entities'][entity]['components']['vector']:
             widget_component = WidgetItemComponent(vector.text, vector)
             self.vector_list_view.addItem(widget_component)
+
+    def select_vector(self):
+        entity = self.context['selected_entity']
+        selected_index = self.vector_list_view.currentRow()
+        selected_item = self.vector_list_view.item(selected_index)
+        selected_component = selected_item.component
+        name = str(selected_component.text)
+        x = str(selected_component.component.x)
+        y = str(selected_component.component.y)
+        self.vector_name_field.setText(name)
+        self.x_field.setText(x)
+        self.y_field.setText(y)

@@ -25,10 +25,7 @@ class MovementDefinitionEditor(Editor):
         self.velocity_standard_type = QtGui.QRadioButton('Standard')
         self.velocity_pulse_type = QtGui.QRadioButton('Pulse')
         self.velocity_group = QtGui.QGroupBox('Velocity')
-        self.velocity_x_label = QtGui.QLabel('X')
-        self.velocity_x_field = QtGui.QLineEdit()
-        self.velocity_y_label = QtGui.QLabel('Y')
-        self.velocity_y_field = QtGui.QLineEdit()
+        self.velocity_list_view = QtGui.QListWidget()
         self.velocity_layout = QtGui.QGridLayout()
         self.body_label = QtGui.QLabel('Choose Body')
         self.body_tree_view = QtGui.QTreeWidget()
@@ -48,10 +45,7 @@ class MovementDefinitionEditor(Editor):
         self.layout.addWidget(self.move_name_field,0,1)
         self.velocity_layout.addWidget(self.velocity_standard_type,0,0)
         self.velocity_layout.addWidget(self.velocity_pulse_type,0,1)
-        self.velocity_layout.addWidget(self.velocity_x_label,1,0)
-        self.velocity_layout.addWidget(self.velocity_x_field,1,1)
-        self.velocity_layout.addWidget(self.velocity_y_label,2,0)
-        self.velocity_layout.addWidget(self.velocity_y_field,2,1)
+        self.velocity_layout.addWidget(self.velocity_list_view,1,0)
         self.layout.addWidget(self.velocity_group,1,0)
         self.body_layout.addWidget(self.body_label)
         self.body_layout.addWidget(self.body_tree_view)
@@ -71,6 +65,8 @@ class MovementDefinitionEditor(Editor):
         EVENT_MAPPING.register_handler('selected_entity', self.set_entity)
         EVENT_MAPPING.register_handler('added_component', self.add_component)
         EVENT_MAPPING.register_handler('removed_component', self.remove_component)
+        EVENT_MAPPING.register_handler('vector_added', self.add_vector)
+        EVENT_MAPPING.register_handler('vector_removed', self.remove_vector)
 
         # wire up events
         self.add_movement_button.clicked.connect(self.add_movement)
@@ -90,21 +86,20 @@ class MovementDefinitionEditor(Editor):
         # set movement name
         self.move_name_field.setText(selected_item.text())
 
-        # set radio button states and x and y values based on
+        # set radio button states based on
         # whether this movement component has a pulse velocity or 
         # standard velocity set
         if selected_item.component.component.pulse_velocity is not None:
             self.velocity_pulse_type.setChecked(True)
-            x = selected_item.component.component.pulse_velocity.component.x
-            y = selected_item.component.component.pulse_velocity.component.y
+            current_velocity = selected_item.component.component.pulse_velocity
         else:
             self.velocity_standard_type.setChecked(True) 
-            x = selected_item.component.component.velocity.component.x
-            y = selected_item.component.component.velocity.component.y
-
-        # update fields
-        self.velocity_x_field.setText(str(x))
-        self.velocity_y_field.setText(str(y))
+            current_velocity = selected_item.component.component.velocity
+        # then make sure that the proper vector object is selected
+        for i in xrange(self.velocity_list_view.count()):
+            item = self.velocity_list_view.item(i)
+            if current_velocity == item.component:
+                self.velocity_list_view.setCurrentRow(i)
 
         # deselect any selected parent
         for i in range(self.parent_list_view.count()):
@@ -146,20 +141,8 @@ class MovementDefinitionEditor(Editor):
         standard = self.velocity_standard_type.isChecked()
         pulse = self.velocity_pulse_type.isChecked()
         parent = self.parent_list_view.currentItem()
-        body= self.body_tree_view.currentItem().component
-        x = float(self.velocity_x_field.text())
-        y = float(self.velocity_y_field.text())
-        velocity = Vector2(entity, [x, y])
-        velocity_wrapper = Component(velocity, "{x}, {y}".format(x=x,y=y))
-        # add this velocity vector component to context to make sure
-        # its existence is known where it needs to be
-        self.context['entities'][entity]['components']['vector'].append(velocity_wrapper)
-        # fire event
-        new_event = Event('added_component',
-                          entity=entity,
-                          component_type='vector',
-                          component=velocity_wrapper)
-        EVENT_MANAGER.fire_event(new_event)
+        body = self.body_tree_view.currentItem().component
+        velocity_wrapper = self.vector_list_view.currentItem().component
         if parent != None:
             parent = parent.component
 
@@ -197,23 +180,21 @@ class MovementDefinitionEditor(Editor):
                           component=selected_component)
         EVENT_MANAGER.fire_event(new_event)
 
-        # also clean up velocity vector
-        velocity = selected_component.velocity
-        self.context['entities'][entity]['components']['vector'].remove(velocity)
-        new_event = Event('removed_component',
-                          entity=entity,
-                          component_type='vector',
-                          component=velocity)
-        EVENT_MANAGER.fire_event(new_event)
-
     def update(self):
         entity = self.context['selected_entity']
         # first update movement list
         self.movement_list_view.clear()
+        # update vector list
+        self.velocity_list_view.clear()
         if entity and entity != '':
             for movement in self.context['entities'][entity]['components']['movement']:
                 widget_component = WidgetItemComponent(movement.text, movement)
                 self.movement_list_view.addItem(widget_component)
+
+            for vector in self.context['entities'][entity]['components']['vector']:
+                widget_component = WidgetItemComponent(vector.text, vector)
+                self.velocity_list_view.addItem(widget_component)
+            
 
     def _find_bodies(self):
         entity = self.context['selected_entity']
@@ -267,3 +248,17 @@ class MovementDefinitionEditor(Editor):
 
     def remove_component(self, event):
         self._find_bodies()
+
+    def add_vector(self, event):
+        vector_component = event.vector_component
+        widget_component = WidgetItemComponent(vector_component.text,
+                                               vector_component)
+        self.vector_list_view.addItem(widget_component)
+
+    def remove_vector(self, event):
+        vector_component = event.vector_component
+        count = self.vector_list_view.count()
+        for i in xrange(count-1,-1,-1):
+            current_vector = self.vector_list_view.item(i)
+            if current_vector.component == vector_component:
+                self.vector_list_view.takeItem(i)
