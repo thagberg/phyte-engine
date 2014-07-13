@@ -84,6 +84,19 @@ class LambdaDef(object):
         return lambda: getattr(self.component, self.attr) 
 
 
+class TextLambdaDef(LambdaDef):
+    def __init__(self, component, attr, format_string):
+        '''
+            format_string should follow the pattern: ".*{a}.*"
+            where a=component[attr]
+        '''
+        super(TextLambdaDef, self).__init__(component, attr)
+        self.format_string = format_string
+
+    def get_text_lambda(self):
+        return lambda: self.format_string.format(a=getattr(self.component, self.attr))
+
+
 class KeyComponent(object):
     def __init__(self, key):
         self.key = key

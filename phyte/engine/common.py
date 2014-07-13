@@ -13,6 +13,9 @@ class Vector2(object):
         self.x = vec[0]
         self.y = vec[1]
 
+    def __str__(self):
+        return '[{x}, {y}]'.format(x=self.x, y=self.y)
+
 
 class LocationComponent(object):
     def __init__(self, entity_id, point):
@@ -44,6 +47,20 @@ class BoxComponent(object):
         self.hitstun = hitstun
         self.push = push
         self.moveable = moveable 
+
+    def __str__(self):
+        return '[{x},{y},{w},{h}] {hi}:{hu}:{so}:{ba}:{st}:{hs}:{mv}'.format(
+            x=self.rect.x,
+            y=self.rect.y,
+            w=self.rect.w,
+            h=self.rect.h,
+            hi=self.hitactive,
+            hu=self.huractive,
+            so=self.solid,
+            ba=self.blockactive,
+            st=self.stun,
+            hs=self.hitstun,
+            mv=self.moveable)
 
 
 class AssetComponent(object):

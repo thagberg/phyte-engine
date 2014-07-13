@@ -44,7 +44,9 @@ class DebugSystem(System):
 
     def _update_debug(self, component):
         if component.text:
-            t_event = GameEvent(UPDATETEXT, component.text)
+            t_event = GameEvent(UPDATETEXT, 
+                                component=component, 
+                                text=component.text)
             self.delegate(t_event)
 
     def _activate(self, component):
@@ -83,14 +85,8 @@ class DebugSystem(System):
         self.delta = time
         for comp in self.components:
             # prepare style options
-            if 'color' in comp.style:
-                color = comp.style['color']
-            else:
-                color = common.BLACK
-            if 'width' in comp.style:
-                width = comp.style['width']
-            else:
-                width = 1
+            color = comp.style.get('color', common.BLACK)
+            width = comp.style.get('width', 1)
 
             # draw debug objects
             if comp.rect:

@@ -114,8 +114,7 @@ class ComponentFactory(object):
             c_text = props['text']
             style = props['style']
             graphic = props['graphic'] if 'graphic' in props else None
-            loc = props['loc'] if 'loc' in props else [0,0]
-            loc = common.Vector2(entity_id=entity_id, vec=loc)
+            loc = props.get('loc', None)
             active = props.get('active', False)
             component = text.TextComponent(entity_id=entity_id, text=c_text, 
                                            loc=loc, graphic=graphic, 

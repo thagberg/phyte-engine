@@ -4,8 +4,10 @@ from events import *
 from pygame import font
 
 
+DEFAULT_COLOR = (0,0,0)
+
+
 class TextComponent(object):
-    default_color = (0,0,0)
 
     def __init__(self, entity_id, text, loc=None, graphic=None, 
                  active=False, **style):
@@ -20,9 +22,11 @@ class TextComponent(object):
         self.underline = style.get('underline', False)
         self.background = style.get('background', None)
         self.aa = style.get('aa', False)
-        self.color = style.get('color', TextComponent.default_color)
-        self.font = style.get('font', font.SysFont('monospace', self.size, False, False))
-        self.font.set_underline(self.underline)
+        self.color = style.get('color', DEFAULT_COLOR)
+        self.style = style
+        #self.font = style.get('font', font.SysFont('monospace', self.size, False, False))
+        self.font = None
+        #self.font.set_underline(self.underline)
 
 
 class TextSystem(System):
@@ -46,10 +50,15 @@ class TextSystem(System):
 
     def handle_event(self, event):
         if event.type == ADDTEXTCOMPONENT:
+            comp = event.component
             print "Added new text component"
-            self.components.append(event.component)
-            if not event.component.graphic:
-                self._update_graphic(event.component)
+            self.components.append(comp)
+            # if no font has yet been initialized for this component, do it now
+            if not comp.font:
+                comp.font = comp.style.get('font', font.SysFont('monospace', comp.size, False, False))
+                comp.font.set_underline(comp.underline)
+            if not comp.graphic:
+                self._update_graphic(comp)
         elif event.type == REMOVETEXTCOMPONENT:
             self.components.remove(ev.component)
         elif event.type == UPDATETEXT:

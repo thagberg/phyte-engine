@@ -142,7 +142,7 @@ class MovementDefinitionEditor(Editor):
         pulse = self.velocity_pulse_type.isChecked()
         parent = self.parent_list_view.currentItem()
         body = self.body_tree_view.currentItem().component
-        velocity_wrapper = self.vector_list_view.currentItem().component
+        velocity_wrapper = self.velocity_list_view.currentItem().component
         if parent != None:
             parent = parent.component
 
@@ -224,7 +224,6 @@ class MovementDefinitionEditor(Editor):
             for component in components:
                 inner_comp = component.component
                 for name in [x for x in dir(inner_comp) if not x.startswith('_')]:
-                    QtCore.pyqtRemoveInputHook()
                     attr = inner_comp.__dict__[name]
                     if type(attr).__name__ == 'Component':
                         if attr.type_name == 'Vector2':
@@ -253,12 +252,12 @@ class MovementDefinitionEditor(Editor):
         vector_component = event.vector_component
         widget_component = WidgetItemComponent(vector_component.text,
                                                vector_component)
-        self.vector_list_view.addItem(widget_component)
+        self.velocity_list_view.addItem(widget_component)
 
     def remove_vector(self, event):
         vector_component = event.vector_component
-        count = self.vector_list_view.count()
+        count = self.velocity_list_view.count()
         for i in xrange(count-1,-1,-1):
-            current_vector = self.vector_list_view.item(i)
+            current_vector = self.velocity_list_view.item(i)
             if current_vector.component == vector_component:
-                self.vector_list_view.takeItem(i)
+                self.velocity_list_view.takeItem(i)
