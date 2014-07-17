@@ -7,7 +7,8 @@ from pygame import draw
 class DebugComponent(object):
     def __init__(self, entity_id, text=None, get_value=None, 
                  rect=None, line=None, ellipse=None, circle=None, 
-                 active=False, arc=None, **style):
+                 active=False, arc=None, style=None):
+        self.style = dict() if style is None else style
         self.entity_id = entity_id
         self.text = text
         self.get_value = get_value
@@ -17,7 +18,6 @@ class DebugComponent(object):
         self.circle = circle
         self.arc = arc
         self.active = active
-        self.style = style
         self.last_value = None
 
 

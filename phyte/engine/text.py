@@ -10,7 +10,8 @@ DEFAULT_COLOR = (0,0,0)
 class TextComponent(object):
 
     def __init__(self, entity_id, text, loc=None, graphic=None, 
-                 active=False, **style):
+                 active=False, style=None):
+        self.style = dict() if style is None else style
         self.entity_id = entity_id
         self.text = text
         self.loc = loc
@@ -23,7 +24,6 @@ class TextComponent(object):
         self.background = style.get('background', None)
         self.aa = style.get('aa', False)
         self.color = style.get('color', DEFAULT_COLOR)
-        self.style = style
         #self.font = style.get('font', font.SysFont('monospace', self.size, False, False))
         self.font = None
         #self.font.set_underline(self.underline)

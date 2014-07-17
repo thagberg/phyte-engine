@@ -101,6 +101,7 @@ class StateDefinitionEditor(Editor):
         self.add_state_button.clicked.connect(self.add_state)
         self.remove_state_button.clicked.connect(self.remove_state)
         self.state_list_view.currentItemChanged.connect(self.select_state)
+        self.selected_rule_list_view.currentItemChanged.connect(self.select_rule)
 
     def set_entity(self, event):
         entity = event.entity
@@ -249,7 +250,100 @@ class StateDefinitionEditor(Editor):
         EVENT_MANAGER.fire_event(new_event)
 
     def select_state(self):
-        pass
+        '''
+            update the state editor GUI to show all properties
+            of the selected state
+        '''
+        entity = self.context['selected_entity']
+        selected_item = self.state_list_view.currentItem()
+        selected_component = selected_item.component
+
+        # start by setting the state name
+        self.state_name_field.setText(selected_component.text)
+
+        # then set the selected activation event
+        for i in range(self.activation_list_view.count()):
+            item = self.activation_list_view.item(i)
+            if item.text() == selected_component.component.activation_event_type:
+                self.activation_list_view.setCurrentRow(i)
+                break
+
+        # then set the selected deactivation event
+        for i in range(self.deactivation_list_view.count()):
+            item = self.deactivation_list_view.item(i)
+            if item.text() == selected_component.component.deactivation_event_type:
+                self.deactivation_list_view.setCurrentRow(i)
+                break
+
+        # then select activation component
+        # begin by deselecting any selected node and collapsing all branches
+        activation_component = selected_component.component.activation_component
+        for i in range(self.activation_component_tree_view.topLevelItemCount()):
+            tl_item = self.activation_component_tree_view.topLevelItem(i)
+            for j in range(tl_item.childCount()):
+                child_item = tl_item.child(j)
+                child_item.setSelected(False)
+            tl_item.setExpanded(False)
+        # then find and select the proper node
+        for i in range(self.activation_component_tree_view.topLevelItemCount()):
+            tl_item = self.activation_component_tree_view.topLevelItem(i)
+            for j in range(tl_item.childCount()):
+                child_item = tl_item.child(j)
+                if child_item.component == activation_component:
+                    tl_item.setExpanded(True)
+                    child_item.setSelected(True)
+                    break
+
+        # then show the proper rules in the selected rule box
+        # also, deselect any selected rule or rule component values
+        for i in range(self.selected_rule_list_view.count()-1,-1,-1):
+            item = self.selected_rule_list_view.takeItem(i)
+        context_rules = self.context['entities'][entity]['components']['rules']
+        rules = [RuleRuleValueWrapper(x, y) for x in selected_component.component.rules for k,y in selected_component.component.rule_values.iteritems() if k == x.component.name]
+        for rule in rules:
+            comp = Component(rule, rule.rule.text)
+            widget_item = WidgetItemComponent(comp.text, comp)
+            self.selected_rule_list_view.addItem(widget_item)
+        self.rule_list_view.setCurrentRow(-1)
+
+    def select_rule(self):
+        entity = self.context['selected_entity']
+        selected_item = self.selected_rule_list_view.currentItem()
+        selected_component = selected_item.component
+        # first select the proper rule
+        for i in range(self.rule_list_view.count()):
+            item = self.rule_list_view.item(i)
+            if item.component == selected_component.component.rule:
+                self.rule_list_view.setCurrentRow(i)
+        
+        # then set rule value (could be a string or a component)
+        rule_value = selected_component.component.rule_value
+        self.rule_value_field.setText('')
+        for i in range(self.rule_value_component_tree_view.topLevelItemCount()):
+            tl_item = self.rule_value_component_tree_view.topLevelItem(i)
+            for j in range(tl_item.childCount()):
+                child_item = tl_item.child(j)
+                child_item.setSelected(False)
+            tl_item.setExpanded(False)
+        # if the rule_value is a string, then populate the rule value field with it
+        if isinstance(rule_value, basestring):
+            self.rule_value_field.setText(rule_value)
+        else: # otherwise, this rule_value is a component value, so find it on the tree
+            for i in range(self.rule_value_component_tree_view.topLevelItemCount()):
+                tl_item = self.rule_value_component_tree_view.topLevelItem(i)
+                for j in range(tl_item.childCount()):
+                    child_item = tl_item.child(j)
+                    if child_item.component == rule_value.component:
+                        tl_item.setExpanded(True)
+                        child_item.setSelected(True)
+                        child_item.setExpanded(True)
+                        for k in range(child_item.childCount()):
+                            attr_item = child_item.child(k)
+                            if attr_item.component.attr == rule_value.attr:
+                                child_item.setSelected(False)
+                                attr_item.setSelected(True)
+                                break
+                        break
 
     def rule_added(self, event):
         rule_component = event.rule_component
