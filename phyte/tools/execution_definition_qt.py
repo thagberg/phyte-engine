@@ -124,7 +124,20 @@ class ExecutionDefinitionEditor(Editor):
         EVENT_MANAGER.fire_event(new_event)
 
     def select_exec(self):
-        pass
+        entity = self.context['selected_entity']
+        selected_item = self.exec_list_view.currentItem()
+        selected_component = selected_item.component
+
+        # set execution name field
+        self.exec_name_field.setText(selected_component.text)
+
+        # clear and populate list of moves in this execution
+        for i in range(self.selected_move_list_view.count()-1,-1,-1):
+            self.selected_move_list_view.takeItem(i)
+        exes = selected_component.component.executables
+        for exe in exes:
+            widget_item = WidgetItemComponent(exe.text, exe)
+            self.selected_move_list_view.addItem(widget_item)
 
     def set_entity(self, event):
         entity = event.entity
