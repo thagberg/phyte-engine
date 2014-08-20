@@ -68,11 +68,21 @@ class AnimationSystem(System):
             cr_event = GameEvent(CHANGECROP, component=c.graphic,
                                  area=c_f.crop)
             self.delegate(cr_event)
+            # activate any solid hitboxes on the current frame
+            for solid in [x for x in c_f.hitboxes if x.solid]:
+                a_event = GameEvent(ACTIVATEPHYSICSCOMPONENT, component=solid)
+                self.delegate(a_event)
 
     def _deactivate(self, component, preserve=False):
         component.active = False
         if not preserve:
             self._reset(component)
+        # deactivate any solid hitboxes for the current frame
+        if not component.current_frame:
+            return
+        for solid in [x for x in component.current_frame.hitboxes if x.solid]:
+            d_event = GameEvent(DEACTIVATEPHYSICSCOMPONENT, component=solid)
+            self.delegate(d_event)
 
     def _reset(self, component):
         component.current_index = 0
@@ -106,8 +116,16 @@ class AnimationSystem(System):
         # if this animation component has a surface, update the crop
         if c.graphic and c.current_frame:
             crop_event = GameEvent(CHANGECROP, component=c.graphic, 
-                                   area=c_f.crop)
+                                   area=c.current_frame.crop)
             self.delegate(crop_event)
+        # activate any solid hitboxes for the current frame
+        for solid in [x for x in c.current_frame.hitboxes if x.solid]:
+            a_event = GameEvent(ACTIVATEPHYSICSCOMPONENT, component=solid)
+            self.delegate(a_event)
+        # deactivate any solid hitboxes from the previous frame
+        for solid in [x for x in c_f.hitboxes if x.solid]:
+            d_event = GameEvent(DEACTIVATEPHYSICSCOMPONENT, component=solid)
+            self.delegate(d_event)
 
     def _jump(self, component, count):
         component.current_index += count

@@ -4,7 +4,7 @@ from pygame import Rect
 from editor_qt import Editor
 from common import Component, WidgetItemComponent
 from engine.physics2d import PhysicsComponent
-from engine.common import BoxComponent
+from engine.common import BoxComponent, Vector2
 from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
 
 
@@ -60,16 +60,29 @@ class PhysicsDefinitionEditor(Editor):
         y = int(self.y_field.text())
         w = int(self.w_field.text())
         h = int(self.h_field.text())
-        rect = Rect(x,y,w,h)
+        rect = Rect(0,0,w,h)
+        rect_wrapper = Component(rect, str(rect))
+        anchor = Vector2(self.entity, (x, y))
+        anchor_wrapper = Component(anchor, str(anchor))
+        self.context['entities'][self.entity]['components']['vector'].append(anchor_wrapper)
         box_component = BoxComponent(entity_id=self.entity,
                                      rect=rect,
+                                     anchor=anchor_wrapper,
                                      hitactive=False,
                                      hurtactive=False,
                                      blockactive=False,
                                      solid=True)
+        box_wrapper = Component(box_component, str(rect))
+        # add this box to the application context and fire respective events
+        self.context['entities'][self.entity]['components']['hitbox'].append(box_wrapper)
+        new_event = Event('added_component',
+                         entity=self.entity,
+                         component_type='hitbox',
+                         component=box_wrapper)
+        EVENT_MANAGER.fire_event(new_event)
         physics_component = PhysicsComponent(entity_id=self.entity,
-                                             box=box_component,
-                                             body=rect)
+                                             box=box_wrapper,
+                                             body=rect_wrapper)
         physics_wrapper = Component(physics_component, name)
         widget_component = WidgetItemComponent(physics_wrapper.text,
                                                physics_wrapper)
@@ -97,6 +110,11 @@ class PhysicsDefinitionEditor(Editor):
         new_event = Event('physics_removed',
                           physics_component=selected_component)
         EVENT_MANAGER.fire_event(new_event)
+        # remove any hitboxes and concomitant components
+        box = selected_component.component.body
+        self.context['entities'][self.entity]['components']['hitbox'].remove(box)
+        anchor = box.component.anchor
+        self.context['entities'][self.entity]['components']['vector'].remove(anchor)
 
     def set_entity(self, event):
         entity = event.entity

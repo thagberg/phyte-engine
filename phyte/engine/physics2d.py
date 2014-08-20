@@ -1,53 +1,62 @@
+from math import ceil
+from copy import deepcopy
+
+from pygame import Rect
+
 from system import System
 from events import *
-from math import ceil
 
 class PhysicsComponent(object):
-    def __init__(self, entity_id, box, body):
+    def __init__(self, entity_id, box, body, active_type=False, active=False):
         self.entity_id = entity_id
         self.box = box 
         self.collideables = list()
         self.body = body
+        self.active_type = active_type
+        self.active = active
 
 
 class PhysicsSystem(System):
-    def __init__(self, factory, components=None, active_components=None):
+    def __init__(self, factory, components=None):
         super(PhysicsSystem, self).__init__()
         self.factory = factory
         self.components = list() if components is None else components
-        self.active_components = list() if active_components is None else active_components
+        self.box_map = dict()
 
     def _add(self, component):
         self.components.append(component)
+        self.box_map[component.box] = component
 
     def _remove(self, component):
         try:
             self.components.remove(component)
             self.components.append(component)
+            del(self.box_map[component.box])
         except ValueError as e:
             print "Error when attempting to remove component from PhysicsManager: %s" % e.strerror
 
-    def _add_active(self, component):
-        self.active_components.append(component)
+    def _activate(self, component):
+        component.active = True
+        if component.__class__.__name__ == 'BoxComponent':
+            self.box_map[component].active = True
 
-    def _remove_active(self, component):
-        try:
-            self.active_components.remove(component)
-            self.components.remove(component)
-        except ValueError as e:
-            print "Error when attempting to remove component from PhysicsManager: %s" % e.strerror
+    def _deactivate(self, component):
+        component.active = False
+        if component.__class__.__name__ == 'BoxComponent':
+            self.box_map[component].active = False
 
     def handle_event(self, event):
         if event.type == ADDPHYSICSCOMPONENT:
+            print "Added new physics component: {comp}".format(comp=event.component)
             self._add(event.component)
-        elif event.type == ADDPHYSICSCOMPONENTACTIVE:
-            self._add_active(event.component)
         elif event.type == REMOVEPHYSICSCOMPONENT:
             self._remove(event.component)
-        elif event.type == REMOVEPHYSICSCOMPONENTACTIVE:
-            self._remove_active(event.component)
         elif event.type == COLLISION:
             self.handle_collision(event.comp1, event.comp2, event.mtv)
+        elif event.type == ACTIVATEPHYSICSCOMPONENT:
+            self._activate(event.component)
+        elif event.type == DEACTIVATEPHYSICSCOMPONENT:
+            self._deactivate(event.component)
 
     def get_min_trans_vect(self, rect1, rect2):
         mtv = [0, 0]
@@ -153,26 +162,30 @@ class PhysicsSystem(System):
                             velocity=velocity_negate)
 
     def update(self, time, events=None):
-        for comp in self.active_components:
+        for comp in [x for x in self.components if x.active_type and x.active]:
             comp_rect = comp.box.rect
+            trans_rect = deepcopy(comp_rect)
+            if comp.box.anchor is not None:
+                trans_rect.x += comp.box.anchor.x
+                trans_rect.y += comp.box.anchor.y
 
             # determine the list of collideable components
             box = comp.box
             if box.hitactive:
                 coll_comps = [x for x in self.components if
                                 (x.box.blockactive or x.box.hurtactive) and 
-                                not x.box.expired]
+                                not x.box.expired and x.active and x != comp]
             elif box.solid:
                 coll_comps = [x for x in self.components if
-                                x.box.solid]
+                                x.box.solid and x.active and x != comp]
             
             # find the indices of collisions
-            collisions = comp_rect.collidelistall(
-                [x.box.rect for x in coll_comps])
+            collisions = trans_rect.collidelistall(
+                [Rect(x.box.rect.x + x.box.anchor.x, x.box.rect.y + x.box.anchor.y, x.box.rect.w, x.box.rect.h) for x in coll_comps])
             # process each collision
             for coll_ind in collisions:
                 coll_rect = coll_comps[coll_ind].box.rect
-                mtv = self.get_min_trans_vect(comp_rect, coll_rect)
+                mtv = self.get_min_trans_vect(trans_rect, coll_rect)
                 c_event = GameEvent(COLLISION, comp1=comp,
                                     comp2=coll_comps[coll_ind], 
                                     mtv=mtv)

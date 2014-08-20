@@ -138,6 +138,9 @@ class HitboxDefinitionEditor(Editor):
         super(HitboxDefinitionEditor, self).__init__(context,
                                                      QtGui.QGroupBox('Hitbox'))
         self.selected_frame = None
+        self.anchor = None
+
+        # setup layout
         self.outer_layout = QtGui.QHBoxLayout()
         self.layout = QtGui.QGridLayout()
         self.box_name_label = QtGui.QLabel('Hitbox Name')
@@ -178,6 +181,7 @@ class HitboxDefinitionEditor(Editor):
         # internal events
         EVENT_MAPPING.register_handler('selected_frame', self.set_frame)
         EVENT_MAPPING.register_handler('updated_box', self.update_fields)
+        EVENT_MAPPING.register_handler('selected_graphic', self.set_anchor)
 
         #set up layout
         self.outer_layout.addLayout(self.layout)
@@ -217,6 +221,15 @@ class HitboxDefinitionEditor(Editor):
         self.box_blockactive_check.stateChanged.connect(self.set_blockactive)
         self.box_solid_check.stateChanged.connect(self.set_solid)
 
+    def set_anchor(self, event):
+        '''
+            Set the anchor for this hitbox, which is the
+            position to which this hitbox should be translated
+            in order to be in "world space"
+        '''
+        selected_graphic = event.graphic_component
+        self.anchor = selected_graphic.component.dest
+
     def add_box(self):
         box_name = str(self.box_name_field.text())
         entity = self.context['selected_entity']
@@ -231,6 +244,7 @@ class HitboxDefinitionEditor(Editor):
         solid = self.check_context['solid'] > 0
         box_component = BoxComponent(entity_id=entity,
                                      rect=rect,
+                                     anchor=self.anchor,
                                      hitactive=hitactive,
                                      hurtactive=hurtactive,
                                      blockactive=blockactive,

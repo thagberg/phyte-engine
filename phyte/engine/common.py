@@ -32,11 +32,12 @@ class VelocityComponent(object):
 
 
 class BoxComponent(object):
-    def __init__(self, entity_id, rect, hitactive=False, 
+    def __init__(self, entity_id, rect, anchor, hitactive=False, 
                  hurtactive=False, expired=False, solid=False, blockactive=False, 
                  damage=0, stun=0, hitstun=0, push=[0,0], moveable=False):
         self.entity_id = entity_id
         self.rect = rect
+        self.anchor = anchor
         self.hitactive = hitactive
         self.hurtactive = hurtactive
         self.expired = expired
@@ -55,7 +56,7 @@ class BoxComponent(object):
             w=self.rect.w,
             h=self.rect.h,
             hi=self.hitactive,
-            hu=self.huractive,
+            hu=self.hurtactive,
             so=self.solid,
             ba=self.blockactive,
             st=self.stun,

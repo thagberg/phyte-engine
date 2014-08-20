@@ -118,6 +118,10 @@ class FrameDefinitionEditor(Editor):
     def __init__(self, context):
         super(FrameDefinitionEditor, self).__init__(context,
                                                     QtGui.QGroupBox('Animation'))
+
+        self.anchor = None
+
+        # set up layout
         self.outer_layout = QtGui.QHBoxLayout()
         self.layout = QtGui.QGridLayout()
         self.frame_name_field = QtGui.QLineEdit()

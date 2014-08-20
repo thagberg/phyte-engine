@@ -5,10 +5,9 @@ import events
 from engine import physics2d
 from tools import common as t_common
 
-def load(file_name, factory):
+def load(file_name, factory, game_context):
     config_file = open(file_name, 'r')
     context = yaml.load(config_file)
-    game_context = dict()
     entity_mapping = dict()
     create = factory.create_component # simple alias to keep things clean
 
@@ -47,11 +46,17 @@ def load(file_name, factory):
                                    vec=[inner_comp.x, inner_comp.y])
             component_map[component] = new_component
 
+            # add new component to game context
+            game_context['vector'].append(new_component)
+
+        
         for component in en_comps['hitbox']:
             inner_comp = component.component
+            anchor = component_map.get(inner_comp.anchor, None)
             new_component = create('hit',
                                    entity_id=entity_id,
                                    rect=inner_comp.rect,
+                                   anchor=anchor,
                                    hit_active=inner_comp.hitactive,
                                    hurt_active=inner_comp.hurtactive,
                                    solid=inner_comp.solid,
@@ -62,13 +67,17 @@ def load(file_name, factory):
                                    push=inner_comp.push,
                                    moveable=inner_comp.moveable)
             component_map[component] = new_component
-            # a solid hitbox should have a concomitant physics component
+            # a solid hitbox needs a concomitant physics component
             if new_component.solid:
-                physics_comp = physics2d.PhysicsComponent(entity_id=entity_id,
-                                                          box=component,
-                                                          body=None)
-                physics_comp = t_common.Component(physics_comp, component.text)
-                en_comps['physics'].append(physics_comp)
+                physics_comp = create('physics',
+                                      entity_id=entity_id,
+                                      body=new_component.rect,
+                                      box=new_component,
+                                      active_type=True)
+
+            # add new component to game context
+            game_context['hitbox'].append(new_component)
+
 
         for component in en_comps['frame']:
             inner_comp = component.component
@@ -81,6 +90,9 @@ def load(file_name, factory):
                                    force=inner_comp.force,
                                    push_box=inner_comp.push_box)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['frame'].append(new_component)
+
 
         for component in en_comps['graphic']:
             inner_comp = component.component
@@ -94,6 +106,9 @@ def load(file_name, factory):
                                    #active=inner_comp.active)
                                    active=True)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['graphic'].append(new_component)
+
 
         for component in en_comps['animation']:
             inner_comp = component.component
@@ -120,6 +135,9 @@ def load(file_name, factory):
                                    loop=inner_comp.loop,
                                    graphic=graphic)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['animation'].append(new_component)
+
 
         for component in en_comps['rule']:
             inner_comp = component.component
@@ -129,6 +147,9 @@ def load(file_name, factory):
                                    name=inner_comp.name,
                                    value=inner_comp.value)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['rule'].append(new_component)
+
 
         for component in en_comps['move']:
             inner_comp = component.component
@@ -144,6 +165,9 @@ def load(file_name, factory):
                                    inputs=inps,
                                    rules=rules)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['move'].append(new_component)
+
 
         for component in en_comps['binding']:
             inner_comp = component.component
@@ -160,6 +184,9 @@ def load(file_name, factory):
                                    bindings=clean_bindings,
                                    mirror_bindings=mirror_bindings)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['binding'].append(new_component)
+
 
         for component in en_comps['execution']:
             inner_comp = component.component
@@ -171,10 +198,14 @@ def load(file_name, factory):
                                    executables=executables,
                                    inputs=inputs)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['execution'].append(new_component)
+
 
         for component in en_comps['physics']:
             inner_comp = component.component
             rect = component_map[inner_comp.box].rect
+            anchor = component_map[inner_comp.box].anchor
             box = create('hit',
                          entity_id=entity_id,
                          rect=rect,
@@ -186,14 +217,19 @@ def load(file_name, factory):
                          stun=0,
                          hitstun=0,
                          push=None,
-                         moveable=False)
+                         moveable=False,
+                         anchor=anchor)
             component_map[inner_comp.box] = box
             new_component = create('physics',
                                    entity_id=entity_id,
                                    box=box,
-                                   body=inner_comp.body,
-                                   active=False)
+                                   body=box.rect,
+                                   active_type=True,
+                                   active=True)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['physics'].append(new_component)
+
 
         for component in en_comps['movement']:
             inner_comp = component.component
@@ -208,6 +244,9 @@ def load(file_name, factory):
                                    pulse_velocity=pulse_velocity,
                                    parent=parent)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['movement'].append(new_component)
+
 
         for component in en_comps['text']:
             inner_comp = component.component
@@ -223,6 +262,9 @@ def load(file_name, factory):
                                    graphic=graphic,
                                    style=cleaned_style)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['text'].append(new_component)
+
 
         for component in en_comps['debug']:
             def _make_get_value(comp, attr):
@@ -243,9 +285,11 @@ def load(file_name, factory):
             rect = component_map.get(inner_comp.rect, None)
             style = inner_comp.style
             cleaned_style = {x:y.component for x,y in style.iteritems()}
-            lambda_comp = component_map.get(inner_comp.get_value.component, None)
-            lambda_attr = inner_comp.get_value.attr
-            get_value = _make_get_value(lambda_comp, lambda_attr)
+            get_value = None
+            if not rect:
+                lambda_comp = component_map.get(inner_comp.get_value.component, None)
+                lambda_attr = inner_comp.get_value.attr
+                get_value = _make_get_value(lambda_comp, lambda_attr)
             new_component = create('deb',
                                    entity_id=entity_id,
                                    active=active,
@@ -254,6 +298,9 @@ def load(file_name, factory):
                                    style=cleaned_style,
                                    get_value=get_value)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['debug'].append(new_component)
+
 
         for component in en_comps['state']:
             def _make_rule_value_lambda(comp, attr):
@@ -289,3 +336,5 @@ def load(file_name, factory):
                                    activation_component=activation_comp,
                                    rule_values=rule_values)
             component_map[component] = new_component
+            # add new component to game context
+            game_context['state'].append(new_component)

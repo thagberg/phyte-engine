@@ -145,6 +145,7 @@ class ComponentFactory(object):
         elif type == 'hit':
             entity_id = props['entity_id']
             rect = props['rect']
+            anchor = props.get('anchor', None)
             hit_active = props.get('hit_active', False)
             hurt_active = props.get('hurt_active', False)
             solid = props.get('solid', False)
@@ -161,6 +162,7 @@ class ComponentFactory(object):
             moveable = props.get('moveable', False)
             component = common.BoxComponent(entity_id=entity_id, 
                                             rect=rect,
+                                            anchor=anchor,
                                             hitactive=hit_active,
                                             hurtactive=hurt_active,
                                             solid=solid,
@@ -356,15 +358,14 @@ class ComponentFactory(object):
             entity_id = props['entity_id']
             box = props['box']
             body = props['body']
-            active_type = props.get('active', False)
-            if active_type:
-                event_type = ADDPHYSICSCOMPONENTACTIVE
-            else:
-                event_type = ADDPHYSICSCOMPONENT
+            active_type = props.get('active_type', False)
+            active = props.get('active', False)
             component = physics2d.PhysicsComponent(entity_id=entity_id,
                                                    box=box,
-                                                   body=body)
-            new_event = GameEvent(event_type, component=component)
+                                                   body=body,
+                                                   active_type=active_type,
+                                                   active=active)
+            new_event = GameEvent(ADDPHYSICSCOMPONENT, component=component)
             self.delegate(new_event)
 
         return component

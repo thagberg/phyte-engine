@@ -1,7 +1,8 @@
+from pygame import draw, Rect
+
 import common
 from system import System
 from events import *
-from pygame import draw
 
 
 class DebugComponent(object):
@@ -83,14 +84,18 @@ class DebugSystem(System):
 
     def update(self, time):
         self.delta = time
-        for comp in self.components:
+        for comp in [x for x in self.components if x.active]:
             # prepare style options
             color = comp.style.get('color', common.BLACK)
             width = comp.style.get('width', 1)
 
             # draw debug objects
             if comp.rect:
-                draw.rect(self.surface, color, comp.rect, width)
+                trans_rect = Rect(comp.rect.rect.x + comp.rect.anchor.x,
+                                  comp.rect.rect.y + comp.rect.anchor.y,
+                                  comp.rect.rect.w,
+                                  comp.rect.rect.h)
+                draw.rect(self.surface, color, trans_rect, width)
             if comp.circle:
                 draw.circle(self.surface, color, comp.circle.pos,
                             comp.circle.radius, width)
