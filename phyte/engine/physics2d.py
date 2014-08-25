@@ -6,6 +6,8 @@ from pygame import Rect
 from system import System
 from events import *
 
+import globals
+
 class PhysicsComponent(object):
     def __init__(self, entity_id, box, body, active_type=False, active=False):
         self.entity_id = entity_id
@@ -160,14 +162,32 @@ class PhysicsSystem(System):
                             entity_id=box2.entity_id,
                             body=comp2.body,
                             velocity=velocity_negate)
+            # otherwise, no movement, just make sure the boxes
+            # stop moving into each other
+            else:
+                from pdb import set_trace
+                set_trace()
+                # move box1 the entire mtv
+                create_comp('incmovement',
+                            entity_id=box1.entity_id,
+                            body=box1.rect,
+                            velocity=mtv)
+                velocity_negate = [
+                    0 if not mtv[0] else 0-comp1.body[0],
+                    0 if not mtv[1] else 0-comp1.body[1]
+                ]
+                create_comp('incmovement',
+                            entity_id=box1.entity_id,
+                            body=comp1.body,
+                            velocity=velocity_negate)
 
     def update(self, time, events=None):
         for comp in [x for x in self.components if x.active_type and x.active]:
             comp_rect = comp.box.rect
             trans_rect = deepcopy(comp_rect)
             if comp.box.anchor is not None:
-                trans_rect.x += comp.box.anchor.x
-                trans_rect.y += comp.box.anchor.y
+                trans_rect.x += comp.box.anchor.body.x
+                trans_rect.y += comp.box.anchor.body.y
 
             # determine the list of collideable components
             box = comp.box
@@ -180,13 +200,16 @@ class PhysicsSystem(System):
                                 x.box.solid and x.active and x != comp]
             
             # find the indices of collisions
-            collisions = trans_rect.collidelistall(
-                [Rect(x.box.rect.x + x.box.anchor.x, x.box.rect.y + x.box.anchor.y, x.box.rect.w, x.box.rect.h) for x in coll_comps])
+            coll_boxes = [Rect(x.box.rect.x + x.box.anchor.x,
+                               x.box.rect.y + x.box.anchor.y,
+                               x.box.rect.w, x.box.rect.h) for x in coll_comps]
+            collisions = trans_rect.collidelistall(coll_boxes)
             # process each collision
             for coll_ind in collisions:
-                coll_rect = coll_comps[coll_ind].box.rect
+                coll_comp = coll_comps[coll_ind]
+                coll_rect = coll_boxes[coll_ind]
                 mtv = self.get_min_trans_vect(trans_rect, coll_rect)
                 c_event = GameEvent(COLLISION, comp1=comp,
-                                    comp2=coll_comps[coll_ind], 
+                                    comp2=coll_comp, 
                                     mtv=mtv)
                 self.delegate(c_event)

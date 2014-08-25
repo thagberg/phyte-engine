@@ -49,6 +49,19 @@ def load(file_name, factory, game_context):
             # add new component to game context
             game_context['vector'].append(new_component)
 
+
+        for component in en_comps['body']:
+            inner_comp = component.component
+            body = component_map[inner_comp.body]
+            velocity = component_map.get(inner_comp.velocity, None)
+            new_component = create('body',
+                                   entity_id=entity_id,
+                                   body=body,
+                                   velocity=velocity)
+            component_map[component] = new_component
+            # add new component to game context
+            game_context['body'].append(new_component)
+
         
         for component in en_comps['hitbox']:
             inner_comp = component.component

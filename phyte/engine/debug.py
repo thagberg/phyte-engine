@@ -91,8 +91,10 @@ class DebugSystem(System):
 
             # draw debug objects
             if comp.rect:
-                trans_rect = Rect(comp.rect.rect.x + comp.rect.anchor.x,
-                                  comp.rect.rect.y + comp.rect.anchor.y,
+                from pdb import set_trace
+                set_trace()
+                trans_rect = Rect(comp.rect.rect.x + comp.rect.anchor.body.x,
+                                  comp.rect.rect.y + comp.rect.anchor.body.y,
                                   comp.rect.rect.w,
                                   comp.rect.rect.h)
                 draw.rect(self.surface, color, trans_rect, width)

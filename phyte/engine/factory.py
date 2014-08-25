@@ -353,6 +353,18 @@ class ComponentFactory(object):
                                   component=component)
             self.delegate(new_event)
 
+        # BodyComponent
+        elif type == 'body':
+            entity_id = props['entity_id']    
+            body = props['body']
+            velocity = props.get('velocity')
+            component = movement.BodyComponent(entity_id=entity_id,
+                                               body=body,
+                                               velocity=velocity)
+            new_event = GameEvent(ADDBODYCOMPONENT,
+                                  component=component)
+            self.delegate(new_event)
+
         # PhysicsComponent
         elif type == 'physics':
             entity_id = props['entity_id']

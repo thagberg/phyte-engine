@@ -16,10 +16,9 @@ class PhysicsDefinitionEditor(Editor):
         self.layout = QtGui.QGridLayout()
         self.name_label = QtGui.QLabel('Physics Object Name')
         self.name_field = QtGui.QLineEdit()
-        self.x_label = QtGui.QLabel('X')
-        self.x_field = QtGui.QLineEdit()
-        self.y_label = QtGui.QLabel('Y')
-        self.y_field = QtGui.QLineEdit()
+        self.anchor_label = QtGui.QLabel('Choose Anchor')
+        self.anchor_list_view = QtGui.QListWidget()
+        self.anchor_layout = QtGui.QVBoxLayout()
         self.w_label = QtGui.QLabel('Width')
         self.w_field = QtGui.QLineEdit()
         self.h_label = QtGui.QLabel('Height')
@@ -32,23 +31,24 @@ class PhysicsDefinitionEditor(Editor):
         # set up layout
         self.layout.addWidget(self.name_label,0,0)
         self.layout.addWidget(self.name_field,0,1)
-        self.layout.addWidget(self.x_label,1,0)
-        self.layout.addWidget(self.x_field,1,1)
-        self.layout.addWidget(self.w_label,1,2)
-        self.layout.addWidget(self.w_field,1,3)
-        self.layout.addWidget(self.y_label,2,0)
-        self.layout.addWidget(self.y_field,2,1)
-        self.layout.addWidget(self.h_label,2,2)
-        self.layout.addWidget(self.h_field,2,3)
-        self.layout.addWidget(self.physics_list_view,3,0)
+        self.anchor_layout.addWidget(self.anchor_label)
+        self.anchor_layout.addWidget(self.anchor_list_view)
+        self.layout.addLayout(self.anchor_layout,1,0)
+        self.layout.addWidget(self.w_label,2,0)
+        self.layout.addWidget(self.w_field,2,1)
+        self.layout.addWidget(self.h_label,3,0)
+        self.layout.addWidget(self.h_field,3,1)
+        self.layout.addWidget(self.physics_list_view,4,0)
         self.button_layout.addWidget(self.add_physics_button)
         self.button_layout.addWidget(self.remove_physics_button)
-        self.layout.addLayout(self.button_layout,3,1)
+        self.layout.addLayout(self.button_layout,4,1)
 
         self.group.setLayout(self.layout)
 
         # internal events
         EVENT_MAPPING.register_handler('selected_entity', self.set_entity)
+        EVENT_MAPPING.register_handler('added_component', self.add_anchor)
+        EVENT_MAPPING.register_handler('removed_component', self.remove_anchor)
 
         # wire up events
         self.add_physics_button.clicked.connect(self.add_physics)
@@ -56,18 +56,15 @@ class PhysicsDefinitionEditor(Editor):
 
     def add_physics(self):
         name = str(self.name_field.text())
-        x = int(self.x_field.text())
-        y = int(self.y_field.text())
         w = int(self.w_field.text())
         h = int(self.h_field.text())
         rect = Rect(0,0,w,h)
         rect_wrapper = Component(rect, str(rect))
-        anchor = Vector2(self.entity, (x, y))
-        anchor_wrapper = Component(anchor, str(anchor))
-        self.context['entities'][self.entity]['components']['vector'].append(anchor_wrapper)
+        anchor = self.anchor_list_view.currentItem().component
+        self.context['entities'][self.entity]['components']['vector'].append(anchor)
         box_component = BoxComponent(entity_id=self.entity,
                                      rect=rect,
-                                     anchor=anchor_wrapper,
+                                     anchor=anchor,
                                      hitactive=False,
                                      hurtactive=False,
                                      blockactive=False,
@@ -113,8 +110,6 @@ class PhysicsDefinitionEditor(Editor):
         # remove any hitboxes and concomitant components
         box = selected_component.component.body
         self.context['entities'][self.entity]['components']['hitbox'].remove(box)
-        anchor = box.component.anchor
-        self.context['entities'][self.entity]['components']['vector'].remove(anchor)
 
     def set_entity(self, event):
         entity = event.entity
@@ -133,3 +128,23 @@ class PhysicsDefinitionEditor(Editor):
         entity = self.context['selected_entity']
 
         self.physics_list_view.clear()
+
+    def add_anchor(self, event):
+        entity = event.entity
+        component_type = event.component_type
+        component = event.component
+        if component_type == 'body':
+            widget_item = WidgetItemComponent(component.text, component)
+            self.anchor_list_view.addItem(widget_item)
+
+    def remove_anchor(self, event):
+        entity = event.entity
+        component_type = event.component_type
+        component = event.component
+        if component_type == 'body':
+            for i in xrange(self.anchor_list_view.count()):
+                item = self.anchor_list_view.item(i)
+                comp = item.component
+                if comp == component:
+                    self.anchor_list_view.takeItem(i)
+                    break                     

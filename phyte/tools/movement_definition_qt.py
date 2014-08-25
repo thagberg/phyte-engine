@@ -2,7 +2,7 @@ from PyQt4 import QtGui, QtCore
 
 from editor_qt import Editor
 from common import Component, WidgetItemComponent, TreeWidgetItemComponent
-from engine.movement import MovementComponent, VaryingMovementComponent
+from engine.movement import MovementComponent, VaryingMovementComponent, BodyComponent
 from engine.common import Vector2
 from event import Event, EVENT_MAPPING, EVENT_QUEUE, EVENT_MANAGER
 
@@ -35,6 +35,7 @@ class MovementDefinitionEditor(Editor):
         self.parent_layout = QtGui.QVBoxLayout()
         self.movement_list_view = QtGui.QListWidget()
         self.add_movement_button = QtGui.QPushButton('Add Movement')
+        self.update_movement_button = QtGui.QPushButton('Update Movement')
         self.remove_movement_button = QtGui.QPushButton('Remove Movement')
         self.movement_button_layout = QtGui.QVBoxLayout()
 
@@ -55,6 +56,7 @@ class MovementDefinitionEditor(Editor):
         self.layout.addLayout(self.parent_layout,1,2)
         self.layout.addWidget(self.movement_list_view,2,0)
         self.movement_button_layout.addWidget(self.add_movement_button)
+        self.movement_button_layout.addWidget(self.update_movement_button)
         self.movement_button_layout.addWidget(self.remove_movement_button)
         self.layout.addLayout(self.movement_button_layout,2,1)
 
@@ -70,6 +72,7 @@ class MovementDefinitionEditor(Editor):
 
         # wire up events
         self.add_movement_button.clicked.connect(self.add_movement)
+        self.update_movement_button.clicked.connect(self.update_movement)
         self.remove_movement_button.clicked.connect(self.remove_movement)
         self.movement_list_view.currentItemChanged.connect(self.select_movement)
 
@@ -132,8 +135,28 @@ class MovementDefinitionEditor(Editor):
                 if child_item.component.component == body.component:
                     # expand parent and select this child item
                     tl_item.setExpanded(True)
+                    self.body_tree_view.setCurrentItem(child_item)
                     child_item.setSelected(True)
                     break
+
+    def update_movement(self):
+        entity = self.context['selected_entity']
+        selected_item = self.movement_list_view.currentItem()
+        selected_component = selected_item.component
+        inner_component = selected_component.component
+
+        name = str(self.move_name_field.text())
+        velocity = self.velocity_list_view.currentItem().component
+        body = self.body_tree_view.currentItem().component
+        parent_item = self.parent_list_view.currentItem()
+        parent = None
+        if parent_item:
+            parent = parent_item.component
+
+        selected_component.text = name
+        inner_component.velocity = velocity
+        inner_component.body = body
+        inner_component.parent = parent
 
     def add_movement(self):
         entity = self.context['selected_entity']
@@ -211,7 +234,9 @@ class MovementDefinitionEditor(Editor):
             #    child_item = item.takeChild(j)
 
         # populate parent tree with existing movement components
-        for component in self.context['entities'][entity]['components']['movement']:
+        available_parents = self.context['entities'][entity]['components']['movement']
+        available_parents += self.context['entities'][entity]['components']['body']
+        for component in available_parents:
             widget_item = WidgetItemComponent(component.text, component)
             self.parent_list_view.addItem(widget_item)
 

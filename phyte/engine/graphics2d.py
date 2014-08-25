@@ -75,6 +75,9 @@ class GraphicsSystem(System):
         flags = comp.flags if comp.flags else 0
         area = comp.area if comp.area else None
         dest = comp.dest
-        dirty = draw_to.blit(comp.surface, (dest.x, dest.y), area, flags)
+        dirty = draw_to.blit(comp.surface, 
+                             (dest.body.x, dest.body.y), 
+                             area, 
+                             flags)
         self.dirties.append(dirty)
 

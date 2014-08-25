@@ -31,6 +31,14 @@ class VaryingMovementComponent(object):
         return self.velocity_func()
 
 
+class BodyComponent(object):
+    def __init__(self, entity_id, body, velocity=None):
+        self.entity_id = entity_id
+        self.body = body
+        self.velocity = velocity
+        self.active = False
+
+
 class MovementSystem(System):
     def __init__(self, factory, components=None):
         super(MovementSystem, self).__init__()
@@ -69,6 +77,11 @@ class MovementSystem(System):
             print "Added new MovementComponent: %s" % event.component
             self._add(event.component)
         elif event.type == REMOVEMOVEMENTCOMPONENT:
+            self._remove(event.component)
+        elif event.type == ADDBODYCOMPONENT:
+            print "Added new BodyComponent: %s" % event.component
+            self._add(event.component)
+        elif event.type == REMOVEBODYCOMPONENT:
             self._remove(event.component)
         elif event.type == ACTIVATEMOVEMENTCOMPONENT:
             self._activate(event.component)
