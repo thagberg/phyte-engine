@@ -1,0 +1,887 @@
+!!python/object/apply:collections.defaultdict
+args: [!!python/name:__builtin__.dict '']
+dictitems:
+  assets:
+  - !!python/object:tools.common.Component
+    component: !!python/object:engine.common.AssetComponent {file_name: /home/tim/Documents/programming/phyte-engine/content/sticksheet.png,
+      surface: null}
+    text: /home/tim/Documents/programming/phyte-engine/content/sticksheet.png
+    type_name: AssetComponent
+  entities:
+    ground:
+      components: !!python/object/apply:collections.defaultdict
+        args: [&id013 !!python/name:__builtin__.list '']
+        dictitems:
+          animation: []
+          binding: []
+          body:
+          - &id002 !!python/object:tools.common.Component
+            component: !!python/object:engine.movement.BodyComponent
+              active: false
+              body: &id001 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: ground,
+                  x: 0, y: 500}
+                text: '[0, 500]'
+                type_name: Vector2
+              entity_id: ground
+              velocity: &id012 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: ground,
+                  x: 0, y: 0}
+                text: '[0, 0]'
+                type_name: Vector2
+            text: ground_body
+            type_name: BodyComponent
+          debug: []
+          execution: []
+          graphic: []
+          hitbox:
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.common.BoxComponent
+              anchor: &id010 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: ground,
+                  x: 800, y: 500}
+                text: '[800, 500]'
+                type_name: Vector2
+              blockactive: false
+              damage: 0
+              entity_id: ground
+              expired: false
+              hitactive: false
+              hitstun: 0
+              hurtactive: false
+              moveable: false
+              push: [0, 0]
+              rect: !!python/object/apply:pygame.__rect_constructor [0, 500, 800,
+                100]
+              solid: true
+              stun: 0
+            text: <rect(0, 500, 800, 100)>
+            type_name: BoxComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.common.BoxComponent
+              anchor: &id011 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: ground,
+                  x: 0, y: 0}
+                text: '[0, 0]'
+                type_name: Vector2
+              blockactive: false
+              damage: 0
+              entity_id: ground
+              expired: false
+              hitactive: false
+              hitstun: 0
+              hurtactive: false
+              moveable: false
+              push: [0, 0]
+              rect: !!python/object/apply:pygame.__rect_constructor [0, 0, 800, 100]
+              solid: true
+              stun: 0
+            text: <rect(0, 0, 800, 100)>
+            type_name: BoxComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.common.BoxComponent
+              anchor: *id001
+              blockactive: false
+              damage: 0
+              entity_id: ground
+              expired: false
+              hitactive: false
+              hitstun: 0
+              hurtactive: false
+              moveable: false
+              push: [0, 0]
+              rect: !!python/object/apply:pygame.__rect_constructor [0, 0, 800, 100]
+              solid: true
+              stun: 0
+            text: <rect(0, 0, 800, 100)>
+            type_name: BoxComponent
+          - &id004 !!python/object:tools.common.Component
+            component: !!python/object:engine.common.BoxComponent
+              anchor: *id002
+              blockactive: false
+              damage: 0
+              entity_id: ground
+              expired: false
+              hitactive: false
+              hitstun: 0
+              hurtactive: false
+              moveable: false
+              push: [0, 0]
+              rect: &id003 !!python/object/apply:pygame.__rect_constructor [0, 0,
+                800, 500]
+              solid: true
+              stun: 0
+            text: <rect(0, 0, 800, 500)>
+            type_name: BoxComponent
+          move: []
+          movement:
+          - *id002
+          - *id002
+          - *id002
+          physics:
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.physics2d.PhysicsComponent
+              active: false
+              active_type: false
+              body: !!python/object:tools.common.Component
+                component: *id003
+                text: <rect(0, 0, 800, 500)>
+                type_name: Rect
+              box: *id004
+              collideables: []
+              entity_id: ground
+            text: ground_physics
+            type_name: PhysicsComponent
+          state: []
+          text:
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.text.TextComponent
+              aa: false
+              active: false
+              background: null
+              bold: false
+              color: &id005 !!python/object:tools.common.Component
+                component: !!python/tuple [255, 0, 0, 255]
+                text: Red
+                type_name: tuple
+              entity_id: ground
+              font: null
+              graphic: null
+              italic: false
+              loc: &id006 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: ground,
+                  x: 0.0, y: 500.0}
+                text: ground_pox
+                type_name: Vector2
+              size: 12
+              style:
+                color: *id005
+              text: <rect(0, 500, 800, 300)>
+              underline: false
+            text: <rect(0, 500, 800, 300)>
+            type_name: TextComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.text.TextComponent
+              aa: false
+              active: false
+              background: null
+              bold: false
+              color: &id007 !!python/object:tools.common.Component
+                component: !!python/tuple [255, 0, 0, 255]
+                text: Red
+                type_name: tuple
+              entity_id: ground
+              font: null
+              graphic: null
+              italic: false
+              loc: *id006
+              size: 12
+              style:
+                color: *id007
+              text: <rect(0, 500, 800, 100)>
+              underline: false
+            text: <rect(0, 500, 800, 100)>
+            type_name: TextComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.text.TextComponent
+              aa: false
+              active: false
+              background: null
+              bold: false
+              color: &id008 !!python/object:tools.common.Component
+                component: !!python/tuple [255, 0, 0, 255]
+                text: Red
+                type_name: tuple
+              entity_id: ground
+              font: null
+              graphic: null
+              italic: false
+              loc: *id006
+              size: 12
+              style:
+                color: *id008
+              text: <rect(0, 500, 800, 100)>
+              underline: false
+            text: <rect(0, 500, 800, 100)>
+            type_name: TextComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.text.TextComponent
+              aa: false
+              active: false
+              background: null
+              bold: false
+              color: &id009 !!python/object:tools.common.Component
+                component: !!python/tuple [255, 0, 0, 255]
+                text: Red
+                type_name: tuple
+              entity_id: ground
+              font: null
+              graphic: null
+              italic: false
+              loc: *id006
+              size: 12
+              style:
+                color: *id009
+              text: <rect(0, 500, 800, 100)>
+              underline: false
+            text: <rect(0, 500, 800, 100)>
+            type_name: TextComponent
+          vector:
+          - *id006
+          - *id010
+          - *id011
+          - *id001
+          - *id012
+          - *id002
+    player:
+      components: !!python/object/apply:collections.defaultdict
+        args: [*id013]
+        dictitems:
+          animation:
+          - &id023 !!python/object:tools.common.Component
+            component: !!python/object:engine.animation.AnimationComponent
+              active: false
+              current_frame: null
+              current_index: 0
+              entity_id: player
+              frames:
+              - !!python/object:tools.common.Component
+                component: !!python/object:engine.animation.FrameComponent
+                  crop: !!python/object/apply:pygame.__rect_constructor [10, 7, 51,
+                    117]
+                  entity_id: player
+                  force: &id014 !!python/tuple [0, 0]
+                  hitboxes:
+                  - &id032 !!python/object:tools.common.Component
+                    component: !!python/object:engine.common.BoxComponent
+                      anchor: &id015 !!python/object:tools.common.Component
+                        component: !!python/object:engine.common.Vector2 {entity_id: player,
+                          x: 100.0, y: 100.0}
+                        text: graphic1_vec
+                        type_name: Vector2
+                      blockactive: false
+                      damage: 0
+                      entity_id: player
+                      expired: false
+                      hitactive: false
+                      hitstun: 0
+                      hurtactive: false
+                      moveable: false
+                      push: [0, 0]
+                      rect: !!python/object/apply:pygame.__rect_constructor [0, 8,
+                        45, 106]
+                      solid: true
+                      stun: 0
+                    text: hib
+                    type_name: BoxComponent
+                  push_box: null
+                  repeat: 30
+                  repeat_index: 0
+                text: standing1
+                type_name: FrameComponent
+              - !!python/object:tools.common.Component
+                component: !!python/object:engine.animation.FrameComponent
+                  crop: !!python/object/apply:pygame.__rect_constructor [68, 0, 58,
+                    122]
+                  entity_id: player
+                  force: *id014
+                  hitboxes:
+                  - &id026 !!python/object:tools.common.Component
+                    component: !!python/object:engine.common.BoxComponent
+                      anchor: *id015
+                      blockactive: false
+                      damage: 0
+                      entity_id: player
+                      expired: false
+                      hitactive: false
+                      hitstun: 0
+                      hurtactive: false
+                      moveable: false
+                      push: &id016 [0, 0]
+                      rect: !!python/object/apply:pygame.__rect_constructor [0, 8,
+                        45, 106]
+                      solid: true
+                      stun: 0
+                    text: hib
+                    type_name: BoxComponent
+                  push_box: null
+                  repeat: 30
+                  repeat_index: 0
+                text: standing2
+                type_name: FrameComponent
+              - !!python/object:tools.common.Component
+                component: !!python/object:engine.animation.FrameComponent
+                  crop: !!python/object/apply:pygame.__rect_constructor [135, 4, 54,
+                    121]
+                  entity_id: player
+                  force: *id014
+                  hitboxes:
+                  - &id027 !!python/object:tools.common.Component
+                    component: !!python/object:engine.common.BoxComponent
+                      anchor: *id015
+                      blockactive: false
+                      damage: 0
+                      entity_id: player
+                      expired: false
+                      hitactive: false
+                      hitstun: 0
+                      hurtactive: false
+                      moveable: false
+                      push: *id016
+                      rect: !!python/object/apply:pygame.__rect_constructor [0, 8,
+                        45, 106]
+                      solid: true
+                      stun: 0
+                    text: hib
+                    type_name: BoxComponent
+                  push_box: null
+                  repeat: 30
+                  repeat_index: 0
+                text: standing3
+                type_name: FrameComponent
+              graphic: &id018 !!python/object:tools.common.Component
+                component: !!python/object:engine.graphics2d.GraphicsComponent
+                  active: false
+                  area: null
+                  dest: &id021 !!python/object:tools.common.Component
+                    component: !!python/object:engine.movement.BodyComponent
+                      active: false
+                      body: *id015
+                      entity_id: player
+                      velocity: &id051 !!python/object:tools.common.Component
+                        component: !!python/object:engine.common.Vector2 {entity_id: player,
+                          x: 0, y: 0}
+                        text: '[0, 0]'
+                        type_name: Vector2
+                    text: player_ body
+                    type_name: BodyComponent
+                  entity_id: player
+                  file_name: /home/tim/Documents/programming/phyte-engine/content/sticksheet.png
+                  flags: null
+                  surface: null
+                  z_level: 0
+                text: graphic1
+                type_name: GraphicsComponent
+              loop: false
+            text: standing_animation
+            type_name: AnimationComponent
+          - &id022 !!python/object:tools.common.Component
+            component: !!python/object:engine.animation.AnimationComponent
+              active: false
+              current_frame: null
+              current_index: 0
+              entity_id: player
+              frames:
+              - !!python/object:tools.common.Component
+                component: !!python/object:engine.animation.FrameComponent
+                  crop: !!python/object/apply:pygame.__rect_constructor [2, 134, 57,
+                    117]
+                  entity_id: player
+                  force: *id014
+                  hitboxes:
+                  - &id028 !!python/object:tools.common.Component
+                    component: !!python/object:engine.common.BoxComponent
+                      anchor: *id015
+                      blockactive: false
+                      damage: 0
+                      entity_id: player
+                      expired: false
+                      hitactive: false
+                      hitstun: 0
+                      hurtactive: false
+                      moveable: false
+                      push: &id017 [0, 0]
+                      rect: !!python/object/apply:pygame.__rect_constructor [0, 8,
+                        45, 106]
+                      solid: true
+                      stun: 0
+                    text: hib
+                    type_name: BoxComponent
+                  push_box: null
+                  repeat: 30
+                  repeat_index: 0
+                text: walking1
+                type_name: FrameComponent
+              - !!python/object:tools.common.Component
+                component: !!python/object:engine.animation.FrameComponent
+                  crop: !!python/object/apply:pygame.__rect_constructor [70, 130,
+                    57, 123]
+                  entity_id: player
+                  force: *id014
+                  hitboxes:
+                  - &id029 !!python/object:tools.common.Component
+                    component: !!python/object:engine.common.BoxComponent
+                      anchor: *id015
+                      blockactive: false
+                      damage: 0
+                      entity_id: player
+                      expired: false
+                      hitactive: false
+                      hitstun: 0
+                      hurtactive: false
+                      moveable: false
+                      push: *id017
+                      rect: !!python/object/apply:pygame.__rect_constructor [0, 8,
+                        45, 106]
+                      solid: true
+                      stun: 0
+                    text: hib
+                    type_name: BoxComponent
+                  push_box: null
+                  repeat: 30
+                  repeat_index: 0
+                text: walking2
+                type_name: FrameComponent
+              - !!python/object:tools.common.Component
+                component: !!python/object:engine.animation.FrameComponent
+                  crop: !!python/object/apply:pygame.__rect_constructor [133, 132,
+                    57, 124]
+                  entity_id: player
+                  force: *id014
+                  hitboxes:
+                  - &id030 !!python/object:tools.common.Component
+                    component: !!python/object:engine.common.BoxComponent
+                      anchor: *id015
+                      blockactive: false
+                      damage: 0
+                      entity_id: player
+                      expired: false
+                      hitactive: false
+                      hitstun: 0
+                      hurtactive: false
+                      moveable: false
+                      push: *id017
+                      rect: !!python/object/apply:pygame.__rect_constructor [0, 8,
+                        45, 106]
+                      solid: true
+                      stun: 0
+                    text: hib
+                    type_name: BoxComponent
+                  push_box: null
+                  repeat: 30
+                  repeat_index: 0
+                text: walking3
+                type_name: FrameComponent
+              graphic: *id018
+              loop: false
+            text: walking_animation
+            type_name: AnimationComponent
+          - &id025 !!python/object:tools.common.Component
+            component: !!python/object:engine.animation.AnimationComponent
+              active: false
+              current_frame: null
+              current_index: 0
+              entity_id: player
+              frames:
+              - !!python/object:tools.common.Component
+                component: !!python/object:engine.animation.FrameComponent
+                  crop: !!python/object/apply:pygame.__rect_constructor [68, 260,
+                    58, 125]
+                  entity_id: player
+                  force: !!python/tuple [0, 0]
+                  hitboxes:
+                  - &id031 !!python/object:tools.common.Component
+                    component: !!python/object:engine.common.BoxComponent
+                      anchor: *id015
+                      blockactive: false
+                      damage: 0
+                      entity_id: player
+                      expired: false
+                      hitactive: false
+                      hitstun: 0
+                      hurtactive: false
+                      moveable: false
+                      push: *id017
+                      rect: !!python/object/apply:pygame.__rect_constructor [11, 10,
+                        37, 108]
+                      solid: true
+                      stun: 0
+                    text: hib
+                    type_name: BoxComponent
+                  push_box: null
+                  repeat: 1
+                  repeat_index: 0
+                text: falling1
+                type_name: FrameComponent
+              graphic: *id018
+              loop: false
+            text: falling_animation
+            type_name: AnimationComponent
+          binding:
+          - &id024 !!python/object:tools.common.Component
+            component: !!python/object:engine.inputs.InputComponent
+              bindings:
+                back: !!python/object:tools.common.Component
+                  component: !!python/object:tools.common.InputToKeyBinding
+                    key: !!python/object:tools.common.Component
+                      component: !!python/object:tools.common.KeyComponent {key: 276}
+                      text: K_LEFT
+                      type_name: KeyComponent
+                    mirror: &id020 !!python/object:tools.common.Component
+                      component: !!python/object:engine.inputs.Input {active: false,
+                        hold_time: 0, name: forward, time_since_input: 0}
+                      text: forward
+                      type_name: Input
+                    name: &id019 !!python/object:tools.common.Component
+                      component: !!python/object:engine.inputs.Input {active: false,
+                        hold_time: 0, name: back, time_since_input: 0}
+                      text: back
+                      type_name: Input
+                  text: back - K_LEFT
+                  type_name: InputToKeyBinding
+                down: !!python/object:tools.common.Component
+                  component: !!python/object:tools.common.InputToKeyBinding
+                    key: !!python/object:tools.common.Component
+                      component: !!python/object:tools.common.KeyComponent {key: 274}
+                      text: K_DOWN
+                      type_name: KeyComponent
+                    mirror: null
+                    name: &id053 !!python/object:tools.common.Component
+                      component: !!python/object:engine.inputs.Input {active: false,
+                        hold_time: 0, name: down, time_since_input: 0}
+                      text: down
+                      type_name: Input
+                  text: down - K_DOWN
+                  type_name: InputToKeyBinding
+                forward: !!python/object:tools.common.Component
+                  component: !!python/object:tools.common.InputToKeyBinding
+                    key: !!python/object:tools.common.Component
+                      component: !!python/object:tools.common.KeyComponent {key: 275}
+                      text: K_RIGHT
+                      type_name: KeyComponent
+                    mirror: *id019
+                    name: *id020
+                  text: forward - K_RIGHT
+                  type_name: InputToKeyBinding
+                up: !!python/object:tools.common.Component
+                  component: !!python/object:tools.common.InputToKeyBinding
+                    key: !!python/object:tools.common.Component
+                      component: !!python/object:tools.common.KeyComponent {key: 273}
+                      text: K_UP
+                      type_name: KeyComponent
+                    mirror: null
+                    name: &id052 !!python/object:tools.common.Component
+                      component: !!python/object:engine.inputs.Input {active: false,
+                        hold_time: 0, name: up, time_since_input: 0}
+                      text: up
+                      type_name: Input
+                  text: up - K_UP
+                  type_name: InputToKeyBinding
+              entity_id: player
+              inp_buffer: null
+              last_state: null
+              mirror_bindings:
+                back: *id020
+                down: null
+                forward: *id019
+                up: null
+              mirror_state: false
+              state: {back: false, down: false, forward: false, up: false}
+            text: ingame_binding
+            type_name: InputComponent
+          body:
+          - *id021
+          execution:
+          - &id042 !!python/object:tools.common.Component
+            component: !!python/object:engine.execute.ExecutionComponent
+              active: false
+              entity_id: player
+              executables:
+              - &id034 !!python/object:tools.common.Component
+                component: !!python/object:engine.move.MoveComponent
+                  active: false
+                  animation: *id022
+                  entity_id: player
+                  inputs:
+                  - !!python/object:tools.common.Component
+                    component:
+                    - *id020
+                    text: forward
+                    type_name: list
+                  name: walking_move
+                  rules: []
+                text: walking_move
+                type_name: MoveComponent
+              - &id033 !!python/object:tools.common.Component
+                component: !!python/object:engine.move.MoveComponent
+                  active: false
+                  animation: *id023
+                  entity_id: player
+                  inputs: []
+                  name: standing_move
+                  rules: []
+                text: standing_move
+                type_name: MoveComponent
+              inputs: *id024
+              mirror: false
+            text: neutral_execution
+            type_name: ExecutionComponent
+          - &id040 !!python/object:tools.common.Component
+            component: !!python/object:engine.execute.ExecutionComponent
+              active: false
+              entity_id: player
+              executables:
+              - &id035 !!python/object:tools.common.Component
+                component: !!python/object:engine.move.MoveComponent
+                  active: false
+                  animation: *id025
+                  entity_id: player
+                  inputs: []
+                  name: falling_move
+                  rules: []
+                text: falling_move
+                type_name: MoveComponent
+              inputs: *id024
+              mirror: false
+            text: falling_execution
+            type_name: ExecutionComponent
+          graphic:
+          - *id018
+          hitbox:
+          - *id026
+          - *id027
+          - *id028
+          - *id029
+          - *id030
+          - *id031
+          - *id032
+          move:
+          - *id033
+          - *id034
+          - *id035
+          movement:
+          - &id037 !!python/object:tools.common.Component
+            component: !!python/object:engine.movement.MovementComponent
+              active: false
+              body: *id015
+              entity_id: player
+              parent: *id021
+              pulse_velocity: null
+              velocity: &id036 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: player,
+                  x: 0.0, y: 0.0}
+                text: 0.0, 0.0
+                type_name: Vector2
+            text: player_movement
+            type_name: MovementComponent
+          - &id038 !!python/object:tools.common.Component
+            component: !!python/object:engine.movement.MovementComponent
+              active: false
+              body: *id036
+              entity_id: player
+              parent: *id037
+              pulse_velocity: null
+              velocity: &id046 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: player,
+                  x: 5.0, y: 0.0}
+                text: 5.0, 0.0
+                type_name: Vector2
+            text: walking_movement
+            type_name: MovementComponent
+          - &id039 !!python/object:tools.common.Component
+            component: !!python/object:engine.movement.MovementComponent
+              active: false
+              body: *id036
+              entity_id: player
+              parent: *id037
+              pulse_velocity: null
+              velocity: &id047 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: player,
+                  x: 0.0, y: 1.0}
+                text: gravity
+                type_name: Vector2
+            text: gravity_movement
+            type_name: MovementComponent
+          state:
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.state.StateComponent
+              activation_component: *id038
+              activation_event_type: ACTIVATEMOVEMENTCOMPONENT
+              deactivation_event_type: DEACTIVATEMOVEMENTCOMPONENT
+              entity_id: player
+              rule_values:
+                walking_rule: !!python/object:tools.common.LambdaDef
+                  attr: active
+                  component: *id034
+              rules:
+              - &id055 !!python/object:tools.common.Component
+                component: !!python/object:engine.state.RuleComponent {name: walking_rule,
+                  operator: ge, value: 1.0}
+                text: walking_rule
+                type_name: RuleComponent
+            text: walking_state
+            type_name: StateComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.state.StateComponent
+              activation_component: *id039
+              activation_event_type: ACTIVATEMOVEMENTCOMPONENT
+              deactivation_event_type: DEACTIVATEMOVEMENTCOMPONENT
+              entity_id: player
+              rule_values: {gravity_rule: '1.0'}
+              rules:
+              - &id041 !!python/object:tools.common.Component
+                component: !!python/object:engine.state.RuleComponent {name: gravity_rule,
+                  operator: eq, value: 1.0}
+                text: gravity_rule
+                type_name: RuleComponent
+            text: gravity_state
+            type_name: StateComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.state.StateComponent
+              activation_component: *id040
+              activation_event_type: ACTIVATEEXECUTIONCOMPONENT
+              deactivation_event_type: DEACTIVATEEXECUTIONCOMPONENT
+              entity_id: player
+              rule_values:
+                falling_rule: !!python/object:tools.common.LambdaDef
+                  attr: y
+                  component: *id015
+                gravity_rule: '1.0'
+              rules:
+              - *id041
+              - &id056 !!python/object:tools.common.Component
+                component: !!python/object:engine.state.RuleComponent {name: falling_rule,
+                  operator: ge, value: 0.0}
+                text: falling_rule
+                type_name: RuleComponent
+            text: falling_state
+            type_name: StateComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.state.StateComponent
+              activation_component: *id037
+              activation_event_type: ACTIVATEMOVEMENTCOMPONENT
+              deactivation_event_type: DEACTIVATEMOVEMENTCOMPONENT
+              entity_id: player
+              rule_values: {player_movement_rule: '1.0'}
+              rules:
+              - &id057 !!python/object:tools.common.Component
+                component: !!python/object:engine.state.RuleComponent {name: player_movement_rule,
+                  operator: ge, value: 1.0}
+                text: player_movement_rule
+                type_name: RuleComponent
+            text: player_movement
+            type_name: StateComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.state.StateComponent
+              activation_component: *id042
+              activation_event_type: ACTIVATEEXECUTIONCOMPONENT
+              deactivation_event_type: DEACTIVATEEXECUTIONCOMPONENT
+              entity_id: player
+              rule_values:
+                neutral_rule: '1.0'
+                not_falling: !!python/object:tools.common.LambdaDef
+                  attr: y
+                  component: *id015
+              rules:
+              - &id058 !!python/object:tools.common.Component
+                component: !!python/object:engine.state.RuleComponent {name: not_falling,
+                  operator: eq, value: 0.0}
+                text: not_falling
+                type_name: RuleComponent
+              - &id054 !!python/object:tools.common.Component
+                component: !!python/object:engine.state.RuleComponent {name: neutral_rule,
+                  operator: ge, value: 1.0}
+                text: neutral_rule
+                type_name: RuleComponent
+            text: neutral
+            type_name: StateComponent
+          text:
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.text.TextComponent
+              aa: false
+              active: false
+              background: null
+              bold: false
+              color: &id043 !!python/object:tools.common.Component
+                component: !!python/tuple [0, 255, 0, 255]
+                text: Green
+                type_name: tuple
+              entity_id: player
+              font: null
+              graphic: null
+              italic: false
+              loc: &id048 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: player,
+                  x: 10.0, y: 10.0}
+                text: debug_position
+                type_name: Vector2
+              size: 12
+              style:
+                color: *id043
+              text: <tools.common.Component object at 0x31f41d0>
+              underline: false
+            text: <tools.common.Component object at 0x31f41d0>
+            type_name: TextComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.text.TextComponent
+              aa: false
+              active: false
+              background: null
+              bold: false
+              color: &id044 !!python/object:tools.common.Component
+                component: !!python/tuple [0, 255, 0, 255]
+                text: Green
+                type_name: tuple
+              entity_id: player
+              font: null
+              graphic: null
+              italic: false
+              loc: &id049 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: player,
+                  x: 10.0, y: 25.0}
+                text: walking_debug_position
+                type_name: Vector2
+              size: 12
+              style:
+                color: *id044
+              text: 'False'
+              underline: false
+            text: 'False'
+            type_name: TextComponent
+          - !!python/object:tools.common.Component
+            component: !!python/object:engine.text.TextComponent
+              aa: false
+              active: false
+              background: null
+              bold: false
+              color: &id045 !!python/object:tools.common.Component
+                component: !!python/tuple [0, 0, 0, 255]
+                text: Black
+                type_name: tuple
+              entity_id: player
+              font: null
+              graphic: null
+              italic: false
+              loc: &id050 !!python/object:tools.common.Component
+                component: !!python/object:engine.common.Vector2 {entity_id: player,
+                  x: 10.0, y: 40.0}
+                text: walking_move_debug_position
+                type_name: Vector2
+              size: 12
+              style:
+                color: *id045
+              text: 'False'
+              underline: false
+            text: 'False'
+            type_name: TextComponent
+          vector:
+          - *id015
+          - *id036
+          - *id046
+          - *id047
+          - *id048
+          - *id049
+          - *id050
+          - *id051
+  inputs:
+  - *id052
+  - *id053
+  - *id020
+  - *id019
+  rules:
+  - *id054
+  - *id055
+  - *id056
+  - *id041
+  - *id057
+  - *id058
